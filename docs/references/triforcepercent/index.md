@@ -1,31 +1,17 @@
 # TriforcePercent Import Index
 
-This folder tracks all assets, references, and data imported from the TriforcePercent project.
+**Source**: https://github.com/triforce-percent/triforce-percent
 
-## Source Repository
-https://github.com/TriforcePercent/TriforcePercent
+## Goals for Import
+- Extract usable models/textures/animations for SoH (Triforce, chamber, Unicorn Fountain, Arwing, Beta Fairy).
+- Convert to Fast64/Blender → SoH `.otr` compatible format.
+- Document licensing/credits.
 
-## Key Asset Categories
-- Triforce models
-- Chamber geometry
-- Unicorn Fountain references
-- Arwing actor references
-- Beta Fairy references
-- Custom cutscene logic
-- Custom item logic
-- Scene scripts
-- Camera paths
+## Raw Assets Location
+`assets/raw/triforcepercent/`
 
-## Import Status
-- [ ] Triforce model
-- [ ] Chamber geometry
-- [ ] Unicorn Fountain geometry
-- [ ] Arwing actor model
-- [ ] Beta Fairy model
-- [ ] Cutscene camera paths
-- [ ] Scene scripts
-- [ ] Textures
-- [ ] Animations
-
-## Notes
-This index will expand as assets are discovered and imported.
+## Next Actions
+- [ ] Scan for models (.dae, .fbx, .zobj)
+- [ ] Extract textures
+- [ ] Identify scene geometry
+- [ ] Test import of Triforce model first
