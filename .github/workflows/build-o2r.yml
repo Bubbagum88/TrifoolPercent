@@ -1,0 +1,72 @@
+# Builds TrifoolPercent.o2r, the mod archive you drop into your Ship of Harkinian install.
+#
+# SoH users already have soh.exe. The mod ships only the .o2r: it carries the Triforce Room scene
+# and the three actor models. Drop it into SoH's `mods/` folder and launch.
+#
+# NOTE: the module code in soh/Enhancements/TrifoolPercent/ (actors, cutscene, text) is NOT in the
+# .o2r. It has to be compiled into soh.exe. The .o2r alone loads the scene; the actors and cutscene
+# need a SoH build with the module.
+#
+# Steps read top-to-bottom like a recipe. When a build fails, open the run, click the red job, and
+# the first red step's name says where to look.
+#
+# To use the result: open the completed run on GitHub -> scroll to "Artifacts" -> download
+# "TrifoolPercent.o2r" -> drop it into your SoH `mods/` folder -> launch SoH.
+name: build-o2r
+
+on:
+  push:
+    paths:
+      - "scenes/**"
+      - "actors/**"
+      - "tools/**"
+      - ".github/workflows/build-o2r.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build TrifoolPercent.o2r
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out TrifoolPercent
+        uses: actions/checkout@v4
+
+      - name: Install Python 3.13 (for Blender's bpy and the asset scripts)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Pillow (needed by the title-card renderer)
+        run: pip install pillow
+
+      - name: Fetch upstream sources (Triforce%, HM Fast64, Shipwright + submodules)
+        # tools/setup.sh pins and clones everything; it uses --depth 1 so moved submodule branches
+        # don't matter. Shipwright is needed because the Torch build and GenerateSohOtr step live
+        # there; soh.o2r is a build dependency of the Torch tooling, not shipped.
+        run: tools/setup.sh
+
+      - name: Install Shipwright's Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(cat third_party/Shipwright/linux-build-deps/apt.txt)
+
+      - name: Build Shipwright's asset tools (needed to produce the mod .o2r)
+        working-directory: third_party/Shipwright
+        run: |
+          cmake --no-warn-unused-cli -H. -Bbuild-cmake -GNinja \
+                -DCMAKE_BUILD_TYPE:STRING=Release -DSOH_TOOLS_ONLY=ON
+          cmake --build build-cmake --config Release --target GenerateSohOtr -j4
+
+      - name: Build TrifoolPercent.o2r (the Triforce Room scene and the three actor models)
+        run: tools/build_o2r.sh
+
+      - name: Upload TrifoolPercent.o2r (drop this into SoH's mods/ folder)
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrifoolPercent.o2r
+          path: build/TrifoolPercent.o2r
+          retention-days: 30
