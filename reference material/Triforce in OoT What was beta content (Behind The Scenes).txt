@@ -1,0 +1,1715 @@
+Triforce in OoT What was beta content (Behind The Scenes)
+https://www.youtube.com/watch?v=Zlxf3EcoP5o&list=PLzcP-azgsWrruZE1iHkJUbn-MTc_i80_Y&index=3
+
+
+    
+  
+
+    
+    
+    
+    
+
+    
+  
+19,278 views  Oct 30, 2022  #tas #triforcepercent #heretogether
+Yes, we put the Triforce into OoT using nothing but button presses. :) Here's what was beta content vs newly created and more behind the scenes fun. Questions? Join   / discord  
+
+Triforce% OoT ACE Showcase was presented by Sauraen, Savestate, and dwangoAC with the help of TASBot under the title Ocarina of Time Beta Showcase during the SGDQ 2022 TAS block after helping raise more than $228k for Doctors Without Borders. Triforce% was performed using an original, unmodified US 1.0 release cartridge of The Legend of Zelda: Ocarina of Time on a real, original N64 (the Nintendo 64 had a passive RGB mod for a clean video signal that did not affect gameplay in any way). Everything in this run was done live in front of an audience using only button presses on controllers, ultimately achieving ACE (Arbitrary Code Execution) using Stale Reference Manipulation (SRM, the OoT community name for this Use-After-Free exploit).
+
+In this second video in the series from Games Done Quick's Hotfix show That's Never Happened Before hosted by Kungfufruitcup, Sauraen and dwangoAC break down each bit of Triforce% content and explain the entire run from start to finish with behind the scenes details on what aspects were beta content and what the team created based on inspiration from Nintendo commercials and advertising material as well as fan rumors.
+
+The official Triforce% site can be found at: https://GetTriforce.Link
+
+Partner Creators:
+Retro Game Mechanics Explained  - Finally Obtaining the Triforce in Ocarina of Time: Triforce Percent Explained:    • Finally Obtaining the Triforce in Ocarina ...   
+SwankyBox - How Players Finally Obtained the Triforce 23 Years Later in Ocarina of Time (Zelda):    • How Players Finally Obtained the Triforce ...  
+Hard4Games  - Triforce%:    • Triforce%  
+
+Partner Reactors:
+HMK - Zelda: Ocarina of Time Beta Showcase | FULL REACTION!:    • Zelda: Ocarina of Time Beta Showcase | FUL...  
+TetraBitGaming - Crazy Ocarina of Time Unused Content Showcase! (Legend of Zelda OoT Triforce% Reaction):    • Video  
+
+OST Published By SiIvaGunner:
+YouTube - Trailer (Beta Mix) - The Legend of Zelda: Ocarina of Time:    • Trailer (Beta Mix)  - The Legend of Zelda: ...  
+Soundcloud -   / triforce-percent  
+Wiki page - https://siivagunner.fandom.com/wiki/T...
+Joke explanations - https://gettriforce.link/siiva_jokes
+
+Thank you to Summer Games Done Quick 2022 for helping us showcase this wonderful TAS as presented by SaveState, Sauraen, and dwangoAC Here Together with the help of TASBot!
+
+TASBot / dwangoAC:
+Discord - http://Discord.TAS.Bot 
+Twitch -   / dwangoac   
+Twitter -   / mrtasbot   
+Patreon -   / dwangoac   
+Web - https://TAS.Bot 
+
+Intro / outro Music by: JohnGabrielUK
+Video Editor: Boone Cavender
+Intro screen text and video mentoring: AngelWind
+T-shirt graphic used in title designed by: Drew Wise for https://TheYetee.com
+
+0:00 Intro
+0:55 Start of the run
+1:35 Setup for ACE
+2:49 Why is there a green bar in the corner?
+3:15 Switching controllers
+4:06 The replay device currently used
+4:56 Injecting the first set of data
+6:12 Injecting data intensifies
+6:42 Reloading the game to apply patches
+7:21 Inventory Editor
+9:30 Arwing from Starfox64
+10:51 Lost Woods exit sequence
+12:45 Beta Kokiri
+14:23 Butterfly
+16:05 Convenient Ura Zelda text-patching code
+17:35 Giving the butterfly to the Beta Kokiri
+18:42 ﾟ･:*｡ Magic Powder ｡*:･ﾟ
+20:07 Skull Kid
+21:08 Upgrading masks
+23:34 Gerudo's Fortress as Child-Link
+26:32 Nabooru
+31:48 The full Song of Time
+33:07 Link and Nabooru having a stare down
+33:53 Full Song of Time functionality
+37:03 Ocarina Systems
+39:33 The Running Man
+43:06 Beating the Running Man
+44:53 The "Special Reward"
+45:14 Running Man Boss Battle
+49:25 Sages' Charm and questionable physics
+53:08 Melting the ice in Zora's Domain
+55:28 Unicorn Fountain
+56:33 Beta Great Fairy
+58:06 The Overture of Sages
+59:24 The Temple of Time
+1:02:14 To the Sacred Realm!
+1:04:12 Yeeting off the platform
+1:06:57 The music of the Sacred Realm
+1:07:39 Sheik
+1:08:45 Oof
+1:09:29 Triforce
+1:13:29 Choice
+1:13:57 Future
+1:15:55 Here together
+1:17:59 Surprise? (Credits)
+1:21:33 👏
+
+All Games Done Quick content is used with permission.
+All TASVideos.org content used with permission under Creative Commons Attribution 2.0 (https://creativecommons.org/licenses/...)
+
+#triforcepercent #heretogether #tas #sgdq #tasbot
+
+
+0:00
+[Music]
+0:05
+thank you alrighty and we are back with more
+0:11
+that's never happened before hello Kung Fu freak up here joining you all this evening tonight we have on dwenko AC and
+0:17
+Soren who've been showing off Triforce percent showcase that was uh the task showcase so tool assistant speed run
+0:24
+that was shown off at this past sgdq it was amazing and so it's so cool to learn more about it but now we get to see uh
+0:31
+the another aspect of it of kind of like what's going on and more of like the visual
+0:36
+um Parts like how it's I was being displayed in games so I'm Gonna Leave it to sworn and twango
+0:41
+YouTube take it away and also feel free to do that quick countdown so we can start the timer again for our timer that
+0:47
+we don't really need on the show all right again this is not uh you know this is not a speed run this is a super
+0:53
+play but let's do it anyway three two one go
+Start of the run
+1:00
+um you know we're we're gonna be showing off Triforce percent Ocarina of Time a showcase we're going to be showing off
+1:05
+the contents of you know what what we used arbitrary code execution to do uh
+1:10
+what we managed to make inside the game the ROM that is playing right now has a small mod
+1:16
+it's only a few hundred bytes and what it does is it will give us arbitrary code execution for free so we don't have
+1:22
+to do the setup everything else will be injected but just at the beginning we're cheating to get the initial Ace just for
+1:28
+today we did this did not happen in gdq at gdq it was a real cartridge safe state did the X did the exploit so
+Setup for ACE
+1:35
+here's the game Ocarina of Time this is a save file just starting at the beginning of the game I've just talked
+1:40
+to Saria and then uh and then saved what we're gonna do the Wonder items
+1:45
+over there past that fence so I'm just going to line myself up here and then I'm going to run the set of uh
+1:55
+this is the task movie file this is a set of inputs that goes through the
+2:01
+bootstrappers one through four as the link is going to walk forward into the area of effect the game will start
+2:07
+jumping to controllers but the controller data will be run by the replay device at that point and then it
+2:13
+will go through the bootstrappers so I'm going to switch controller I'm going to unpause I'm switching controller one to
+2:19
+the replay device so all four Connect controllers are connected to the replay device and it is playing this task movie
+2:26
+in and you may notice that it's a little different that link is you know rolling instead of sitting on the ground with
+2:33
+the shield in this case we actually don't care where he goes um but yeah it's done that was
+2:40
+bootstrappers one through four that's all done the Hyper Speed Loader is is loaded into memory and waiting for
+2:48
+further commands and is drawing a little green bar in the corner the reason we put a green bar in the corner is to tell
+Why is there a green bar in the corner?
+2:53
+ourselves that everything worked correctly so far so that we know it works correctly so far but also because
+2:59
+the game natively if you crash you get a yellow bar in the corner and if you
+3:05
+crash the crash debugger you get a red bar in the corner and so we put a green bar in the corner to mean the game is
+3:11
+pwned we have control over everything we can do whatever we want so
+Switching controllers
+3:17
+from there I'm going to switch controller I have just switched controller 1 back to my controller here
+3:23
+so I can move link around now and I'm going to run the next step of the
+3:28
+injection this was all done on stage except the the actual setup was done by Save State instead of using the shortcut
+3:34
+this was all done on stage and while we were talking duango was sitting here typing away on the laptop to run each of
+3:40
+these scripts so this is the next script this is using the hyper speed loader and
+3:45
+injecting data that is at um specific fixed addresses in memory
+3:52
+that is linked to fixed addresses in memory these are on the expansion pack and things have to though the way the
+4:00
+whole system works is a little you know changes around a little bit things have to be done in that order yes Lauren was
+The replay device currently used
+4:07
+is using a test team 32 replay device made by onosaurus you can theoretically
+4:14
+buy one of these if you want to I'm not trying to sell anything we don't make money on this this is totally a cottage industry uh we don't always have stock
+4:23
+but when we do you can go to shop.task.bot.shop.task.bot to get a
+4:28
+task team looking two Board of your own uh Soren has one of his own uh I have
+4:33
+one here this is the version four uh onosaurus on a source and did a fantastic job
+4:40
+the mass two three one two helped out a ton so these are these are available if you want to try to do this on your own
+4:45
+but it will take a lot of work and you won't be able to do everything we are doing here just so you're aware because
+4:51
+there's some things we weren't able to release right and we'll get into that later at the end so the first
+Injecting the first set of data
+4:58
+set of data is done injecting um that was that took about I don't know
+5:04
+another 15 seconds or so and that is a bunch of data that this is our sort of patches to the oot engine
+5:12
+um this is data that was linked to static locations in memory basically the the game can be divided into code and
+5:19
+data that are have to be in known locations in memory and then files so like you know animations or music or uh
+5:27
+textures or whatever are separate files that um the game has to know where they are at any time but it doesn't really
+5:33
+matter where they are as long as there's a there's a directory basically that says where they are and so as long as it can look it up in the directory and find
+5:39
+it it doesn't really matter where it is it doesn't matter what order they are so that first part is is done injecting and
+5:45
+we had to have that finished before link goes through the loading zone because if link goes to the loading zone during
+5:50
+that the uh it will crash basically uh the the whole system of um retrying
+5:57
+looking at the rumble result adults and retrying things if it gets in if there's an error that's all fine and dandy but
+6:04
+when we're overwriting parts of the engine if there's an error we're we're you know we're messed up immediately so
+6:10
+uh we have to we have to make that not happen but as soon as I run the set the next strip and this is a script that is
+Injecting data intensifies
+6:16
+just going to start injecting all of the rest of the data for the rest of the run and this is going to take about six or
+6:21
+seven minutes depending on how long it takes to go through loading zones and things it has injected a whole bunch of
+6:27
+patches for scenes for uh you know items it's injecting um the Brewer right now it injected the
+6:33
+beta Kokiri um you know it's it's you know it's going through things it has the biggest things for the the finale scene at the
+6:40
+end and so as once that has started we have to go through the loading zone and we also have to pause and the loading
+Reloading the game to apply patches
+6:47
+zone and the pause cause the game to reload all aspects of the game there are some things that are reloaded through
+6:53
+loading zone there's other things including link that are reloaded when you go when you pause actually link is
+6:58
+not in memory when you when you get the pause when you open up the pause screen it unloads link it loads in the pause
+7:04
+screen into the same memory so this will allow us to force a Reload of link and
+7:10
+then our patches to the engine stick in some patches when it when it loads link
+7:15
+it sticks those patches in as it loads link and we you know we need those patches to be active so
+Inventory Editor
+7:22
+you know so far you haven't seen anything uh that's special but here we go here's our first piece of uh this is
+7:28
+actually debug content not beta content but this was made by the developers this is the inventory editor
+7:34
+um this was you know used by the developers to set up Link's State
+7:39
+um so that they could you know mess around try try different aspects of the game I do not remember exactly all of
+7:46
+the items I'm going to need so I'll do my best best guess but I'm probably going to miss some so in order to turn
+7:53
+this on uh we had to you know we said we said live we had to
+7:59
+write one byte into memory it's true it's one byte that enables this but we actually wrote a Handler that checks
+8:04
+constantly when the pause menu is open whether you're pressing L and when you press L it turns on that one byte to
+8:11
+turn on the inventory editor um but you can see this this is actually used at one point in the Majora's Mask
+8:17
+um any percent Speed Run they used a a different glitch to basically right to memory arbitrarily and uh
+8:25
+turn on the one byte for the inventory editor and then just gave themselves all the items and were you know use the
+8:30
+in-game mechanics to warp to the end of the game um so I'm giving myself all this these are all the songs these are the
+8:36
+spiritual Stones this was the fire Medallion this is the swords and shields these are the uh upgrades for like uh
+8:44
+silver scale and wallet and things like that and then these are some of the normal items this is rupees this is
+8:49
+Hearts I go back out of the screen you can see I have a bunch of stuff now give myself sword and shield I give myself
+8:55
+Ocarina and Boomerang and bottled bugs uh anything you want to add at the
+9:02
+moment do I go uh no all I'm going to mention is that one of the things that was a constant
+9:07
+comment after the effect is that we weren't very specific about or we tried to be specific and very clear but there
+9:13
+was some confusion around what was beta content what was on the cartridge and what wasn't what you just saw that
+9:18
+really is on the cartridge it's death content I wouldn't necessarily call it beta so just to rehash that point
+9:24
+um but a lot of other stuff we created ourselves and we'll try to be very specific as we go through this of what's what
+9:29
+[Music] yeah so here is our next thing to show here this is the r Wing from Star Fox
+Arwing from Starfox64
+9:35
+64. this is actually on on the cartridge
+9:40
+um we just literally had to run a you know a few instructions to cause it to spawn um this was created by the developers
+9:46
+back in 1998 to test uh physics for the fire dragon volvagia
+9:52
+um and uh basically the idea was volvagio would you know fly fly around the the sky and they thought it would
+9:58
+fly or she would fly like in our wing would and so they made an R Wing but they left it in the game and it has all
+10:03
+these you know custom animations and Laser sounds and everything um so yes that is real beta content or
+10:09
+not even beta in the sense that they never expected to have the r Wing in the final game but it was actually made by
+10:15
+the developers and yeah yeah it's like it's like when the developers are making stuff and they throw things also it's
+10:20
+one of my favorite things that people discovered that is in this game and I just had to say something about it yeah
+10:26
+and you may be asking how did we spawn it well we wrote code to listen for button presses and when I hold L plus d
+10:33
+down it will spawn the art Wing and I can spawn this anywhere I forget if I might read the code that it would check
+10:39
+if one has already spawned let's let's find out yeah it checks if one is already spawned it won't spawn another one if one has already spawned but this
+10:45
+one is spawned it's out there I will just ignore it for now and I could spawn that anywhere oh there's it's shooting at me
+Lost Woods exit sequence
+10:51
+so um this is the next thing this is completely fabricated this exits
+10:56
+sequence this is not on the cartridge at all um but we need a place to start with the
+11:04
+uh with the like you know getting people to suspend their disbelief about maybe I
+11:10
+could have done this and in a sense you could have done this if you had actually done the a setup you could have done
+11:15
+something like this but not just by going to the woods and doing the sequence of exits so this is the
+11:21
+sequence of exits that you need to perform go through in order to go through the Lost Woods in Zelda one
+11:27
+except in Zelda one you just literally navigate Northwest Southwest whereas here we're getting lost out of a North
+11:34
+Exit then getting lost out of a West exit then getting lost out of a South exit and then getting lost out of a West
+11:39
+exit and again this is just completely custom code that we wrote um that is that is checking for these
+11:46
+it's it's actually running every frame checking where link is and whether he is in this scene and within a certain
+11:53
+radius of these points which we placed in the exit areas so as he's walking out
+11:58
+he'll cross through that radius and hopefully
+12:03
+you hear Zelda chime here that means that this was successful that we have you know successfully
+12:09
+entered the right code you will hear as we you know in our commentary we did not say this was on the cartridge we said
+12:16
+you know it wasn't really clear if anyone had you know gone through this
+12:21
+pattern of exits before or if they did if they knew what to find next and that's true that it's not clear if
+12:27
+anyone did actually leave the woods in that order but no on your cartridge at home this will not work unless of course
+12:34
+you do the full Ace setup and then you start injecting data through the controllers somehow then this will work
+12:40
+because that is actually you know the ace setup is actually how you do this so what this Lost Woods exit code has
+Beta Kokiri
+12:47
+unlocked is the beta Kokiri or this is more like a beta Kokiri because there
+12:52
+are several of them so bodies
+12:58
+yes so the beta Kokiri head is a 3D model left on the cartridge the beta Kokiri
+13:04
+body is is 3D model left on the cartridge and there's actually several of each of them the skeleton and the
+13:10
+animation are left on the cartridge however the dialogue is made up by our
+13:15
+team written by our you know our writers um the the quest idea where the the beta
+13:23
+copyright is looking for a butterfly specifically the butterfly is a beta item but the idea of the Kokiri looking
+13:28
+for the butterfly is not beta that is something that we just made up because the idea is we have these individual
+13:34
+pieces of beta content we want to make a story that will have a certain progression to it that will eventually
+13:40
+lead to the Triforce so beta Kokiri you know actual beta content to some extent
+13:46
+but not the dialogue he's looking for bugs we'll give him some bugs he does not like these bugs
+13:54
+I am tempted to narrate but I probably should not do that
+13:59
+I mean if you need it yeah oh sorry
+14:05
+I won't do it so um we're going to oh we got him with his
+14:10
+eyes closed um and the you know the blinking animations and everything is also part of the the model that was on the
+14:15
+cartridge so uh we're gonna warp to the uh Temple of Time which we're going to castletown Market to to buy him a
+14:22
+butterfly so this brings us to our next piece of beta content so
+Butterfly
+14:27
+this butterfly there are two aspects of it that our beta content actually left on the cartridge
+14:33
+um there is the 3D model that you will be seeing in a moment um that actually has a bug that we patch
+14:39
+the bug which is ironic because it's a bug um we patch the bug in the display list uh on the on the butterfly uh using
+14:46
+arbitrary code execution but other than that the model is actually there on the cartridge and there is an entry in one
+14:51
+of the item tables for a butterfly and it is with all of the other bottle items so it is clear that this was you know
+14:59
+it's beta it's a beta item however the idea of it being in this shop the idea of the shopkeepers dialogue and the
+15:06
+Quest for it and everything that is you know made up by us to showcase the butterfly because you know we got to do
+15:12
+it we can just load the 3D model in front of link and look at it but that's no fun you gotta you know want to
+15:18
+actually see it so butterfly is not in the shop talk to the owner he has custom text here
+15:24
+and so I should mention that uh you know there are uh you know there's there's
+15:30
+every custom aspect it's not just that we had to let's say write the text we also had to write the code that would
+15:38
+allow us to change the text on the Fly um and uh you know that's actually so
+15:45
+the interesting part about the text uh let me just pause that thought here here's the butterfly this is the 3D
+15:51
+model the wings would be a little corrupted if we didn't fix that bug but we fixed the bug this is what it looks
+15:56
+like I'm gonna buy it for 35 rupees [Music] no we don't want to buy anything else
+16:02
+I'm going to warp back to the woods um so so yeah the text the interesting part of
+Convenient Ura Zelda text-patching code
+16:08
+that is that the text patching we're actually using Code left on the
+16:14
+cartridge for the n64dd expansion to Ocarina of Time which is also known as
+16:21
+Ura Zelda so this is you know Ocarina of Time code to support or Zelda that is
+16:28
+it's a so for you know for the expansion they needed to be able to patch text in the game from the N64 DD and so we're
+16:36
+actually hooking into that not completely using the original but you know largely using the original code
+16:42
+there and hooking into that and and you know using that to make our custom text so that is actually more beta content
+16:49
+um you know some juicy urselda content for you even though it's just you know some some function some some code that
+16:57
+you never see uh yeah so here we are almost back at our beta code here I should also mention the
+17:04
+injection is done it has we've spent I've spent enough time gabbing here about about everything that it has
+17:10
+managed to inject all the data for the finale scene and you know for the rest of the time here I could just unplug the
+17:17
+replay device until we get to the finale scene we need to inject further data other than that it's it's just done and
+17:23
+I'm just playing on controller one everything is in the expansion pack all of the patches have been made to the OS
+17:28
+made to the game engine and it's just going to pull that data from the memory as it needs it
+17:34
+um so you see butterfly we have a custom icon for the butterfly designed by our artists also custom text there that says
+Giving the butterfly to the Beta Kokiri
+17:42
+butterfly made by our artists we can equip it to the C button show it to the
+17:47
+beta Kokiri uh this is actually so I mentioned the butterfly has a entry in
+17:52
+one of the item tables it doesn't have an entry in all of the item tables so this is actually a big Poe that we
+17:58
+overwrote as butterfly [Music]
+18:04
+did you say you overwrote a Poe yes this is this is actually a big Poe
+18:11
+um because it is you know the butterfly is in one of the item tables but we need it in all of the item tables instead of like enlarging the tables you just
+18:18
+replace something so um oh sorry
+18:25
+I was just saying that that's very clever to do it that way there's a lot of things where like we
+18:32
+know exactly what we're gonna show and so it's made to do exactly that and if you like go out of the bat you know go
+18:38
+out of Bounds at that you you know just won't work or whatever um so this magic powder this is called
+ﾟ･:*｡ Magic Powder ｡*:･ﾟ
+18:45
+odd potion this is a normal adult link trading item it took me five hours to
+18:50
+get that odd potion to float at the correct height above Link's hands for this shot here rather than to be over
+18:57
+his hand because when Adult Link pulls out an item he holds it out with one hand and it hovers over his hand like
+19:03
+this and it was doing the same thing for young Link because this is an adult link item that took five hours to fix that
+19:08
+and there are so many little things throughout the presentation which were just like that where it kind of worked
+19:15
+but then it wasn't right and we had to make it look because you know if that was wrong that would have looked like oh that doesn't you know that doesn't look
+19:21
+convincing that couldn't have been you know made by Nintendo back in the day but since it was all you know really up
+19:27
+to the Quality then we were able to keep people's suspension of disbelief alive through the through the rest of the the
+19:33
+project and that's that's a huge point that suspension of disbelief was a major element of of conversation for us
+19:40
+throughout the development of this I don't know how many odd calls we had about how do we handle this element and
+19:46
+how do we keep people in that moment without breaking it and the downside of
+19:51
+us doing that is that we did end up in a situation where some people didn't know what was beta content and what wasn't but anyway
+19:58
+oh I should also mention while I'm here the text magic powder is custom because
+20:03
+it's actually normally named odd potion so here's our Skull Kid friend
+Skull Kid
+20:15
+we're just gonna say no here and just FYI this is a completely custom Skull Kid I mean like the 3D model and
+20:22
+animations are are normal but we totally overwrote the vanilla Skull Kid actor and replaced it with this one that just
+20:28
+does this one thing and nothing else because you know that's that's how this
+20:34
+works so we wrote some backstory or other other writer um you know wrote most of
+20:41
+this text foreign
+20:47
+so the idea of this was you know in terms of a plot standpoint you know we started out with the exits activated
+20:54
+beta Kokiri this was something so small and insignificant getting a bug for Kokiri and it builds up from thing to
+21:02
+thing until you know until we get the Triforce at the end um so skullcade is going to sprinkle uh
+Upgrading masks
+21:10
+Magic powder on our masks to make them more powerful so there are only two masks that this works on again this will
+21:16
+not work on anything other than what we exactly made it for
+21:22
+[Music] so we have the Gerudo mask which will
+21:27
+now actually work correctly and we have the bunny Hood which will also and I am
+21:33
+not do not have the skill of Save State to be able to equip both of these at the same time that is another glitch
+21:40
+speedrunning strategy to be able to equip two copies of the the same item at the same time
+21:45
+that they were able to do during the live run but I'm actually not good enough of the game so
+21:51
+um so about these masks are they in RV's beta content there is no leftover code in Ocarina of Time cartridge for the
+21:59
+bunny Hood running fast like it does in Majora's Mask however
+22:05
+Majora's Mask is full of ideas that were in development for Ocarina of Time and
+22:10
+then cut and the fact that these masks are in Ocarina of Time as the trading
+22:16
+sequence and then the bunny Hood was in Majora's Mask and actually worked leads
+22:22
+us to believe that well of course they wanted the masks to have functions and they just left the
+22:28
+mask side quests in Ocarina of Time in this vestigial State and turned the main contents of that into a completely new
+22:35
+game then you know it's and then it's a new game so is this beta content well it's
+22:41
+not so this isn't reactivating something that was found in the cartridge but this is stuff that the developers were
+22:47
+thinking about and left in Ocarina of Time in the state that you know it as as the mass side weapon side quest and then
+22:55
+you know became its full version from Majora's Mask now if you're wondering how we actually did the bunny Hood
+23:00
+running this is actually uh not the version from Majora's Mask he's running faster than enjoy his mask this is the
+23:07
+version from a rom hack called The Missing Link at Ocarina of Time rom hack
+23:12
+so we uh we you know they built on their code for for this this version
+23:19
+foreign [Music]
+23:27
+you know many of the same developers uh from that ROM hacker is the same people who worked on try first present so uh
+Gerudo's Fortress as Child-Link
+23:35
+here's a grudo here the scruto guard guarding this gate um she has normal you know normal dialogue
+23:42
+waves us off normally if we wear the guru mascara she has unique dialogue she
+23:47
+will say you've got guts kid coming around you know wearing something like that but
+23:54
+I'm sure many people saw the guru masks saw the gate and guard and thought oh well you know I'd love to
+24:00
+The Mask ought to work she's gotta let me in so you know she says grudo child far
+24:07
+from the desert my your father must be Hylian as we know from the gossip stones in Ocarina of Time the gerudos leave
+24:13
+Gerudo Valley out tyrol to find their you know boyfriends uh as the game says
+24:19
+and uh so you know she is assuming that we are a half highly and half Gerudo
+24:25
+child and we'll open the gate for us so this is a completely custom actor um I believe this one is one that we
+24:32
+took the actor from the original actor code and then made a bunch of modifications to open the gate and
+24:37
+everything these guards are uh the original guard but with an assembly patch
+24:43
+um so it's the original code gets loaded into memory and then patches get applied in Assembly Language to have them
+24:49
+respond and speak these uh these flavor text lines to us
+24:55
+so they're talking about how you know how hard life is for them over in in the desert here
+25:01
+serious credit to the writing team for coming up with these lines too because it was so
+25:06
+it one of the things that was so interesting about the suspension of disbelief is the lines were so good you
+25:12
+honestly could not tell what was in the original game and what we had added
+25:18
+yeah and we had people I felt as well yeah we had people reacting to this
+25:23
+saying like I can't believe that text was localized and left on the game cartridge so you know it wasn't it was
+25:31
+made by us but thank you um you know our our writers are
+25:37
+flattered um and you know this was again this was two and a half years of effort um and a lot of that was on the content
+25:44
+of making this as high quality and you know as as good quality as the original
+25:50
+game um and so I should mention I'm I'm you know changing my masks here out of view
+25:56
+of the grudos but actually we've given ourselves the grudo's card
+26:01
+um so they will not arrest us even if I don't have the mask just because they they see that we're you know we're in
+26:06
+the club already um so the the hiding from them is not actually a game mechanic that's just performance
+26:13
+foreign yeah we broke that disillusion in this playthrough by just putting on the mask
+26:20
+in front of the guard that was at the gate but I could just take off the mask here and then we'll just continue uh
+26:26
+speaking the same uh you know they'll go this is uh looping through the four four
+26:31
+lines of dialogue this scene um so Nibiru is not normally here this
+Nabooru
+26:36
+is totally custom nubaru actor um and some of the animations are actually also custom so uh this scene is
+26:42
+actually tricky we have to have the camera over here when we start or else you will have problems if we have the
+26:47
+camera facing the other way you will um this guard uh gets special treatment but
+26:54
+the other guards just get deleted and so if the camera is aiming the wrong way you just see the the guard disappear so
+26:59
+we have to have the camera somewhere over here ideally sort of try to get this a little better yeah there we go
+27:05
+and then talk to her and it'll be fine so as soon as we start talking to her what happens is so nibiru's code is
+27:12
+totally custom these Gardens are pretty much unmodified but Nibiru will actually
+27:17
+immediately delete the other guards and then start overwriting these this
+27:23
+guard's position information so niburu is basically mind controlling this card to make her walk back and forth it
+27:31
+basically shuts off the normal code for her and it's actually nibiru's code that is making the guard walk back and forth
+27:37
+here and that's because we needed the guard to be walking back and forth in view of the camera and not walking all
+27:43
+the way to the side and the reason for that is when the guard exits if the guard is way all the way way over over
+27:49
+on the side sorry it would be this way on your screen then the guard will run
+27:54
+really quickly to get to the exit and we didn't want that so I had to play with this a whole bunch to get the guard to
+28:00
+walk back and forth so you can think about it as the guard is Eve is dropping on our conversation and just pretending to be busy walking back and forth here
+28:07
+and actually you know staying close within the camera so that as soon as whatever moment we interrupt her
+28:16
+wherever she is she will turn to Nibiru for this line of dialogue for guards you
+28:22
+may leave the girl and I alone and then she will follow this path and if the first segment of the path is
+28:27
+too long then it won't look realistic so that's what we had to do to get that to look right
+28:33
+Nibiru can see through our disguise blah blah um we added every single line of
+28:40
+dialogue of this has the the the you know in the text format there's a there's a command for don't let you skip
+28:46
+it and we added that to every single line of dialogue so that save say couldn't accidentally Mash through the
+28:52
+dialogue and skip it during the live run actually know about all that guard
+28:57
+handling somehow that never came up on any of our conversations so I'm just looking you don't have to know about that yeah I didn't need to know yeah
+29:05
+that's awesome and so I should also mention for the world um all of the code and assets that we
+29:11
+created our team ourselves are released on our GitHub we did not release any Nintendo copyrighted
+29:18
+anything um you know textures whatever the some of the models and the from the ending
+29:24
+um but you know this Nibiru code github.com Triforce percent Triforce
+29:29
+Dash percent written out slash Triforce Dash percent written out you can just see the code for Nibiru you can see the
+29:34
+code for it's like 85 of everything we released because you know just just the
+29:40
+copyrighted pieces that you know if we release those we would they would get shut down so we didn't release those but
+29:46
+we released everything that we have made so you can look at this code you're welcome to you know there's a very permissive license on it you can use it
+29:52
+in your own projects everything like that so that you those this is actually our first cut some cutscene having the the
+29:58
+camera pull back here there's going to be a larger custom cut scene here in a moment
+30:03
+and this whole concept of um uh niburu teaching link the song the
+30:09
+full song of time is mostly made up though there's a couple elements of it that are
+30:15
+um sort of have some basis in in in the game um so I'll talk about that in a moment
+30:20
+but this is a you know fully custom cut scene here um I will go through and show
+30:26
+um a bit later uh how some of this stuff is made behind the scenes in blender um you know I was a tools developer
+30:32
+before I started this project so a big chunk of the effort of this project was actually making or fixing or you know
+30:38
+updating tools for the oot Community to make this this all of this content possible
+30:45
+um so you know that then has helped other projects in the future
+30:52
+so this is now all custom cutscene every you know every little camera motion is waiting for a text to finish and then
+30:58
+doing the next little little shot um and nubarus so the point of this was we
+31:04
+needed to somehow get from getting into Gerudo Fortress to link having the full swing of time and this is how we sort of
+31:12
+wrote in terms of uh you know writing we wrote our way there
+31:18
+um so you know we'll say no I know you want to stop Ganondorf of course we don't want to have you know we wanted to
+31:23
+have something for that but we didn't want to have a complete alternate outcome so here we go so that's a custom animation for Nibiru the Shania is
+31:30
+custom this is the instrument in the background music of the spirit Temple so we just made up and said oh well okay
+31:37
+that means Nibiru plays the instrument so we're gonna give her one it's a little uh sort of Middle Eastern oboe
+31:44
+kind of instrument but it really looks like that and this is another custom animation
+The full Song of Time
+31:49
+and this I did this full Ocarina system
+31:55
+um is semi already there in the game and then semi-custom so the icons for Sharp
+32:01
+and flat and up and down are custom but the the concept of having an Ocarina
+32:07
+system that supports all of the notes is not custom that is actually to some extent already in the game and
+32:13
+I'll describe that more in a moment
+32:19
+[Music] and you know save state had to practice a bunch to be able to do that I've been
+32:26
+playing this song for you know a year and a half over and over building this project so I can do it most of the time
+32:33
+we actually had a bug for a while that if you messed up the song input it was
+32:39
+just like my mistake it wasn't some serious bug but if you messed up the song and put and this teaching
+32:45
+um this this in this shot um it would like go to the wrong text
+32:52
+box and then you would soft lock and so I had to fix that before the final version oh wow but yeah another little
+33:00
+uh another little custom cutscene this has all been part of the same custom cut scene um and I'll talk about Nibiru in in a
+33:06
+moment here uh but one last thing you'll notice she still has the Shania in her hand and she is uh you know still
+Link and Nabooru having a stare down
+33:14
+following us the the game actually has um I should mention uh while we're here the game has code that is shared by most
+33:21
+NPCs for doing things like having them follow link you know follow him with
+33:27
+with their gaze um and having him Z Target the correct part of their body and all that kind of stuff
+33:33
+um so uh yeah so to talk about Nibiru and the full song of time and everything
+33:40
+um there's uh and I have to sort of pay attention to this as I'm as I'm talking
+33:47
+which is I'm not I'm not the best multitasker in the world here um
+33:52
+so the the blue blocks of time um the song of time blocks
+Full Song of Time functionality
+33:59
+um when you play the song of time they appear and disappear but they're not actually just appearing or disappearing they're actually going to the opposite
+34:05
+timeline so a block that you play if your child link and you play the song it goes the adult length timeline and then
+34:11
+if you go there you'll see it and excuse me this is not used in any puzzles
+34:17
+um in the game except in one place in a lava room in uh Goron City it's not
+34:24
+actually using any dungeons or anything like that it's just sort of like a throwaway side room where they have those that's the only place in the game
+34:29
+that you can actually see that the block is going forward and back in time every other place the boxer user in a dungeon
+34:35
+that you can only access as one age and look other than using speedrunning strategies to you know cheat your way in
+34:42
+in there which of course you can do that um so these blocks were obviously made to go back forward and back in time and
+34:49
+then they weren't used for that purpose so we can sort of estimate
+34:55
+um that they would have been use for puzzles where you actually need
+35:01
+to send them back and forth in time and then you would need to go back and forth in time to interact with them like actual time puzzles sort of like Skyward
+35:08
+Sword kind of stuff um and that isn't in the final game but the spirit temple in the final game is this
+35:15
+two-sided dungeon where you do the dungeon as adult Lincoln Child Link and so we said okay well there's you know we
+35:23
+can speculate that at some point because of the blocks of time at some point they must have been thinking about time
+35:29
+puzzles where you actually go back and forth in time and you have the spirit Temple where you need to have child and
+35:34
+Adult Link and you know there in order to do one of these puzzles you would have to not go
+35:40
+and just put the master sword back or pull the master sword and go back to the dungeon you'd actually have to be able to do it right there and that's you know
+35:47
+so there needing to be some way of doing that and on top of all of that at the very end of Ocarina of Time When Zelda
+35:54
+sends link back to his childhood she doesn't play the song of time she plays Zelda's Lullaby and not only does she
+36:01
+play Zelda's Lullaby she plays Zelda's Lullaby an octave down so she's playing a not correct octave
+36:09
+version of Zelda's Lullaby to send link back in time and that is canonically we'll send link back in time because you
+36:16
+see it happen in the game so it's like okay obviously in the song of time the only
+36:23
+thing that the song of time does is it opens the door of time and it sends these blocks back and forth in time but it doesn't do anything for link and it
+36:30
+and it satisfies some frogs it you know makes them happy but other than that that's that's all the song is used for
+36:35
+so you know we said okay let's assume let's just put it together and say okay the
+36:42
+you you there's some we think that maybe at some point in development they were intending the spirit Temple to have time
+36:48
+puzzles where you actually go back in time use the blocks link plays a song plays the song of time to go back and
+36:53
+forth in time but then we need it to be a different version of it we want to show off this other Ocarina system which
+36:59
+exists so yeah a word about the Ocarina system so in the game
+Ocarina Systems
+37:05
+there are uh there are two systems in the code for handling ocarina songs and
+37:12
+every single song is in both systems in the game it's actually duplicated the data for the song is in both different
+37:18
+formats one of the formats only detects the five nodes and one of the tip formats can detect and handle all of the
+37:24
+in-between nodes and that second format with all the in-between notes is used in the final game
+37:30
+for the Scarecrow song The Long Scarecrow song that you can teach to one of the scarecrows which is then played
+37:36
+after the end credits uh after you beat the game if you wait for a couple minutes It'll play your Scarecrow song back to you and you can use pitch bends
+37:42
+you can use the in-between notes you can do whatever you want can be a very long song um and then the other Scarecrow song the
+37:48
+one that you actually use to spawn the Scarecrow uses the shorter system where it just has the five notes
+37:53
+so both of those systems exist and I should mention that the long system with the long scarecrow it's not just used
+37:59
+for long scarecrow it's used for every time you learn a song so like I learned that song from Nibiru even if that was
+38:05
+Vanilla in the vanilla game um you know anytime you learn a song from any character it's using the long system because the NPCs will sometimes
+38:12
+put in vibrato and things like that in in the song playback and after you
+38:18
+finish the main let's say the first six notes or whatever the song will continue for a few notes and play the next piece
+38:23
+of it and that has to use the in-between vote notes also so that system exists it's used in the game and the shorter
+38:30
+system exists and that's also used in the game and they both sort of coexist and are used for different things and so what we did is we made a bunch of
+38:36
+patches with arbitrary code execution to use the long system for everything or
+38:42
+actually more accurately to change the short system so that the short system also supports all of the notes that's
+38:48
+actually what we did we didn't really patch the long system and so we patched most things one thing we didn't patch
+38:55
+was the interface here you can see the notes are glitchy the A's the notes that
+39:01
+are a will show up as a c right because that's actually note number two and then the other ones are way off at the top
+39:07
+and they're glitch Graphics so that one was part that we didn't patch and you know I it's just it was a lot of effort
+39:14
+to make this as is that we we knew we're never gonna look at the menu there so we
+39:19
+didn't patch it um and uh you know the the same thing with the the learning song interface it only
+39:26
+shows eight of the notes we could have messed with that and made it had a more complicated interface but we just left it you know it is what it is the next
+The Running Man
+39:34
+part you're gonna really like because this is the running man and you can't go wrong nothing
+39:39
+you're giving me even less to do than usual so I just get to watch honestly isn't it enjoyable day okay come on it's
+39:46
+nice I love having the back and forth it's wonderful and typically it's just me and one other guest the thing the two of you working together I'm like cool I
+39:52
+just I'm just a viewer at this point it's all for it I'm just back here if you need me
+39:58
+the running man you know normal The Running Man normal race is totally normally in the game but the thing is in
+40:05
+there is no code there is no dialogue there is nothing for you beating the right man so even if you use
+40:10
+speedrunning strategies and glitches or you just hack it and emulate or whatever you give yourself a time of zero you
+40:16
+show up at the Lost Woods he'll already be there and in his dialogue he will say you know you did well but I beat you by
+40:23
+one second so the Running Man will always beat you by one second unless you have arbitrary code execution so we have
+40:30
+arbitrary code execution so we can change fabric of reality we can change you know we're actually swapping out the
+40:36
+whole Running Man for an alternate running man that has a better outcome so that's that's a completely vanilla running man that you saw there this is
+40:43
+all vanilla so far with the race um and then after we go through this loading zone we're going through this
+40:49
+loading zone first because otherwise we'll spawn on the other side of the bridge as young Link which is a little
+40:54
+bit more of a pain in the butt whoops I think I messed that up
+41:04
+all right so this is me messing this up is a good point to tell you that another part of the Ocarina system that we
+41:10
+didn't actually patch is the checking for the the number of notes that it will check in sequence this is not actually
+41:16
+checking whether I play all 18 notes of this it's only checking the last eight
+41:22
+so I can just play right
+41:27
+I can just play that part and it'll still take it so we didn't
+41:32
+show that realize that sorry what did you say
+41:38
+I didn't know that yep so the timer is corrupted
+41:44
+this is sort of legit and sort of not legit we it was our own custom code that
+41:50
+set the timer to a negative value that since we went back in time that's our code that's not anything in the game but
+41:57
+this is legitimately what the game does when the timer is negative it is trying to draw the numbers it has a you know a
+42:04
+algorithm for drawing tens and then ones and everything and it gets the ones and the value is negative it reads Graphics
+42:10
+out of bounds we actually have there's actually code to make sure that the the timer value stays between so this is it
+42:17
+started at negative 90 and it's counting up and we have code that if it gets above like negative 15 it'll go back to
+42:23
+negative 30. so this will just actually cycle forever in case we took too long again Marathon strats everything had to
+42:30
+be as robust as possible to whatever could possibly happen live so this we
+42:36
+don't actually only have the 90 seconds we have an infinite amount of time um to you know go into the future and
+42:42
+finish the race so we're going to the end of the race um playing the song again I might as well
+42:48
+just start from here so being on a show called that's never happened before and telling you we
+42:55
+worked ridiculously hard so we would never have to utter the words well that's never happened before well there
+43:01
+was a that's never happened before for us live but that I'll get to that at the very end so here comes the running man
+Beating the Running Man
+43:07
+so this is not the same running man that we started with this is a completely
+43:12
+custom actor well obviously the 3D model and animations are you know vanilla
+43:18
+um but the the code for him is completely custom this overwrites so already in the game The Running Man that
+43:24
+you start with the the the child Running Man and the adult Running Man are different but we overwrote the one the
+43:30
+version of the running man that comes in here at the end of the race we replace that with our custom
+43:35
+running man that finishes the race so this is this is custom actor all of the dialogue is custom of course beating me
+43:41
+out running man was a big urban legend so we used arbitrary code execution to make that urban legend now real you know
+43:48
+again at gdq this was a real cartridge unmodified ROM and it was through the
+43:54
+magic of arbitrary code execution and manipulating the console's memory that we were able to beat the running
+44:00
+man but that's still within the context of the original unmodified game so you
+44:05
+know but are completely custom running man who we've who we've now beaten says he wants to give us a special reward in
+44:11
+the middle of the field the reason we had to do that was that um we couldn't fight him on the bridge
+44:17
+we needed some more space so and we wanted an excuse for it to show another beta item which is this giant Ruby here
+44:23
+I am not good enough to Hess I've I've successfully done it a couple of times because it's not super hard but I'm not
+44:29
+gonna embarrass myself trying 20 times to do that right now so I'm just gonna walk backwards
+44:39
+and yes just to review we went back in time to Child Link until then we came
+44:44
+back into Adult Link right so we started the race as adult went back in time seven years went to
+44:50
+the right end of the race and then went forward in time seven years so this giant magenta rupee is a item left on
+The "Special Reward"
+44:56
+the cartridge um and its real behavior is what you're going to see except that when it blows
+45:02
+up it only knocks link over right where he is I added extra code to knock link
+45:07
+back a great distance and then start the cutscene to start the Running Man Battle
+Running Man Boss Battle
+45:14
+so the Running Man boss battle is completely custom code some people online were speculating that he has Dark
+45:19
+Link code no the code for him is is released it's on our GitHub the actor file uh is not
+45:28
+released because unfortunately the main the way that this was made when the custom animations were made they're
+45:33
+actually Inseparable from the model so we can't and the model is Nintendo's copyrighted so even though the
+45:39
+animations are released and we did release the animation files by themselves the model is not released and
+45:44
+so you can you can't actually play with them um but the code is released the animations themselves are released again
+45:50
+we released every single thing we could that was not copyrighted um but you know that's that's that's
+45:55
+what we had to do in order to not get it shut down so um yeah so he's tough he will Dodge a
+46:01
+lot of things um we don't really have to worry about dying because we have the inventory
+46:06
+editor we just give ourselves More arts or nehru's love or whatever um I can show
+46:12
+um arrows don't work that well though I can show one way to cheese him actually I might as well cheese him so I should
+46:18
+also mention as I pause you can see there's multiple copies of him that's not a graphical glitch it's actually
+46:24
+this is actually created by um the programmer who made the Running Man Battle not me uh rank I seizure made
+46:31
+like 90 of his code here um and so you know I'm gonna cheese him
+46:37
+because this is not the this is not the real version so um why not first of all his AI does not
+46:44
+uh handle walls properly he doesn't walk through the wall so it's not like he
+46:49
+just completely Clips through the wall but he does not know how to uh whoops that's not that's not what I wanted to
+46:56
+have happen here I gotta walk around he doesn't know how to like plan paths that
+47:01
+will intelligently avoid the walls he just sort of runs into it um so you know there he is oh well then
+47:08
+he's gonna do that so I guess that's a pretty good strategy um but yeah one of the uh
+47:15
+so I was trying to cheese him against the wall that didn't seem to work too well where is he he's probably stuck on the wall over here again we we you know
+47:21
+coach Save State to um not you know not not try to put the
+47:26
+Running Man in in situations that the the flaws in the running man's code would be visible
+47:32
+um one thing we can do is um if we can get a hit on him
+47:38
+which I'm having trouble doing and save state was better at this when we hit him with a bow he he gets knocked back
+47:44
+directly in in a row in like a straight um I'm just sort of spamming forward
+47:51
+here hoping I can hit him at some point but it's not working too well for me um
+47:57
+you know I'm not I'm not as good at him as save state is so uh this really is
+48:03
+that part of it this is it's pretty hard you know at first at first we made him not too hard and then it was like okay
+48:11
+he wasn't uh you know he was he was taking he was he was dying in only a few hits
+48:16
+um it also depends on what kind of hits you're you're doing um so if you hit him with um
+48:23
+uh whatchamacall if you hit him with uh sorry I'm a bad multitasker if you're in with stabs Crouch stabs like this
+48:31
+um that does double damage if you if you set that up ahead with a jump attack um there we go finally got him
+48:38
+lucky jump attack there um custom animation custom cutscene custom dialogue
+48:44
+um we were originally had a version of this where he falls over at the end it was really funny but also looked really
+48:49
+bad it looked like really bad quality so we you know had to get some custom animations in and everything and he says
+48:57
+I guess you're a better cheater than I am which led a lot of people to realize that this
+49:03
+was custom content which were you know we're glad that it had that effect um but yes here's here's his backstory
+49:09
+so completely made up backstory we needed to you know find a way to go from the urban legend of running man to
+49:16
+getting the ability to equip the new medallions and I'll talk about that in a moment but we also wanted to show why
+49:22
+the running man could beat us all of these years so we wrote a backstory for him that he found this object this this
+Sages' Charm and questionable physics
+49:30
+golden locket that gave him the ability to run extremely fast which of course is
+49:36
+what he does and he says he could even run faster than light which is the excuse for why he could time travel and
+49:42
+get to the end of the race before it started but we were able to do better um still suspicious of that physics
+49:49
+it's it's not real but that was our you know we had to come up with an explanation so and it's funny so it is
+49:56
+hilarious there you go um and then you know reference to breath of the wild here
+50:03
+um and of course the you know the Redemption Arc of person gives up their power and you know whatever so this
+50:09
+locket the sages charm this is made up but the power that the sages term gives us is actual beta content so that's and
+50:15
+and it's not left on the cartridge but we'll talk about that in a moment so say just charm 3D model made by us the
+50:21
+dialogue is made by us the idea of it doubling the magic beater again is made up by us but the idea of equipping the
+50:28
+medallions is not made up by us and the running man runs off into the subset for the final time end of his Arc it will
+50:34
+run for 1500 units and then despawn um so this is the Sage's charm it goes over
+50:41
+here this is actually just a reskinned uh Stone of Agony but it has our custom icon there and our custom text here that
+50:48
+says sages charm um and we can actually equip it we can actually equip anything here
+50:54
+um but that's not how we're supposed to use it uh this is more you know behind the scenes thing but actually what it gives
+51:00
+us the ability to is equip the medallions and I better make sure I unequip those other things because if I actually use them the game will crash
+51:07
+so um the idea of equipping medallions is actual beta content that was not left on
+51:13
+the cartridge but that was created by Nintendo back in the day and that was shown in pre-release videos and
+51:19
+screenshots and um you know information like that and it was also in the some of
+51:24
+the beta versions of Ocarina of Time that have been leaked we did not copy any code or any data from the Giga
+51:30
+League or from the space World overdump which is another the other beta version of Ocarina of Time that leaked
+51:36
+um and we had a lot most of Triforce percent planned if not made before those happen but we can still use those in our
+51:44
+description as saying that this was you know additional evidence so we see in those versions that you could actually
+51:51
+equip the medallions and actually use them it has the text for them and it has uh you know other graphics for them so
+51:57
+that is absolutely 100 was made by Nintendo that was the magic spells there wasn't a separate dinspire if it was
+52:04
+when nehru's love that was just you would equip the medallions and use it medallions and they would do those magic functions and there was another one
+52:10
+um uh there were other ones for the other medallions as well you could also equip
+52:15
+all of the evangelions to arrows and then make Elemental arrows of all six types
+52:21
+um there was like wind arrows and and you know not just light arrows and fire arrows and Ice arrows and everything so
+52:27
+um yes that's that's you know actually made by Nintendo and then the mechanics of equipping the medallions was you know
+52:33
+written by uh the code was written by me and that involves not just you know it
+52:39
+involves patches to rendering the medallions here because they're a different size um this isn't just draw that picture we
+52:46
+had to change it so that it can draw the picture of the correct size and also um this the animation of having it fly
+52:54
+up there that's also custom we had to match the original animation that's used for you know equipping other things we
+53:00
+had to make that you know work for the medallions as well and also make it make all of those things not happen if you
+53:06
+don't already have this sages chart uh yeah so the ice melting in Zora's domain using The Medallion to melt the
+Melting the ice in Zora's Domain
+53:12
+ice this is something that was theorized this was an urban legend there isn't really
+53:18
+um you know the functionality for this is not left in the game but the actor that does the ice and the water uh for
+53:25
+zoria's domain um decides between ice and water based on Link's age but it's making that
+53:30
+decision every single frame so all you would have to do all the original developers would have had to do to make
+53:37
+this be a dynamic change was change the condition from being you know is linked
+53:43
+child or adult to being has link melted the ice yet or something you know something like that so it is dynamically
+53:50
+picking between the water and the ice in the in the final game so we said that that is sort of arguable that the
+53:56
+developers were intending because they could have made it where it's either at spawn it picks which it's going to be
+54:01
+and then and then just doesn't do anything else or they could have made it where they're actually so every scene has different setups for adult and child
+54:08
+and for other situations so they could have just made it that there was just a different actor in the child version and the adult
+54:15
+version that's how most things are in the game and they didn't do it that way they had it pick every frame which one
+54:20
+to draw so it's sort of our we're saying that it's sort of arguable but the actual animation and everything for
+54:26
+um melting the ice is is you know made by us and you'll notice these uh steam
+54:32
+particles that are orange at first and Fade to White we had to play with that a lot to try to get it to look right
+54:37
+there's also custom code for changing it to go back to having the light reflecting on the walls in Zora's domain
+54:45
+um which didn't you know normally happen I should also mention we had a bug in the code for fading out
+54:51
+the snowflakes because there's snowflakes in Zora's domain and um we uh
+54:57
+there was a bug in the code and there's a 1 in 16 chance that it would crash here and we we had only ever crashed
+55:04
+once before gdq and it was in March it was months beforehand and so we didn't know what the bug was and we played it
+55:09
+at gdq with the bug because we didn't know any better and it didn't crash and then weeks later when dwango was
+55:16
+preparing for another event to show this it crashed again we managed to get a stack Trace I found the bug I realized
+55:22
+that it was a 1 in 16 chance of crashing every time we showed it and we just got lucky live so
+Unicorn Fountain
+55:28
+um so yeah I should have I maybe I shouldn't have been talking over that part but urban legend to melt the ice and Zora's
+55:35
+domain that little alcove that we went into the Alcove is there but it's not actually an exit we we patched it to be
+55:41
+an exit so if you actually you know cheat your way down there you can see the Alcove you walk into the Alcove but
+55:46
+it doesn't Fade to Black it's not an exit it doesn't take you to the Unicorn Fountain the Unicorn Fountain here this
+55:52
+is our first completely custom scene sorry I had to yeah yeah no no unicorn
+55:57
+Fountain so this is a completely custom scene injected through the controller input um you know still the vanilla game the
+56:04
+way we're the way we're counting it but um this was beta content that was shown in pre-release videos and screenshots
+56:11
+you can see magazine clippings with this unicorn Fountain actually if you look closely Nintendo's unicorns looked a lot
+56:17
+more Jank than ours did we really fixed them up and made them look better um the uh Ocarina of Time does not
+56:24
+support overlapping water boxes so the water in here is actually not real water only the water here on the ground is
+56:29
+real water but we figured we wouldn't climb on the Statue during the live run um this pedestal the Ocarina is actual
+Beta Great Fairy
+56:36
+beta item that's actually left in the cartridge we just had to spawn it in it's a 3D model it just has the Collision it doesn't do anything the
+56:42
+Ocarina prompt on top of it is actually a separate actor um so yeah we just you know spawn those
+56:49
+in um and of course it's an Ocarina prompt it's used um you know we put told it to ask for
+56:55
+Zelda's Lullaby in a moment here we'll um
+57:01
+see see it's another custom cutscene this is actually the first custom cut scene I made I did
+57:07
+most of the custom cutscenes uh duango and uh Defender Sam did some of the Steph roll cutscenes but I did pretty
+57:13
+much everything else uh for all the cutscene the custom cutscenes and I'll show some of that after on our on our
+57:18
+last last segment here of how some of that looked behind the scenes um
+57:25
+yes it's not um so this is the beta Great Fairy the
+57:30
+beta Great Fairy 3D model is actually left in the cartridge um it does not have any animations it's
+57:36
+very clearly supposed to be a static model and in the videos you can see it just has a static model that you know
+57:41
+hovers floats up and down like this so the 3D model is actually on the cartridge but the scenario the dialogue
+57:48
+all of that is not on the cartridge our writing team
+57:54
+Yes Credit to our writing team credit to our uh scene modeling team for you know
+58:00
+making this look good um credit to me for programming this part
+58:05
+um yeah so the beta great Ferry did appear in the Nintendo screenshots in the
+The Overture of Sages
+58:11
+Unicorn Fountain but of course the beta Great Fairy was not teaching link the Overture of sages the overtrue sages was
+58:17
+perhaps the most famous video game urban legend it was a hoax about Ocarina of Time about how to get the Triforce that
+58:24
+involves this song The Overture of sages the same button presses that we have here
+58:30
+um you know they are our composing team which is myself and Rebecca Tripp um you know I I arranged this song to
+58:37
+match the button presses so the the actual six note Ocarina song was composed by the hoaxer in 1999 the
+58:44
+person who made up this fake leak composed this and then I arranged the background music to actually turn it
+58:49
+into a real Ocarina song that you could learn and of course you know put it into the game with arbitrary code execution
+58:55
+making this rumor finally true just through millions of button presses
+59:01
+um and you know so we learned the Overture of sages um and the greater Great Fairy instructs
+59:07
+us to play this song before the blade of Destiny and the path of the sages shall be revealed we learned the Overture of
+59:13
+sages from the beta Great Fairy in the Unicorn Fountain here and the beta Great Fairy instructed us to play the song in
+59:20
+front of the blade of Destiny so that's where we're going next so it's important
+The Temple of Time
+59:26
+um you know for our lore it doesn't actually matter for the for the run but um we do not have the match to start in
+59:32
+our inventory we have never had the mass started in air inventory we never pulled the master sword we became adult using
+59:38
+the full song of time not using the master sword and by the way here we have to step out into the outer World
+59:46
+um to show uh that the uh the world is not destroyed by Ganon
+59:52
+um this is actually we just changed which scene this points to so it's pointing to the child version of the the
+59:58
+scene if we went out into the market it would be destroyed by Ganon um make that mistake yeah that we had
+1:00:05
+that happen on another show oh and the uh the uh reason we actually
+1:00:11
+had to go out there was not just to show that it was because if we don't reload the Temple of Time it does not work properly the Temple of Time is actually
+1:00:18
+a very complex area it looks like it's completely empty it is full of stuff especially in some of the scene setups
+1:00:25
+um let me just get this right I didn't get it right
+1:00:33
+[Music] there we go um it is full of stuff Chic is there
+1:00:40
+most of the time and Chic is running a lot of the cutscenes it's chic's code that handles various pieces of things
+1:00:47
+the master sword has code that handles things there's like lighting effects
+1:00:52
+there's there's a whole bunch of stuff so we had to patch a bunch of that stuff to make this scene possible as Adult
+1:00:59
+Link because there's so much code in the game that just checks is link child or
+1:01:04
+adult for what to do and so for example if you get into this cut scene and your
+1:01:10
+your Adult Link normally without any Patches from arbitrary code execution you'll see the cut scene but the door of time will open because the door of time
+1:01:17
+the part of the door of time that could open just exited as soon as it loaded
+1:01:22
+because your your adult length so the door of time of course it's already open so that code just completely doesn't
+1:01:28
+work because it assumes that we're Adult Link so we had to make all of these patches to various pieces of this code
+1:01:35
+and we have to make sure the correct version of all of that loads in and so we have to be in the correct scene setup
+1:01:40
+so we actually have to be walking in so that's why we had to do that so these are vanilla cutscenes but we have a ton
+1:01:46
+of patches in place to allow us to experience these cutscenes as you don't link so for example the master sword
+1:01:53
+would not be in the pedestal if we're Adult Link normally um
+1:01:58
+and I would show what happens if we pull the master sword because we actually
+1:02:03
+built this it actually for the most part it actually works correctly and we can have Adult Link pull the master sword
+1:02:09
+but if I do that it will get stuck in a bunch of cut scenes and we'll waste like five minutes so I'm not going to do that
+To the Sacred Realm!
+1:02:14
+I'm going to do what we did during the Run play the Overture sages in front of the master sword as Ariana almondos the
+1:02:21
+hoaxer in 1999 told us so of course this is all I mean it's not beta content it's urban
+1:02:28
+legend content that was made up in a hoax in 1999 and finally real in Ocarina
+1:02:35
+of Time through the magic of arbitrary code execution at sgdq again this was an unmodified ROM unmodified cartridge
+1:02:43
+all of these things were done by modifying the console's memory in real time through controller input by taskbot
+1:02:50
+so all of that data injected and it's just sitting there in memory and we have all of our patches in the operating
+1:02:56
+system that will load things at the appropriate times you know all doing all of that
+1:03:02
+um so it's just you know it's just sort of seamlessly running our new plot now um but this was all created by
+1:03:09
+controller input in within the context of the vanilla game without any modifications in advance
+1:03:15
+so custom cutscene here there every single sage has a custom cut scene you'll see this I'll show this scene
+1:03:21
+behind the scenes um later but this is a you know a bunch of little custom cutscenes completely
+1:03:26
+custom dialogue this scene obviously the Chamber of sages in it is in Ocarina of
+1:03:31
+Time so we took that scene we imported it into blender and we made a bunch of modifications to it
+1:03:36
+um this platform does work if you just spawn into the scene normally and these side platforms do exist but they're not
+1:03:42
+in quite this pattern of going up um like this and there are invisible walls around the side platform raru does
+1:03:50
+have Collision but his arms don't have collision by the way um and these uh these bridges that lead
+1:03:56
+to the side platforms are made up by us they have some interesting um shaders used on them actually or
+1:04:02
+graphical effects used on them that are difficult for most emulators to handle um so that's another another part that
+1:04:08
+you can't really emulate without sort of Advanced emulator settings also we practice this a lot to make sure
+Yeeting off the platform
+1:04:15
+we didn't fall off because it's annoying I should I should actually fall off and show what happens so they you know
+1:04:20
+goodbye so what happens is the first bridge will
+1:04:27
+trigger um despite his arms are the fact that we didn't talk to rauru sorry his arms are
+1:04:35
+down yes his arms are down he didn't spawn back incorrectly and we don't have an interface we've lost our whole GUI but
+1:04:42
+we're never gonna need the GUI for the rest of the run so that's fine it still is in part of a cutscene mode
+1:04:49
+that's what's going on until we go through a proper loading zone um it will be still think partly that we're in a
+1:04:56
+cutscene um but yeah so all every single one of these stages is a custom cutscene stored
+1:05:01
+in this in this uh uh you know modified scene file oh I just skipped through the
+1:05:07
+rock joke but durunia makes a rock joke because he's a Goron in there they're Rock people so uh yes our you know we so
+1:05:17
+this is you know this is based on A Link Between Worlds where you go to the sacred realm the same the same scene
+1:05:23
+basically um you know Ruto is thirsty for link but who isn't
+1:05:28
+um and you know you go up the these circular stairs to all the side platforms and receive blessings from the
+1:05:35
+sages so that's uh you know that's that's what we're we implemented here um and again the side platforms are in
+1:05:41
+the vanilla scene but they aren't in this nice staircase pattern and of course there's no staircases that go
+1:05:47
+between them um and these these the sages are all custom it's actually one actor that handles all of the sages and we'll pull
+1:05:54
+in the right you know pull in the right object and draw it and have them do their animation and everything and
+1:06:00
+because it's basically the same code running for all of them except for Chic Sheik has a bit of a different thing
+1:06:06
+um right there but yeah um so you know she said Nibiru said um
+1:06:12
+she would see us again in a few years when we talked to her earlier and now here she is they they don't you know
+1:06:18
+don't interact again after this but they do have Collision just in case we had to walk into raurus so we need to have them
+1:06:24
+all have Collision their Collision is appropriate to their body size this is the size of the cylinder is based on
+1:06:30
+their the size of their body so that's you know that's a little tidbit you might not have noticed um so this is you know in our own Canon
+1:06:38
+you know made-up Canon for this this is our first time meeting each of these stages except for naburu
+1:06:44
+um and sarri of course you already knew us so this is you know impa is is first introduced and says oh you must have
+1:06:50
+been the boy from Princess Zelda's dreams and she says we got her sages charms the sages charm was supposed to be impas in our you know our custom plot
+The music of the Sacred Realm
+1:06:57
+that we made here before you go too far there's questions about the music oh yeah so this uh music track I'm sorry
+1:07:04
+I'm not I'm usually hearing this I have muted in my own audio here uh but yes this music track was arranged by Rebecca
+1:07:10
+Tripp this is the only song that was not arranged by me um uh actually well that with a caveat
+1:07:17
+you'll hear about in a minute um but yes this is uh you know a custom Arrangement based on the original sages
+1:07:22
+theme and then you know she she elaborated it into a more appropriate for you know climbing the stairs up to
+1:07:29
+the Triforce [Music] any other things I should address before I walk up onto this platform here I
+1:07:37
+think everything else I'm going to save for later okay yeah I was going to say a couple things for the end probably
+Sheik
+1:07:42
+we could ask so there's six sages we already talked to the six stages here's our seventh
+1:07:48
+platform in our seventh Sage [Music]
+1:07:56
+this particular line we worked on I workshopped this with the other writer a bunch we we want we were you know sort
+1:08:03
+of wanted to say the one with the ability to execute arbitrary code but we thought that would be too spot on so we
+1:08:09
+just went with Bend and shift time itself but some people realized from this dialogue that this was you know
+1:08:17
+that this was uh custom content um you know talking about the timelines we've known each other in ages past and
+1:08:24
+surely in other timelines at the present um you know our destiny is about to change forever when we get the Triforce
+1:08:32
+um you know this is trying to try to make this sound like what Chic would actually tell link but also she sort of
+1:08:38
+knows that something a little bit more than than reality is happening here so
+1:08:44
+you know here's our here's our questions what the burning question that link could ask Chic since we showed the
+Oof
+1:08:51
+second one during gdq we'll show the first one today link is asking Chic are
+1:08:56
+you Zelda questions
+1:09:09
+and of course this is a reference to the Retro Studios Chic game that was
+1:09:14
+canceled um you know would be nice if she could get their own game someday but you know
+1:09:20
+we'll have to wait a bit longer I guess um I hope it does happen sunny [Music]
+1:09:27
+you know let's not keep the gdq audience waiting
+Triforce
+1:09:33
+from what they've been here to uh you know to see and you know ironically I
+1:09:39
+was actually surprised by the people reacting to this online a couple of them definitely understood at this point that
+1:09:46
+we were about to get the Triforce but there was enough people who didn't understand I thought we were being really
+1:09:52
+heavy-handed with the symbolism and everything and everybody would understand what was past the store but you know maybe people weren't as up to
+1:09:59
+date on the lawyer and everything and of course at this moment I I you know emphasized to everybody that this was an
+1:10:05
+unmodified cartridge and we hadn't changed anything about the game in advance all we did was Press buttons very fast and that's true millions of
+1:10:12
+button inputs encoding large scale changes to you know custom scene custom
+1:10:17
+dialogue custom actors custom everything but still within the context of the original game no ROM changes no no
+1:10:25
+nothing modified in advance just arbitrary code execution and as I go through this loading transition you will
+1:10:31
+see a Triforce wipe that is actual beta content left on the cartridge you just
+1:10:36
+have to set a particular type of scene transition and it will show the Triforce as the wipe so
+1:10:42
+here you go and this scene the Triforce scene is a
+1:10:50
+not left on the cartridge but it was created by Nintendo back in the day shown in a very famous early uh video
+1:10:57
+you know an advertisement for Ocarina of Time We recreated it um you know we added the animation of
+1:11:02
+Link reaching and touching the Triforce and of course the text is custom
+1:11:08
+I was amazed that even with it being so on point in this message that some people still believed that it was on the
+1:11:15
+original cartridge I think at this point even the people were like no there's no way that was
+1:11:21
+actually on the original cartridge right I think they even those people realized that this couldn't have been because it
+1:11:27
+says 23 years it's self-referential it's 23 years is the time between Ocarina of
+1:11:32
+Time releasing and sgdq 23 and a half years um and you know of millions of players
+1:11:38
+around the world there's a dream to get the Triforce in Ocarina of Time was not previously possible until we have
+1:11:44
+arbitrary code execution and we can create the entire scene the Triforce the
+1:11:49
+Triforce chess everything you know the scene we we made it as close as we could to the scene that Nintendo created back
+1:11:55
+in the day as you know accurate as possible um but it is you know created by us it
+1:12:00
+was not left on the cartridge but arbitrary code execution is left on the cartridge and we can use that and get
+1:12:07
+this without modifying the game in advance so that's what we've done so I'm going to move on so you know what
+1:12:13
+happens next link gets the Triforce what would link do with the Triforce
+1:12:18
+well first of all he has to have a little chat with the goddesses and the goddesses have to tell him he doesn't
+1:12:23
+realize at first that he's hearing a voice in his head from the goddesses we considered having more elaborate scene
+1:12:29
+for this but the more elaborate team is coming next so we're stuck with this for now
+1:12:34
+um custom cutscenes I will show this cutscene in behind the scenes specifically this is one of the most
+1:12:39
+interesting ones this is actually one of the last ones that I made um
+1:12:45
+we've started working on this at the same time as the next scene but um like I was I was I was proud of the
+1:12:51
+cinematography here as you should be
+1:13:00
+and the music's also arranged by me this is the Triforce chamber music from
+1:13:05
+A Link to the Past arranged for Ocarina of Time engine so you know I started this whole thing as being a music arranger I got the
+1:13:13
+opportunity to have my own music Arrangements in an unmodified copy of Ocarina of Time in front of hundreds of
+1:13:20
+thousands of audio audience members so that that was really you know part of the special and there's a lot of special parts of this for me but that was that
+1:13:26
+was part of the special part for me um so we get to this choice this is the only choice in the game that we didn't
+Choice
+1:13:32
+Implement anything for the other options we just went with see the future but just for the sake of showing off it the
+1:13:38
+game does not check which dialog option I pick it just closes the dialog box and then goes on
+1:13:44
+to the the ending which is only one ending so I will pick a different option and you will see that nothing nothing
+1:13:50
+happens um but you know sorry it's see the future that's what we that's what we
+1:13:56
+designed for so link requests to see the Future Link is
+Future
+1:14:01
+warping in time to the future we zoom in on the Triforce chest and then we Zoom back out from the Triforce chest
+1:14:09
+the same place but tens of thousands of years in the future the same location in the sacred realm is
+1:14:16
+now in the sky it's you know way back when it wasn't really clear if the sacred realm was different from the sky
+1:14:23
+well it's certainly that's a lot of I won't get into that now but anyway this is the sacred realm in the future and
+1:14:29
+Link is warping back in [Music]
+1:14:42
+and tens tens of thousands of viewers in the future this is what link looks like
+1:14:47
+so this is this is not a video this is the N64 this is injected code injected
+1:14:54
+models injected patches to the RSP microcode that allow us to do cell shading this is you know it was thought
+1:15:02
+to not be possible on the N64 to do Cell Trading that was thought not to be possible to
+1:15:07
+do high poly models uh you know the the the the animations on their uh clothing and hair are being
+1:15:15
+computed live they're not they're not like pre-baked animations it was actually smaller size to not inject all
+1:15:21
+of the hair animations and everything and have them actually simulated so physics simulation voice acting
+1:15:27
+I'm so happy to see this I know they're out there but it would be
+1:15:33
+nice if we could see it then don't you think
+1:15:40
+all right Chad Foo is this a slow mode or sub only chat or can anyone
+1:15:47
+participate go for the main events it's I believe
+1:15:52
+it's in anybody can participate chat all right folks well
+Here together
+1:15:57
+I think you guys know what to do now everyone it's time type here together in
+1:16:03
+the chat or explore the emotes that are available to you Yeah we actually support most of the GD
+1:16:09
+well a lot of the gdq emotes not all of them the ones that are like sort of positive in in tone and some twitch
+1:16:15
+emotes uh so we'll leave it here they're going yeah okay should I should press it yeah definitely all right
+1:16:27
+so yes these are live these are actually being captured right now this was not pre-computed you'll you know hopefully
+1:16:33
+we'll see your name some of them are showing up off screens you might not see your name but this is actually real the
+1:16:40
+replay device isn't is uh well we have scripts on the computer they're reading Twitch API grabbing chat messages
+1:16:46
+encoding them sending them to the replay device the replay device encodes them into controller input sends it to the
+1:16:51
+console the console decodes it back into messages and renders them on screens you should shut up there for a moment
+1:17:00
+renders them on screen like the way your web sort of like how a web browser does it's actually drawing the text properly
+1:17:07
+um I should mention the voice actors are not the initial not the Nintendo voice
+1:17:12
+actors their other professional voice actors that we you know got onto the project but not the actual voice actors
+1:17:17
+from Nintendo but they did it very good job um and you know thank you for being here together with us
+1:17:24
+um and we we actually have another little a little surprise after this scene uh for the next next segment here
+1:17:31
+but I'll let this play out here listen carefully
+1:17:37
+[Music]
+1:17:45
+so link finally speaks and is all the game breath of the wild link speaks in
+1:17:51
+Ocarina of Time and uh you know this is we were actually expecting that to happen some usernames there but here we
+Surprise? (Credits)
+1:17:59
+are you'll hear some new music this is the taskbot theme
+1:18:06
+oh which we have added just for today
+1:18:12
+and I will talk a little bit more about the music after it's done but I want to let it play out for everybody
+1:18:19
+please enjoy this was originally composed by Whimsy Heath and John Gabriel UK and adapted by Sauron
+1:18:30
+[Music]
+1:18:55
+thank you so actually while let's play playing I
+1:19:02
+will mention a couple of things first of all the Staff Roll is also totally
+1:19:07
+custom cut scenes made by us and injected into the game with arbitrary code execution just like everything else you know this wasn't just a video we
+1:19:14
+switched to this is all in engine um the music that you're hearing this is
+1:19:20
+this theme of taskbot this is playing in the Ocarina of Time engine you may not have realized but Ocarina of Time and
+1:19:26
+all of the first party Nintendo 64 games part of their sound engine is actually a chipped tune engine they have a system
+1:19:34
+for playing these waveform chiptune waveforms and that is used for some sound effects like the Zelda shine but
+1:19:40
+not used in any music so I specifically arranged this for that system which is
+1:19:46
+basically complete not completely unused but most people are not using that for for music Pyramid in the background
+1:19:52
+there by the way [Music]
+1:20:02
+and shout outs to gdq hotfix for having us on today just for you
+1:20:11
+that's so cool so it's a little less impactful of an ending without the bombastic orchestral
+1:20:19
+music but you know we wanted to give an opportunity to show off another
+1:20:24
+not fully unused for to partially used but mostly unknown aspect of Ocarina of
+1:20:30
+Time is this whole chiptune synthesis engine um so you know we wanted to present something and the audio you know the
+1:20:36
+music track was not a perfect arrangement for this I will admit that I you know there were some issues actually I ran into a bug with the noise Channel
+1:20:44
+um it seems like Nintendo didn't really test it and it had some problems and it sometimes crashes the RSP so I had to
+1:20:51
+cut the noise based instruments the hi-hats and stuff so you know this is not not my finest work but I did want to
+1:20:57
+show that off today so we are at the end you know the Triforce in the sacred realm in Ocarina
+1:21:03
+of Time the ending that many of us wish that we could have had um and you know now we have created for
+1:21:10
+ourselves through the magic of arbitrary code execution and a lot of engineering and a lot of you know asset creation and
+1:21:18
+and partners worked with our partners um and you know 20 or more than 25 people contributed to this Triforce
+1:21:24
+percent over the last two and a half years um and it has been a privilege to be you
+1:21:30
+know participate in this and and direct this project wow
+1:21:35
+wow that was incredible that was incredible everyone in the room is standing
+1:21:41
+standing for Mr Tasman dwangelosi Soren and save state so incredible I want to read one last
+1:21:48
+donation I think this really hits it well the sound defense donates 25 they
+1:21:53
+say this Ocarina of Time beta showcase may be the most fascinating thing I've ever seen at a gdq I can picture a game
+1:22:01
+containing all of this interesting story content and I want to see more thank you to save State and the tasbot team for
+1:22:08
+showing this off give it up one more time foreign
+1:22:17
+we are having a great night we're raising money for Doctors Without Borders we will be right back after this
+1:22:23
+don't you go anywhere [Applause]
