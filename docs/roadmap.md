@@ -123,6 +123,26 @@ Key of Power:
 - [ ] Release: fork build plus `.o2r`, with install steps
 - [ ] Community testing round
 
+## Textures: original and HD
+
+Every texture we make ships in two versions, so players can pick the look that matches the rest of their game:
+
+- **Original:** N64 resolution and formats, matching vanilla OoT. This is the default and must always work on its own.
+- **HD:** upscaled versions made to sit alongside HD texture packs such as OoT Reloaded, so our scenes don't look low-res next to an HD Hyrule.
+
+How we plan to do it:
+
+- **One source, two exports.** Keep each texture's master in `assets/textures/` at the higher resolution, and generate the N64 version from it with a script, so the two sets never drift apart.
+- **Same resource paths.** The HD texture replaces the original at the same path, so the code and scenes don't care which one is loaded. SoH can load higher-resolution replacements and has an alternate-assets toggle; confirm the exact mechanism in the Phase 2 toolchain work.
+- **Packaging.** Ship the HD set as a separate, optional `.o2r` next to the base archive, so the base mod stays small and the HD pack can be updated on its own.
+- **Load order with other HD packs.** Our hijacked scene slots (Goron Shop, Granny's Potion Shop, Dampé's Hut) are also retextured by HD packs. Test that our textures win in those scenes, and document the load order players need.
+- **Free wins.** Where our scenes reuse vanilla textures, leave them as vanilla references, so an installed HD pack upgrades them for free.
+
+Checklist:
+- [ ] Phase 2: decide the HD mechanism (separate archive or alternate assets) and add the HD export to the build script
+- [ ] Phase 1 onward: every new texture lands with both an original and an HD version
+- [ ] Phase 7: test with no HD pack, with our HD pack only, and alongside OoT Reloaded
+
 ## Biggest risks
 
 | Risk | Where it bites | Plan |
@@ -132,6 +152,7 @@ Key of Power:
 | Missing models (BotW Link/Zelda, Running Man boss) | Phases 5–6 | Commission or build new ones, or swap in stand-ins. Not blocking until late |
 | Cel shading has no direct SoH equivalent | Phase 6 | Treat as stretch. Ship without it if needed |
 | Custom flags clashing with randomizer | Phases 3–5 | Use a custom save section in `SaveManager`, not unused vanilla bits |
+| Our textures clash with, or get overridden by, HD texture packs | Phases 1–7 | Keep both texture sets, test with OoT Reloaded installed, and document the load order |
 
 ## Stretch goals
 
