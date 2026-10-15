@@ -53,7 +53,7 @@ These are the existing tools we use to rebuild Triforce% natively inside Ship of
 ### Reference code
 | Project | Why it matters |
 |---------|----------------|
-| [triforce-percent](https://github.com/triforce-percent/triforce-percent) | The original TASBot Triforce% code, scenes and assets. Our breakdown is in [docs/references/triforcepercent](docs/references/triforcepercent/index.md). |
+| [triforce-percent](https://github.com/triforce-percent/triforce-percent) | The original TASBot Triforce% code, scenes and assets. Breakdown is in [docs/references/triforcepercent](docs/references/triforcepercent/index.md). |
 | [zeldaret/oot](https://github.com/zeldaret/oot) | The OoT decompilation. SoH's game code comes from it, so actor and scene structures match. |
 | [HackerOoT](https://github.com/HackerN64/HackerOoT) | Decomp-based OoT modding base, a good reference for custom actor and scene patterns. |
 
