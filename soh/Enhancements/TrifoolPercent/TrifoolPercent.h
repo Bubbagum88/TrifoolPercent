@@ -12,6 +12,9 @@
 #define CVAR_TRIFOOL_TEST_ENTRANCE CVAR_ENHANCEMENT("TrifoolPercent.TestEntrance")
 #define CVAR_TRIFOOL_UNICORN_FOUNTAIN CVAR_ENHANCEMENT("TrifoolPercent.UnicornFountain")
 #define CVAR_TRIFOOL_FOUNTAIN_ENTRANCE CVAR_ENHANCEMENT("TrifoolPercent.FountainEntrance")
+#define CVAR_TRIFOOL_SETUP_PRESET CVAR_ENHANCEMENT("TrifoolPercent.SetupPreset")
+#define CVAR_TRIFOOL_DEV_INPUTS CVAR_ENHANCEMENT("TrifoolPercent.DevInputs")
+#define CVAR_TRIFOOL_PAUSE_DEBUG_INV CVAR_ENHANCEMENT("TrifoolPercent.PauseDebugInv")
 
 // Resources shipped in TrifoolPercent.o2r (built by actors/triforce_actor/make_torch_input.py).
 #define dgTrifoolTriforcePieceDL "__OTR__objects/object_trifool_triforce_piece/gTrifoolTriforcePieceDL"
