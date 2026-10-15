@@ -31,6 +31,12 @@ Fast64 fork headless (Blender as the `bpy` Python module), which writes SoH's bi
 display list, vertex and texture resources directly. The Triforce% `.blend` dates from 2021, so the script fixes
 it up first (see its docstring).
 
+Two more things are added for playing in the room rather than only watching the cutscene. Triforce%'s collision
+was just the floors and stairs, so the script rebuilds it from the visible room (walls included), fills the pool
+with a water box, and puts a loading zone back to Goron City at the end of the entry walkway. It also makes the
+room indoor: no sky, sun or moon, and the clock stops. [`make_title_card.py`](../../scenes/triforce_chamber/make_title_card.py)
+replaces the Goron Shop's title card texture with "Triforce Room".
+
 **The room's textures are placeholders.** The `.blend` points at five images Triforce% never published (they
 appear to come from the ROM or from beta material). [`make_placeholder_textures.py`](../../scenes/triforce_chamber/make_placeholder_textures.py)
 writes simple stand-ins (sandstone bricks, floor tiles, two water layers) for any that are missing. Drop the real
@@ -69,8 +75,13 @@ Checked in a Linux container on 2026-10-15:
 - `build/TrifoolPercent.o2r` packs to 53 resources.
 - The module compiles with no warnings against Shipwright `6b4edce` (2026-10-14).
 
-**Not checked: running it in the game.** That needs an OoT ROM and a display, which the build container does not
-have. Expect the first in-game run to turn up problems. The likeliest ones:
+Checked in the game on 2026-10-15, on a stock Ship of Harkinian 9.2.3 for Windows (the `.o2r` alone, without the
+module): the Goron Shop door leads into the Triforce Room. That first run had no walls, no water, no way out, the
+Goron Shop title card, a running clock and a sun in the room, which led to the fixes above. Items cannot be used in
+the room because the game restricts items by scene, and this is still the Goron Shop's scene.
+
+**Not checked: the module in the game** (actors, cutscene, text). That needs a Windows build of SoH with the
+module, which has not been made yet. The likeliest problems:
 - Link's cutscene actions. The cutscene drives Link with actions `0x4B`, `0x4E`, `0x4F` and `0x50`; Triforce%
   added custom Link animations (Meditate, ReachUp) and may have patched what those actions do. On stock SoH Link
   will do whatever vanilla does for those numbers.

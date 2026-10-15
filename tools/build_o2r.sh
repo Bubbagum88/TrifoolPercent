@@ -20,7 +20,7 @@ if [ ! -x "$TORCH" ]; then
     cmake --build "$ROOT/build/torch" --target torch -j"$(nproc)"
 fi
 
-# 1. Triforce Room scene. Triforce% did not publish the room's textures, so stand-ins fill any that are missing.
+# 1. Triforce Room scene and its title card. Triforce% did not publish the room's textures, so stand-ins fill any that are missing.
 python3 "$ROOT/scenes/triforce_chamber/make_placeholder_textures.py" \
     "$TP/triforce-percent/scene/TriforceRoom/textures"
 "$PY" "$ROOT/scenes/triforce_chamber/export_room.py" \
@@ -28,6 +28,7 @@ python3 "$ROOT/scenes/triforce_chamber/make_placeholder_textures.py" \
     --fast64 "$TP/addons" \
     --soh-include "$TP/Shipwright/soh" \
     --out "$STAGE/scene"
+python3 "$ROOT/scenes/triforce_chamber/make_title_card.py" "$STAGE/title"
 
 # 2. Triforce actor objects, converted from Triforce%'s compiled zobj files.
 python3 "$ROOT/actors/triforce_actor/make_torch_input.py" "$TP/triforce-percent" "$STAGE/torch-in"
@@ -35,4 +36,4 @@ python3 "$ROOT/actors/triforce_actor/make_torch_input.py" "$TP/triforce-percent"
 
 # 3. One archive for SoH's mods folder.
 python3 "$ROOT/tools/pack_o2r.py" "$ROOT/build/TrifoolPercent.o2r" \
-    "$STAGE/scene" "$STAGE/torch-out/TrifoolPercent-objects.o2r"
+    "$STAGE/scene" "$STAGE/title" "$STAGE/torch-out/TrifoolPercent-objects.o2r"
