@@ -81,8 +81,10 @@ Goal: prove custom songs, warps and in-engine cutscenes.
 
 - [ ] Zora's Domain ice melting (`z_bg_spot07_taki`)
 - [ ] Reroute the Domain → Lake Hylia exit to the Unicorn Fountain (Test01 slot)
-- [x] Unicorn Fountain scene exported into the Test01 slot (scene only; actor/cutscene pending)
-- [ ] Pedestal of the Ocarina and the Beta Great Fairy with her cutscene (ported actors)
+- [x] Unicorn Fountain scene exported into the Test01 slot
+- [x] Beta Great Fairy actor ported (state machine, particles, audio; mesh unavailable until the zobj is sourced)
+- [ ] Fountain cutscene converted to SoH macros so the fairy's state machine is driven by the scene, not a timer
+- [ ] Pedestal of the Ocarina actor
 - [ ] She teaches the Overture of Sages (replacing the Phase 3 debug unlock)
 
 **Exit check:** from a fresh file with the right flags, learn the Overture from the Beta Great Fairy.
