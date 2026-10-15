@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Write a "Triforce Room" place-name title card over the Goron Shop's.
+"""Write the "Triforce Room" place-name title card.
 
-The room borrows the Goron Shop's scene slot, so the game shows the Goron Shop's title card on entry. Title cards
-are 144x24 IA8 textures (textures/g_pn_20/gGoronShopTitleCard{ENG,GER,FRA}Tex for the Goron Shop); a mod archive
-holding those paths replaces them, so this works on a stock Ship of Harkinian too. Every language gets the same
-English text for now.
+Debug scenes like Besitu, where the room lives, have no place name. The TrifoolPercent module shows this texture
+as the room's title card on entry (a 144x24 IA8 texture, the vanilla title card format), so it only appears in a
+Ship of Harkinian build with the module.
 
 Usage: make_title_card.py <out dir> [font.ttf]
 """
@@ -18,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 TEXT = "Triforce Room"
 WIDTH, HEIGHT = 144, 24
 DEFAULT_FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf"
-RESOURCES = [f"textures/g_pn_20/gGoronShopTitleCard{lang}Tex" for lang in ("ENG", "GER", "FRA")]
+RESOURCES = ["textures/trifool_place_title_cards/gTrifoolTriforceRoomTitleCardTex"]
 
 # libultraship resource header (0x40 bytes): little endian, type 'OTEX', version 0, id 0xDEADBEEFDEADBEEF.
 HEADER = struct.pack("<I4sIQ", 0, b"XETO", 0, 0xDEADBEEFDEADBEEF).ljust(0x40, b"\0")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Merge Ship of Harkinian resources into one .o2r mod archive.
 
-An .o2r is a zip whose entry names are resource paths (scenes/shared/golon_scene/golon_room_0, ...).
+An .o2r is a zip whose entry names are resource paths (scenes/shared/besitu_scene/besitu_room_0, ...).
 Inputs can be folders of resources (Fast64's scene export) or other archives (Torch's output).
 
 Torch also writes a `version` file holding the game version of the ROM it read. Our stand-in ROM is not a real
@@ -21,7 +21,7 @@ MANIFEST = {
     "author": "TrifoolPercent contributors; Triforce% team (original scenes, actors and text)",
     "version": "0.1.0",
     "website": "https://github.com/Bubbagum88/TrifoolPercent",
-    "description": "Proof of concept: the Triforce% Triforce Room in the Goron Shop's scene slot. "
+    "description": "Proof of concept: the Triforce% Triforce Room in the unused Besitu debug scene slot. "
     "Needs a Ship of Harkinian build with the TrifoolPercent module.",
     "license": "Triforce% license: credit the Triforce% contributors, no implied endorsement, no warranty.",
 }

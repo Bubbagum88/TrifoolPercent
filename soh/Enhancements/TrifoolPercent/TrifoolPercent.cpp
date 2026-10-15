@@ -1,4 +1,4 @@
-// TrifoolPercent glue: registers the Triforce% actors with ActorDB, turns the Goron Shop into the Triforce Room
+// TrifoolPercent glue: registers the Triforce% actors with ActorDB, sets up the Triforce Room
 // (the scene itself comes from TrifoolPercent.o2r), plays the room's cutscene and supplies its text.
 
 #include <string>
@@ -23,9 +23,22 @@ extern PlayState* gPlayState;
 
 #define CVAR_VALUE CVarGetInteger(CVAR_TRIFOOL_TRIFORCE_ROOM, 1)
 
-// Triforce% hijacked the Goron Shop's scene slot for its Triforce Room, and so does TrifoolPercent.
-#define TRIFORCE_ROOM_SCENE SCENE_GORON_SHOP
-#define TRIFORCE_ROOM_EXIT ENTR_GORON_CITY_OUTSIDE_SHOP
+// Triforce% hijacked the Goron Shop's scene slot for its Triforce Room. TrifoolPercent uses the unused debug scene
+// Besitu instead (map select "116:Test Room"), so the Goron Shop stays vanilla.
+#define TRIFORCE_ROOM_SCENE SCENE_BESITU
+// For testing, the room sends Link back out next to his house, where a loading zone leads into it (see below).
+#define TRIFORCE_ROOM_EXIT ENTR_KOKIRI_FOREST_OUTSIDE_LINKS_HOUSE
+#define TRIFORCE_ROOM_ENTRANCE ENTR_BESITU_0
+
+#define CVAR_TEST_ENTRANCE_VALUE CVarGetInteger(CVAR_TRIFOOL_TEST_ENTRANCE, 1)
+
+// Test loading zone into the Triforce Room on the ground in front of Link's house, marked by a blue flame. The spot
+// was picked from Kokiri Forest's collision: flat floor at y -80, 135 units from the nearest spawn point and well
+// clear of walls, so no spawn lands inside it.
+static Vec3f sTestEntrancePos = { -18.0f, -80.0f, 816.0f };
+#define TEST_ENTRANCE_RADIUS 40.0f
+#define TEST_ENTRANCE_HEIGHT 40.0f
+#define TEST_ENTRANCE_FLAME_PARAMS 0x0002 // En_Light: blue flame
 
 static s16 sTriforcePieceId = -1;
 static s16 sTriforceChestId = -1;
@@ -82,13 +95,17 @@ static void SpawnTriforceRoom() {
     Actor_Spawn(actorCtx, gPlayState, sTriforcePieceId, 0.0f, 0.0f, 0.0f, 0, 0, 0, TRIFOOL_TRIFORCE_WISDOM);
     Actor_Spawn(actorCtx, gPlayState, sTriforcePieceId, 0.0f, 0.0f, 0.0f, 0, 0, 0, TRIFOOL_TRIFORCE_COURAGE);
 
+    // Debug scenes have no place name, so the room brings its own title card (built by make_title_card.py).
+    TitleCard_InitPlaceName(gPlayState, &gPlayState->actorCtx.titleCtx, (void*)gTrifoolTriforceRoomTitleCardTex, 160,
+                            120, 144, 24, 20);
+
     // Triforce% ran this as an entrance cutscene; every visit plays it here.
     gPlayState->csCtx.segment = gTrifoolTriforceRoomCs;
     gSaveContext.cutsceneTrigger = 1;
 }
 
 // Triforce% ended the cutscene with a terminator into its Ending scene. Until the Ending is ported, fade back out
-// to Goron City at the same frame.
+// to Kokiri Forest at the same frame.
 static void LeaveTriforceRoomAtCutsceneEnd() {
     if (!IsTriforceRoom()) {
         return;
@@ -101,6 +118,33 @@ static void LeaveTriforceRoomAtCutsceneEnd() {
     gPlayState->nextEntranceIndex = TRIFORCE_ROOM_EXIT;
     gPlayState->transitionTrigger = TRANS_TRIGGER_START;
     gPlayState->transitionType = TRANS_TYPE_FADE_WHITE;
+}
+
+static bool IsKokiriForest() {
+    return gPlayState != nullptr && gPlayState->sceneNum == SCENE_KOKIRI_FOREST;
+}
+
+static void SpawnTestEntranceMarker() {
+    if (!IsKokiriForest()) {
+        return;
+    }
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_LIGHT, sTestEntrancePos.x, sTestEntrancePos.y,
+                sTestEntrancePos.z, 0, 0, 0, TEST_ENTRANCE_FLAME_PARAMS);
+}
+
+static void EnterTriforceRoomFromTestEntrance() {
+    if (!IsKokiriForest() || gPlayState->transitionTrigger != TRANS_TRIGGER_OFF) {
+        return;
+    }
+    Player* player = GET_PLAYER(gPlayState);
+    f32 dy = player->actor.world.pos.y - sTestEntrancePos.y;
+    if (dy < -TEST_ENTRANCE_HEIGHT || dy > TEST_ENTRANCE_HEIGHT ||
+        Math_Vec3f_DistXZ(&player->actor.world.pos, &sTestEntrancePos) > TEST_ENTRANCE_RADIUS) {
+        return;
+    }
+    gPlayState->nextEntranceIndex = TRIFORCE_ROOM_ENTRANCE;
+    gPlayState->transitionTrigger = TRANS_TRIGGER_START;
+    gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
 }
 
 // Text from Triforce% text/messages.c. The strings are raw OoT message bytes, so every control code below is a
@@ -170,7 +214,13 @@ static void RegisterTrifoolTriforceRoom() {
     COND_HOOK(OnOpenText, CVAR_VALUE, LoadTriforceRoomMessage);
 }
 
+static void RegisterTrifoolTestEntrance() {
+    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ENTRANCE_VALUE, SpawnTestEntranceMarker);
+    COND_HOOK(OnPlayerUpdate, CVAR_TEST_ENTRANCE_VALUE, EnterTriforceRoomFromTestEntrance);
+}
+
 static RegisterShipInitFunc initFunc(RegisterTrifoolTriforceRoom, { CVAR_TRIFOOL_TRIFORCE_ROOM });
+static RegisterShipInitFunc testEntranceInitFunc(RegisterTrifoolTestEntrance, { CVAR_TRIFOOL_TEST_ENTRANCE });
 
 namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
@@ -182,9 +232,14 @@ static void RegisterTrifoolPercentWidgets() {
     SohGui::mSohMenu->AddWidget(path, "Triforce Room", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_TRIFORCE_ROOM)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(true).Tooltip(
-            "Turns the Goron Shop into the Triforce% Triforce Room: the Triforce pieces, chest and light, the "
+            "The Triforce% Triforce Room (in the debug Test Room's slot): the Triforce pieces, chest and light, the "
             "\"You got the Triforce!!!\" cutscene and the goddesses' wish. Needs TrifoolPercent.o2r in the mods "
             "folder for the room itself."));
+    SohGui::mSohMenu->AddWidget(path, "Test Entrance by Link's House", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_TRIFOOL_TEST_ENTRANCE)
+        .Options(UIWidgets::CheckboxOptions().DefaultValue(true).Tooltip(
+            "Adds a loading zone into the Triforce Room in front of Link's house in Kokiri Forest, marked by a blue "
+            "flame, for quick testing."));
 }
 
 static RegisterMenuInitFunc menuInitFunc(RegisterTrifoolPercentWidgets);

@@ -1,4 +1,4 @@
-"""Export the Triforce% Triforce Room as Ship of Harkinian scene resources, replacing the Goron Shop.
+"""Export the Triforce% Triforce Room as Ship of Harkinian scene resources, in the unused debug scene Besitu.
 
 Run with the Python from tools/setup.sh (it has `bpy`, Blender as a module):
 
@@ -8,7 +8,8 @@ Run with the Python from tools/setup.sh (it has `bpy`, Blender as a module):
         --soh-include third_party/Shipwright/soh \
         --out build/o2r
 
-The resources land in <out>/scenes/shared/golon_scene/, the path SoH loads the Goron Shop from, so packing <out>
+The resources land in <out>/scenes/shared/besitu_scene/, the path SoH loads the Besitu debug scene from (map
+select "116:Test Room"). Triforce% used the Goron Shop's slot; Besitu leaves the Goron Shop vanilla. Packing <out>
 into an .o2r and dropping it in SoH's mods folder swaps the room in.
 
 The .blend was made with a 2021 Fast64, so a few things are fixed up before exporting:
@@ -22,7 +23,8 @@ The .blend was made with a 2021 Fast64, so a few things are fixed up before expo
   never walked there outside the cutscene), so its walls were missing. The new collision is the room mesh minus
   its water surface, and a water box fills the pool under that surface.
 - The room is made indoor (no skybox, sun or moon, clock stopped), as Triforce% left the 2021 defaults.
-- The end of the entry walkway gets a loading zone back to Goron City, which the room never had.
+- The end of the entry walkway gets a loading zone out to Kokiri Forest by Link's house, for quick testing
+  together with the module's test entrance there. The room never had an exit.
 """
 
 import argparse
@@ -36,7 +38,7 @@ from mathutils import Matrix
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "tools", "fast64"))
 import hm64_headless  # noqa: E402
 
-SCENE_ID = "SCENE_GORON_SHOP"
+SCENE_ID = "SCENE_BESITU"
 # Blender y of the exit line: the entry walkway runs from the back wall (y -56) to the room; Link spawns at y -46.
 EXIT_Y = -53.0
 CUSTOM_ACTORS = ["TriforceChest", "TriforceLight", "TriforceOfCourage", "TriforceOfPower", "TriforceOfWisdom"]
@@ -54,7 +56,7 @@ def rebuild_collision(room, mesh_obj, old_col_obj):
     water_verts = [mesh_obj.matrix_world @ v.co for f in water_faces for v in f.verts]
     bmesh.ops.delete(bm, geom=water_faces, context="FACES_ONLY")
 
-    # The far end of the entry walkway becomes a loading zone back to Goron City (scene exit 1).
+    # The far end of the entry walkway becomes a loading zone out to Kokiri Forest by Link's house (scene exit 1).
     bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=(0, EXIT_Y, 0), plane_no=(0, 1, 0))
     exit_material = mesh_obj.material_slots["TileMatl"].material.copy()
     exit_material.name = "ExitToGoronCityMatl"
@@ -140,9 +142,9 @@ def main() -> int:
     scene_obj = objects["Scene"]
     scene_obj.ootSceneHeader.musicSeq = "NA_BGM_NO_MUSIC"
     scene_obj.ootSceneHeader.exitList.clear()
-    goron_city = scene_obj.ootSceneHeader.exitList.add()
-    goron_city.exitIndex = "Custom"
-    goron_city.exitIndexCustom = "ENTR_GORON_CITY_OUTSIDE_SHOP"
+    kokiri_forest = scene_obj.ootSceneHeader.exitList.add()
+    kokiri_forest.exitIndex = "Custom"
+    kokiri_forest.exitIndexCustom = "ENTR_KOKIRI_FOREST_OUTSIDE_LINKS_HOUSE"
 
     scene.ootSceneExportObj = scene_obj
     settings = scene.ootSceneExportSettings
@@ -152,7 +154,7 @@ def main() -> int:
 
     scale = scene.ootBlenderScale
     export_hm64_scene(scene_obj, Matrix.Diagonal((scale, scale, scale)).to_4x4(), settings)
-    print(f"Exported Triforce Room to {settings.exportPath}/scenes/shared/golon_scene")
+    print(f"Exported Triforce Room to {settings.exportPath}/scenes/shared/besitu_scene")
     return 0
 
 

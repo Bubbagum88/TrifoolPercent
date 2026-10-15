@@ -1,7 +1,6 @@
 # Proof of concept: the Triforce Room
 
-The first TrifoolPercent milestone rebuilds Triforce%'s Triforce Room inside Ship of Harkinian. Walk into the
-Goron Shop and you get the room, the chest, the three Triforce pieces rising and joining, "You got the
+The first TrifoolPercent milestone rebuilds Triforce%'s Triforce Room inside Ship of Harkinian. Walk through the blue flame by Link's house in Kokiri Forest and you get the room, the chest, the three Triforce pieces rising and joining, "You got the
 Triforce!!!" and the goddesses' wish. It proves the four pipelines every later scene needs: scene, actor,
 object (model) and text.
 
@@ -15,16 +14,18 @@ TrifoolPercent is two pieces, as the [code breakdown](../references/triforceperc
 | `TrifoolPercent.o2r` | The room scene and the three actor models | Built by [`tools/build_o2r.sh`](../../tools/build_o2r.sh) from the Triforce% repo; goes in SoH's `mods` folder |
 
 ```
-triforce-percent/scene/TriforceRoom/TriforceRoom.blend --(headless Blender + HM Fast64)--> scenes/shared/golon_scene/*  --+
+triforce-percent/scene/TriforceRoom/TriforceRoom.blend --(headless Blender + HM Fast64)--> scenes/shared/besitu_scene/*  --+
 triforce-percent/actor/Triforce{Piece,Chest,Light}/zobj.zobj --(Torch)--> objects/object_trifool_triforce_*/*           --+--> TrifoolPercent.o2r
 triforce-percent TriforceRoom_scene.c cutscene + text/messages.c --> soh/Enhancements/TrifoolPercent (compiled into SoH)
 ```
 
-### Scene: the Goron Shop slot
+### Scene: an unused debug scene slot
 
-Triforce% put its Triforce Room in the Goron Shop's scene slot, so TrifoolPercent does too. SoH loads the Goron
-Shop from `scenes/shared/golon_scene/` in its archives, and a mod archive that has those files wins. No engine
-change is needed to swap the room in; the vanilla door from Goron City now leads to the Triforce Room.
+Triforce% put its Triforce Room in the Goron Shop's scene slot. TrifoolPercent uses one of the game's unused
+debug scenes instead, `besitu` (map select "116:Test Room"), so the Goron Shop stays vanilla. SoH loads it from
+`scenes/shared/besitu_scene/` in its archives, and a mod archive with those files wins. The module adds a loading
+zone into the room in front of Link's house in Kokiri Forest, marked by a blue flame; the Test Room entry in the
+debug map select also goes there.
 
 [`scenes/triforce_chamber/export_room.py`](../../scenes/triforce_chamber/export_room.py) runs HarbourMasters'
 Fast64 fork headless (Blender as the `bpy` Python module), which writes SoH's binary scene, room, collision,
@@ -33,9 +34,10 @@ it up first (see its docstring).
 
 Two more things are added for playing in the room rather than only watching the cutscene. Triforce%'s collision
 was just the floors and stairs, so the script rebuilds it from the visible room (walls included), fills the pool
-with a water box, and puts a loading zone back to Goron City at the end of the entry walkway. It also makes the
-room indoor: no sky, sun or moon, and the clock stops. [`make_title_card.py`](../../scenes/triforce_chamber/make_title_card.py)
-replaces the Goron Shop's title card texture with "Triforce Room".
+with a water box, and puts a loading zone out to Kokiri Forest at the end of the entry walkway, matching the test
+entrance. It also makes the room indoor: no sky, sun or moon, and the clock stops. The debug scene has no title
+card, so the module calls `TitleCard_InitPlaceName` on a "Triforce Room" texture built by
+[`make_title_card.py`](../../scenes/triforce_chamber/make_title_card.py).
 
 **The room's textures are placeholders.** The `.blend` points at five images Triforce% never published (they
 appear to come from the ROM or from beta material). [`make_placeholder_textures.py`](../../scenes/triforce_chamber/make_placeholder_textures.py)
@@ -69,16 +71,16 @@ whenever the room loads. Its text (`0x0ACE` and the goddesses' `0x0E00`–`0x0E0
 ## What was checked, and what was not
 
 Checked in a Linux container on 2026-10-15:
-- The room exports cleanly; the resources sit at the Goron Shop's path and the time warp actor lands at the
+- The room exports cleanly; the resources sit at the Besitu scene's path and the time warp actor lands at the
   right spot (0, -54, 248).
 - Torch converts all three objects with every texture, palette, vertex array, limb, skeleton and animation.
 - `build/TrifoolPercent.o2r` packs to 53 resources.
 - The module compiles with no warnings against Shipwright `6b4edce` (2026-10-14).
 
 Checked in the game on 2026-10-15, on a stock Ship of Harkinian 9.2.3 for Windows (the `.o2r` alone, without the
-module): the Goron Shop door leads into the Triforce Room. That first run had no walls, no water, no way out, the
-Goron Shop title card, a running clock and a sun in the room, which led to the fixes above. Items cannot be used in
-the room because the game restricts items by scene, and this is still the Goron Shop's scene.
+module). The room loaded in the Goron Shop slot (that was its first slot); walls, water, the exit and the title
+card all work. Items in the room follow whatever rules the room's scene has: the old Goron Shop slot blocked them;
+whether the Besitu slot does needs an in-game check.
 
 **Not checked: the module in the game** (actors, cutscene, text). That needs a Windows build of SoH with the
 module, which has not been made yet. The likeliest problems:
@@ -91,14 +93,14 @@ module, which has not been made yet. The likeliest problems:
 
 | Triforce% | Proof of concept | Why |
 |---|---|---|
-| Room entered from the Chamber of Sages via a rerouted exit, with an entrance cutscene | Entered through the normal Goron Shop door; the cutscene plays every visit | No Chamber of Sages yet |
-| Cutscene terminator `81` warps to the Ending | Fades back to Goron City at the same frame (1885) | No Ending yet; in vanilla, terminator 81 goes to Lon Lon Ranch |
+| Room entered from the Chamber of Sages via a rerouted exit, with an entrance cutscene | Entered through a blue flame by Link's house in Kokiri Forest; the cutscene plays every visit | No Chamber of Sages yet; keeps testing to one keypress |
+| Cutscene terminator `81` warps to the Ending | Fades back to Kokiri Forest at the same frame (1885) | No Ending yet; in vanilla, terminator 81 goes to Lon Lon Ranch |
 | Custom music (`triforce.aseq`, `PowerOfTheGoddesses.aseq`) | Room is silent; the goddesses get the Ocarina of Time theme | Custom sequences are not ported yet |
 | Beta Triforce icon in "You got the Triforce!!!" | No icon | The icon was a patched heart piece texture; needs a custom icon hook |
 
 ## Next steps
 
-1. Build it and walk into the Goron Shop: `tools/setup.sh`, `tools/build_o2r.sh`, `tools/build_soh.sh`.
+1. Build it and walk through the blue flame by Link's house in Kokiri Forest: `tools/setup.sh`, `tools/build_o2r.sh`, `tools/build_soh.sh`. On Windows, the `build-windows` CI workflow builds the whole package.
 2. Replace the placeholder room textures if the originals can be found.
 3. Port the two music sequences and the beta Triforce icon.
 4. Chamber of Sages and the Overture of Sages, which lead into this room (step 2 of the breakdown's order of work).

@@ -9,6 +9,7 @@
 #include "align_asset_macro.h"
 
 #define CVAR_TRIFOOL_TRIFORCE_ROOM CVAR_ENHANCEMENT("TrifoolPercent.TriforceRoom")
+#define CVAR_TRIFOOL_TEST_ENTRANCE CVAR_ENHANCEMENT("TrifoolPercent.TestEntrance")
 
 // Resources shipped in TrifoolPercent.o2r (built by actors/triforce_actor/make_torch_input.py).
 #define dgTrifoolTriforcePieceDL "__OTR__objects/object_trifool_triforce_piece/gTrifoolTriforcePieceDL"
@@ -22,6 +23,9 @@ static const ALIGN_ASSET(2) char gTrifoolTriforceChestOpenAnim[] = dgTrifoolTrif
 
 #define dgTrifoolTriforceLightSkel "__OTR__objects/object_trifool_triforce_light/gTrifoolTriforceLightSkel"
 static const ALIGN_ASSET(2) char gTrifoolTriforceLightSkel[] = dgTrifoolTriforceLightSkel;
+
+#define dgTrifoolTriforceRoomTitleCardTex "__OTR__textures/trifool_place_title_cards/gTrifoolTriforceRoomTitleCardTex"
+static const ALIGN_ASSET(2) char gTrifoolTriforceRoomTitleCardTex[] = dgTrifoolTriforceRoomTitleCardTex;
 
 #define dgTrifoolTriforceLightAnim "__OTR__objects/object_trifool_triforce_light/gTrifoolTriforceLightAnim"
 static const ALIGN_ASSET(2) char gTrifoolTriforceLightAnim[] = dgTrifoolTriforceLightAnim;

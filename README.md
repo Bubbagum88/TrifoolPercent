@@ -59,7 +59,7 @@ These are the existing tools we use to rebuild Triforce% natively inside Ship of
 | [HackerOoT](https://github.com/HackerN64/HackerOoT) | Decomp-based OoT modding base, a good reference for custom actor and scene patterns. |
 
 ## Status
-Proof of concept in progress: the Triforce% **Triforce Room**, in the Goron Shop's slot. See
+Proof of concept in progress: the Triforce% **Triforce Room**, in the unused Besitu debug-scene slot. See
 [docs/design/triforce-room-poc.md](docs/design/triforce-room-poc.md) for how it is built and what has been tested.
 
 ## How to Use
@@ -68,7 +68,7 @@ TrifoolPercent is a small Ship of Harkinian code module plus an `.o2r` asset pac
 1. `tools/setup.sh` fetches the pinned Triforce%, Shipwright and HarbourMasters Fast64 sources, and a Python venv with Blender's `bpy`.
 2. `tools/build_o2r.sh` builds `build/TrifoolPercent.o2r` (the Triforce Room scene and the Triforce actor models).
 3. `tools/build_soh.sh` copies [`soh/Enhancements/TrifoolPercent`](soh/Enhancements/TrifoolPercent) into Shipwright and builds the game.
-4. Put `TrifoolPercent.o2r` in SoH's `mods` folder, launch, and walk into the Goron Shop in Goron City. The feature can be switched off under Enhancements > TrifoolPercent.
+4. Put `TrifoolPercent.o2r` in SoH's `mods` folder, launch, and walk through the blue flame by Link's house in Kokiri Forest. The feature can be switched off under Enhancements > TrifoolPercent.
 
 ## Inspiration
 - Original Triforce% project
