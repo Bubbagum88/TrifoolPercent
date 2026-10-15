@@ -264,6 +264,7 @@ Assets NOT in upstream — originals required:
 - [ ] Magic bar visual tweaks for medallion-C usage
 - [ ] Staff Roll presentation (text + chained flyovers)
 - [ ] TwitchMessages sky-overlay rendering (optional)
+- [ ] Unused OoT Triforce scene-transition effect (TCRF; wire into entrance into the Triforce Room and the Sacred Realm hand-off)
 
 ---
 
