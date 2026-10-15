@@ -58,7 +58,7 @@ Goal: make Phase 1 repeatable before scaling it up.
 - [ ] A dev save or debug warp for each story beat, mirroring `Statics_TestShortcuts`
 - [ ] Build the Triforce% romhack ROM (`rom-setup/romhack`) as a side-by-side reference (§7)
 - [ ] CI that at least builds the fork
-- [ ] Check whether SoH can load compiled code from a mod package (needed for drag-and-drop, see Phase 7)
+- [x] Check whether SoH can load compiled code from a mod package → **no**; see [`docs/references/soh-code-mod-feasibility.md`](references/soh-code-mod-feasibility.md)
 - [ ] Turn `run/triforcepercent_data.run` into a tracked porting checklist in `docs/references/import_status.md`
 
 **Exit check:** a fresh clone can produce a playable Triforce Room build by following `docs/build.md`.
@@ -133,7 +133,7 @@ Key of Power:
 
 That conflicts with how the mod is built today. Assets can already ship as a plain `.o2r`, but new actor code has to be compiled into SoH, which is why the plan uses a Shipwright fork. Three ways to close that gap, best first:
 
-1. **SoH code mods.** libultraship has a newer C mod system (`manifest.json` plus events, see its scripting guide). If the SoH release we target can load compiled code from a mod package, the actors and quest logic ship inside the package and the fork goes away. Check this early, in Phase 2, because it changes how all the code is organised.
+1. **SoH code mods.** Checked and **ruled out** against stock SoH through 9.2.3 ("Ackbar Delta"); see [`docs/references/soh-code-mod-feasibility.md`](references/soh-code-mod-feasibility.md). libultraship treats `.o2r` as asset-only — no `dlopen`, no manifest, no upstream appetite. Shipping compiled code "inside the mod" is a real fork project (ABI, loader, host-API header), not a configuration we can enable.
 2. **Upstream the module.** Get the `TrifoolPercent` module (or the generic hooks it needs) merged into Shipwright behind an off-by-default toggle. The download is then just the `.o2r`.
 3. **Fallback.** Ship a prebuilt SoH build together with the `.o2r` in one zip. Still one download, but not drag-and-drop into an existing install.
 
@@ -168,7 +168,7 @@ Checklist:
 | Missing models (BotW Link/Zelda, Running Man boss) | Phases 5–6 | Commission or build new ones, or swap in stand-ins. Not blocking until late |
 | Cel shading has no direct SoH equivalent | Phase 6 | Treat as stretch. Ship without it if needed |
 | Custom flags clashing with randomizer | Phases 3–5 | Use a custom save section in `SaveManager`, not unused vanilla bits |
-| Drag-and-drop needs SoH to load our code without a fork | Phases 2, 7 | Check SoH code mods in Phase 2; otherwise upstream the module or ship a bundled build |
+| Drag-and-drop needs SoH to load our code without a fork | Phase 7 | **Ruled out** against stock SoH; the realistic shipping option is a prebuilt fork binary beside the `.o2r`. See [`docs/references/soh-code-mod-feasibility.md`](references/soh-code-mod-feasibility.md) |
 | Our textures clash with, or get overridden by, HD texture packs | Phases 1–7 | Keep both texture sets, test with OoT Reloaded installed, and document the load order |
 
 ## Stretch goals
