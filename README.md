@@ -63,6 +63,9 @@ Proof of concept in progress: the Triforce% **Triforce Room**, in the unused Bes
 [docs/design/triforce-room-poc.md](docs/design/triforce-room-poc.md) for how it is built and what has been tested,
 and the [roadmap](docs/roadmap.md) for every phase from here to release.
 
+## Porting Checklist
+Every mechanic, scene, actor, cutscene and asset from the original Triforce% that needs to land in TrifoolPercent, categorized with checkboxes: [docs/porting-checklist.md](docs/porting-checklist.md).
+
 ## How to Use
 TrifoolPercent is a small Ship of Harkinian code module plus an `.o2r` asset pack. On Linux or WSL:
 
