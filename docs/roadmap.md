@@ -120,8 +120,19 @@ Key of Power:
 - [ ] Playtest the full quest, fix soft-locks and missing flags
 - [ ] Confirm vanilla saves and other SoH features still work with the CVar off
 - [ ] Credits and licensing pass on every asset (`docs/references/creators.md`)
-- [ ] Release: fork build plus `.o2r`, with install steps
+- [ ] Release as a drag-and-drop package (see below), with install steps
+- [ ] List it on modding sites such as GameBanana, with downloads for the base mod and the optional HD textures
 - [ ] Community testing round
+
+**Goal: drag-and-drop install.** The finished mod should be one package a player drops into SoH's `mods` folder (or installs through a common mod loader), with no custom SoH build.
+
+That conflicts with how the mod is built today. Assets can already ship as a plain `.o2r`, but new actor code has to be compiled into SoH, which is why the plan uses a Shipwright fork. Three ways to close that gap, best first:
+
+1. **SoH code mods.** libultraship has a newer C mod system (`manifest.json` plus events, see its scripting guide). If the SoH release we target can load compiled code from a mod package, the actors and quest logic ship inside the package and the fork goes away. Check this early, in Phase 2, because it changes how all the code is organised.
+2. **Upstream the module.** Get the `TrifoolPercent` module (or the generic hooks it needs) merged into Shipwright behind an off-by-default toggle. The download is then just the `.o2r`.
+3. **Fallback.** Ship a prebuilt SoH build together with the `.o2r` in one zip. Still one download, but not drag-and-drop into an existing install.
+
+Either way, keep all code inside the module and hooks from Phase 1, so it can move to option 1 or 2 without a rewrite.
 
 ## Textures: original and HD
 
@@ -152,6 +163,7 @@ Checklist:
 | Missing models (BotW Link/Zelda, Running Man boss) | Phases 5–6 | Commission or build new ones, or swap in stand-ins. Not blocking until late |
 | Cel shading has no direct SoH equivalent | Phase 6 | Treat as stretch. Ship without it if needed |
 | Custom flags clashing with randomizer | Phases 3–5 | Use a custom save section in `SaveManager`, not unused vanilla bits |
+| Drag-and-drop needs SoH to load our code without a fork | Phases 2, 7 | Check SoH code mods in Phase 2; otherwise upstream the module or ship a bundled build |
 | Our textures clash with, or get overridden by, HD texture packs | Phases 1–7 | Keep both texture sets, test with OoT Reloaded installed, and document the load order |
 
 ## Stretch goals
