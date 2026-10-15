@@ -1,4 +1,4 @@
-<h1 align="center" ❄️🧊 TrifoolPercent 🧊❄️ </h1>
+<h1></h1> align="center" ❄️🧊 TrifoolPercent 🧊❄️ </h1>
 
 A **Ship of Harkinian** mod project inspired by the legendary Triforce% ACE/TAS run — but with a playful twist.  
 No ACE. No memory corruption. Just pure modding magic.
