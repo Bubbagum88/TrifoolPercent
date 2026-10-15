@@ -20,7 +20,7 @@ The research settled the shape of the project (§1, §6):
 | **Assets**: an `.o2r` archive in SoH's `mods/` folder | Scenes, rooms, objects, textures, Link animations, music | SoH loads these as resource overrides |
 | **This repo** | Source assets (`.blend`), actor and quest source, docs, build scripts | One place to track the port. Code is synced into the fork |
 
-**Scene slots.** Start the way Triforce% did: reuse rarely visited vanilla scene slots (Goron Shop → Triforce Room, Granny's Potion Shop → Unicorn Fountain, Dampé's Hut → Ending) and rewire entrances. Adding real scene-table entries is a later, optional cleanup (Phase 6).
+**Scene slots.** Reuse rarely visited vanilla or debug scene slots (currently: Besitu → Triforce Room; later: Granny's Potion Shop → Unicorn Fountain, Dampé's Hut → Ending) and rewire entrances. Adding real scene-table entries is a later, optional cleanup (Phase 6).
 
 **Reuse before porting.** SoH already has Bunny Hood speed/jump, Ocarina time travel without the Master Sword, custom music, and the save editor. The Arwing is vanilla `En_Clear_Tag` and only needs a spawn trigger.
 
@@ -38,15 +38,16 @@ Each phase proves one new pipeline end to end, so later phases are mostly repeti
 
 Goal: prove that a custom scene, custom actors, a custom object and custom text all work in SoH. This is the riskiest part of the plan, and everything after it depends on it.
 
-- [ ] Fork Shipwright and get a clean local build with an extracted `oot.o2r`
-- [ ] Add the `TrifoolPercent` module and CVar, with one `RegisterShipInitFunc` entry point
-- [ ] Re-export `scene/TriforceRoom` with Fast64 and pack it into the Goron Shop slot in an `.o2r`
-- [ ] Port `TriforcePiece`, `TriforceChest` and `TriforceLight` and register them with `ActorDB`
-- [ ] Import the Triforce piece, chest and light objects
-- [ ] Show "You got the Triforce!!!" (`0x0ACE`) through `CustomMessageManager`
-- [ ] Document the build steps in `docs/build.md` so anyone can reproduce them
+- [x] Fork Shipwright and get a clean local build with an extracted `oot.o2r`
+- [x] Add the `TrifoolPercent` module and CVar, with one `RegisterShipInitFunc` entry point
+- [x] Re-export `scene/TriforceRoom` with Fast64 and pack it into the Besitu debug-scene slot in an `.o2r` (moved off the Goron Shop so it stays vanilla)
+- [x] Port `TriforcePiece`, `TriforceChest` and `TriforceLight` and register them with `ActorDB`
+- [x] Import the Triforce piece, chest and light objects
+- [x] Show "You got the Triforce!!!" (`0x0ACE`) through `CustomMessageManager`
+- [x] Add a test loading zone (blue flame by Link's house) and a Windows CI build so anyone can grab the artifact
+- [ ] Document the build steps in `docs/build.md` so anyone can reproduce them locally
 
-**Exit check:** warp into the Goron Shop entrance in SoH, watch the three pieces rise, combine and sink into Link, and get the Triforce text box.
+**Exit check:** walk through the blue flame by Link's house in SoH, watch the three pieces rise, combine and sink into Link, and get the Triforce text box. In-game testing of the actors and cutscene is pending the Windows CI build.
 
 ### Phase 2: Toolchain and workflow
 
