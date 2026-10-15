@@ -1,6 +1,6 @@
 <h1 align="center"> ❄️🧊 Tri-FOOL-Percent 🧊❄️ </h1>
 
-A **Ship of Harkinian** mod project inspired by the legendary Triforce% ACE/TAS run — but with a playful twist.  
+A **Ship of Harkinian** mod project Heavily inspired by the legendary Triforce% ACE/TAS run — but with a playful twist.  
 No ACE. No memory corruption. Just pure modding magic.
 
 ## Goals
