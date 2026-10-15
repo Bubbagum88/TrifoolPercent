@@ -2,7 +2,9 @@
 # one artifact. Download the "TrifoolPercent-windows" artifact from the run, unzip it into an empty folder, and run
 # soh.exe; on first launch it asks for your own OoT ROM to make oot.o2r. TrifoolPercent.o2r is already in mods/.
 #
-# The Shipwright commit matches tools/setup.sh. The steps follow Shipwright's own generate-builds.yml.
+# Shipwright and its submodules are fetched by tools/setup.sh (shallow by SHA). actions/checkout's own submodules:
+# true doesn't work: the pinned Shipwright's libultraship branch tip has moved on since and the fetch fails on
+# "not our ref".
 name: build-windows
 on:
   push:
@@ -26,14 +28,13 @@ jobs:
     steps:
       - name: Checkout TrifoolPercent
         uses: actions/checkout@v4
-      - name: Checkout Shipwright
-        uses: actions/checkout@v4
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
         with:
-          repository: HarbourMasters/Shipwright
-          ref: ${{ env.SHIPWRIGHT_COMMIT }}
-          path: third_party/Shipwright
-          submodules: true
-      - name: Install dependencies
+          python-version: "3.13"
+      - name: Fetch Triforce%, Fast64 and Shipwright
+        run: tools/setup.sh
+      - name: Install SoH build deps
         run: |
           sudo apt-get update
           sudo apt-get install -y $(cat third_party/Shipwright/linux-build-deps/apt.txt)
@@ -42,14 +43,6 @@ jobs:
         run: |
           cmake --no-warn-unused-cli -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE:STRING=Release -DSOH_TOOLS_ONLY=ON
           cmake --build build-cmake --config Release --target GenerateSohOtr -j4
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-      - name: Fetch Triforce% and Fast64
-        run: |
-          python -m venv .venv-blender
-          tools/setup.sh
       - name: Build TrifoolPercent.o2r
         run: tools/build_o2r.sh
       - name: Upload o2r files
@@ -66,18 +59,17 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Install dependencies
-        run: |
-          choco install ninja -y
+        run: choco install ninja -y
       - name: Checkout TrifoolPercent
         uses: actions/checkout@v4
-      - name: Checkout Shipwright
-        uses: actions/checkout@v4
-        with:
-          repository: HarbourMasters/Shipwright
-          ref: ${{ env.SHIPWRIGHT_COMMIT }}
-          path: Shipwright
-          submodules: true
+      - name: Clone Shipwright
+        shell: pwsh
+        run: |
+          git clone --filter=blob:none https://github.com/HarbourMasters/Shipwright Shipwright
+          git -C Shipwright checkout ${{ env.SHIPWRIGHT_COMMIT }}
+          git -C Shipwright submodule update --init --depth 1 libultraship torch
       - name: Add the TrifoolPercent module
+        shell: pwsh
         run: Copy-Item -Recurse soh/Enhancements/TrifoolPercent Shipwright/soh/soh/Enhancements/TrifoolPercent
       - name: Restore cached vcpkg folder
         uses: actions/cache@v4
@@ -96,6 +88,7 @@ jobs:
           path: o2r
       - name: Build SoH
         working-directory: Shipwright
+        shell: pwsh
         env:
           VCPKG_ROOT: ${{ github.workspace }}/Shipwright/vcpkg
         run: |
@@ -106,6 +99,7 @@ jobs:
           cd build-windows
           cpack
       - name: Assemble the package
+        shell: pwsh
         run: |
           $zip = Get-ChildItem Shipwright/_packages/*.zip | Select-Object -First 1
           Expand-Archive -Path $zip.FullName -DestinationPath TrifoolPercent-windows
