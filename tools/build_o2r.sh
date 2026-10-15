@@ -34,7 +34,10 @@ python3 "$ROOT/scenes/triforce_chamber/make_title_card.py" "$STAGE/title"
 python3 "$ROOT/actors/triforce_actor/make_torch_input.py" "$TP/triforce-percent" "$STAGE/torch-in"
 (cd "$STAGE" && "$TORCH" o2r "$STAGE/torch-in/triforce_objects.z64" -s "$STAGE/torch-in" -d "$STAGE/torch-out")
 
-# 3. Unicorn Fountain scene, in the unused Test01 debug slot. Its title card ships as a PNG in the Triforce% repo.
+# 3. Unicorn Fountain scene, in the unused Test01 debug slot. Its title card ships as a PNG in the Triforce% repo;
+#    many of the room textures were ripped from the ROM at build time and are not shipped, so placeholders fill in.
+python3 "$ROOT/scenes/unicorn_fountain/make_placeholder_textures.py" \
+    "$TP/triforce-percent/scene/UnicornFountain/textures"
 "$PY" "$ROOT/scenes/unicorn_fountain/export_fountain.py" \
     --blend "$TP/triforce-percent/scene/UnicornFountain/UnicornFountain.blend" \
     --fast64 "$TP/addons" \
