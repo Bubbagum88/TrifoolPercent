@@ -27,6 +27,7 @@ if [ ! -x "$TORCH" ]; then
 fi
 
 # 1. Triforce Room scene and its title card. Published textures from assets/, missing ones from placeholders.
+mkdir -p "$TP/triforce-percent/scene/TriforceRoom/textures"
 cp -f "$ROOT/assets/scene/TriforceRoom/textures/"*.png "$TP/triforce-percent/scene/TriforceRoom/textures/"
 python3 "$ROOT/scenes/triforce_chamber/make_placeholder_textures.py" \
     "$TP/triforce-percent/scene/TriforceRoom/textures"
@@ -43,6 +44,7 @@ python3 "$ROOT/actors/triforce_actor/make_torch_input.py" "$ROOT/assets" "$STAGE
 
 # 3. Unicorn Fountain scene, in the unused Test01 debug slot. Same shape as the Triforce Room: mirror ships
 #    the four published textures, the placeholder script fills the ones Triforce% never published.
+mkdir -p "$TP/triforce-percent/scene/UnicornFountain/textures"
 cp -f "$ROOT/assets/scene/UnicornFountain/textures/"*.png "$TP/triforce-percent/scene/UnicornFountain/textures/"
 python3 "$ROOT/scenes/unicorn_fountain/make_placeholder_textures.py" \
     "$TP/triforce-percent/scene/UnicornFountain/textures"
