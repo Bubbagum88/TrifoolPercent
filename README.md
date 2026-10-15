@@ -16,7 +16,7 @@ No ACE. No memory corruption. Just pure modding magic.
 - **cutscenes/** — cutscene scripts
 - **scripts/** — quest logic and triggers
 - **tools/** — development tools (Fast64, Blender, etc.)
-- **docs/** — documentation and roadmap
+- **docs/** — documentation and [roadmap](docs/roadmap.md)
 - **build/** — final mod files (.o2r)
 
 ## Tools
@@ -58,7 +58,7 @@ These are the existing tools we use to rebuild Triforce% natively inside Ship of
 | [HackerOoT](https://github.com/HackerN64/HackerOoT) | Decomp-based OoT modding base, a good reference for custom actor and scene patterns. |
 
 ## Status
-Early development — foundation laid.
+Early development — foundation laid. The Triforce Room proof of concept is next. See the [roadmap](docs/roadmap.md) for every phase from here to release.
 
 ## How to Use
 1. Clone this repo
