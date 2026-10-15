@@ -1,4 +1,4 @@
-# TrifoolPercent
+<h1 align="center"> ❄️🧊 Tri-FOOL-Percent 🧊❄️ </h1>
 
 A **Ship of Harkinian** mod project inspired by the legendary Triforce% ACE/TAS run — but with a playful twist.  
 No ACE. No memory corruption. Just pure modding magic.
@@ -16,7 +16,7 @@ No ACE. No memory corruption. Just pure modding magic.
 - **cutscenes/** — cutscene scripts
 - **scripts/** — quest logic and triggers
 - **tools/** — development tools (Fast64, Blender, etc.)
-- **docs/** — documentation and roadmap
+- **docs/** — documentation and [roadmap](docs/roadmap.md)
 - **soh/** — the Ship of Harkinian code module (copied into a Shipwright checkout)
 - **build/** — final mod files (.o2r)
 
@@ -60,7 +60,8 @@ These are the existing tools we use to rebuild Triforce% natively inside Ship of
 
 ## Status
 Proof of concept in progress: the Triforce% **Triforce Room**, in the unused Besitu debug-scene slot. See
-[docs/design/triforce-room-poc.md](docs/design/triforce-room-poc.md) for how it is built and what has been tested.
+[docs/design/triforce-room-poc.md](docs/design/triforce-room-poc.md) for how it is built and what has been tested,
+and the [roadmap](docs/roadmap.md) for every phase from here to release.
 
 ## How to Use
 TrifoolPercent is a small Ship of Harkinian code module plus an `.o2r` asset pack. On Linux or WSL:
