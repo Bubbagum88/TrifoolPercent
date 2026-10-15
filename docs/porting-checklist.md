@@ -6,6 +6,21 @@ Sourced from [docs/references/triforcepercent/code-breakdown.md](references/trif
 
 ---
 
+## 0. Before you start a scene — build the reference romhack
+
+The upstream repo builds **two** things from the same source: the live ACE run and a plain romhack ROM (`rom-setup/romhack`). The romhack ROM is just the ACE run with every `PATCH/ACTOR/OBJECT/SCENE/STATICDATA` entry from `run/triforcepercent_data.run` pre-applied, so it plays in any N64 emulator. Emulators cannot run the live ACE version — the romhack build is the only way to see the quest end-to-end outside of TASBot.
+
+Set this up once, locally, before porting the first scene, and keep an emulator open next to the SoH build throughout the port:
+
+- Build target: `rom-setup/romhack` in [triforce-percent/triforce-percent](https://github.com/triforce-percent/triforce-percent) (needs Linux/WSL, the glankk N64 toolchain, and your own OoT 1.0U compressed ROM — no Nintendo data is distributed).
+- Use it as the **authoritative visual/behavioural reference** for every scene, cutscene, actor, dialogue flow, and audio cue you port. If a scene-header or actor-list diff is ambiguous in the source, dumping the built ROM resolves it.
+- `statics/statics.c` → `Statics_TestShortcuts` has commented-out warps to each story beat; mirror these with SoH's debug warp to jump directly to whatever you're currently porting.
+- Do **not** ship or redistribute the built ROM — it contains vanilla OoT data. Local reference use only.
+
+See code-breakdown §7 for full build notes.
+
+---
+
 ## 1. Scenes
 
 New scenes (Fast64 `.blend` sources upstream, re-export to `.o2r`):
@@ -261,7 +276,7 @@ Assets NOT in upstream — originals required:
 - [ ] Entrance-table init at `OnLoadGame` / `OnSceneInit`
 - [ ] New-file preset / `Statics_SetGameState` equivalent
 - [ ] `SaveManager` custom section for TrifoolPercent flags
-- [ ] Build the upstream `rom-setup/romhack` locally as a reference emulator target (not shipped)
+- [ ] Build the upstream `rom-setup/romhack` locally as a reference emulator target (not shipped) — see §0
 
 ---
 
