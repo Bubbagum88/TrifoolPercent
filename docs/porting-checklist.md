@@ -100,7 +100,7 @@ Patched vanilla actors (upstream ships as MIPS diffs — reimplement as `VB_*` h
 Quest state and flow:
 
 - [x] `Statics_SetGameState` — set event flags (Epona, DMT not on fire, carpenters, masks sold), grant magic + double magic, give adult B = Biggoron Sword, `naviTimer = 1`
-- [ ] Beta inventory editor on pause (`L` → `pauseCtx.debugState = 1`)
+- [x] Beta inventory editor on pause (`L` → `pauseCtx.debugState = 1`)
 - [x] `Statics_LostWoods` — N→W→S→W path tracking, set `BETAKOKIRI_SPAWNED`
 - [x] `Statics_PatchShop` — Bazaar shelf-3 swap to Butterfly after text `0x009C`
 - [x] `Statics_MoveOddPotionToChild` — Butterfly reward → child trade slot
@@ -149,7 +149,7 @@ Rendering / animation:
 - [x] `hairphys.c` — hair / tunic physics for BotW actors
 - [ ] F3DZEX cel-shading microcode (BotW Link/Zelda) — needs libultraship / shader-side approach, no RSP microcode in SoH
 - [ ] Chamber of Sages scene draw config: animated water + light rays fading near player
-- [ ] Spawn trigger for Arwing (vanilla `En_Clear_Tag`, L+D-Down) **(already in SoH)**
+- [x] Spawn trigger for Arwing (vanilla `En_Clear_Tag`, L+D-Down) **(already in SoH)**
 
 Audio:
 
