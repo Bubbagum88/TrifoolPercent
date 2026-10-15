@@ -1,0 +1,9 @@
+# Fetched by tools/setup.sh
+/third_party
+/.venv-blender
+
+# Build outputs (tools/build_o2r.sh)
+/build/*
+!/build/.gitkeep
+
+__pycache__/

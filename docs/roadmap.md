@@ -4,10 +4,11 @@
 - Repository + folder structure created
 
 ## Phase 1: Core Assets (Current)
-- Triforce model + textures
-- Basic Triforce actor
-- Test chamber scene
-- Simple spawn testing
+Proof of concept: the Triforce Room ([design notes](design/triforce-room-poc.md)).
+- Triforce model + textures (piece, chest, light converted with Torch; needs in-game test)
+- Basic Triforce actor (TriforcePiece/Chest/Light ported; needs in-game test)
+- Test chamber scene (Triforce Room in the Goron Shop slot; placeholder textures)
+- Simple spawn testing (spawned on room load; needs in-game test)
 
 ## Phase 2: Beta Content
 - Unicorn Fountain

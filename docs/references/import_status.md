@@ -7,9 +7,9 @@ Track the progress of importing assets into TrifoolPercent.
 - README + roadmap (complete)
 
 ## In Progress
-- Triforce model
-- Basic Triforce actor
-- Test chamber scene
+- Triforce Room scene: exported to SoH resources, room textures are placeholders
+- Triforce piece, chest and light: actors ported, models converted, not yet run in game
+- Triforce Room cutscene and text (`0x0ACE`, `0x0E00`–`0x0E07`): ported, not yet run in game
 
 ## Pending Import
 - Unicorn Fountain scene
