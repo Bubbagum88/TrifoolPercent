@@ -44,7 +44,9 @@ jobs:
           cmake --no-warn-unused-cli -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE:STRING=Release -DSOH_TOOLS_ONLY=ON
           cmake --build build-cmake --config Release --target GenerateSohOtr -j4
       - name: Build TrifoolPercent.o2r
-        run: tools/build_o2r.sh
+        run: |
+          pip install pillow
+          tools/build_o2r.sh
       - name: Upload o2r files
         uses: actions/upload-artifact@v4
         with:
