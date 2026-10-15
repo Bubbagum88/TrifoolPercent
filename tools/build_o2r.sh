@@ -34,6 +34,16 @@ python3 "$ROOT/scenes/triforce_chamber/make_title_card.py" "$STAGE/title"
 python3 "$ROOT/actors/triforce_actor/make_torch_input.py" "$TP/triforce-percent" "$STAGE/torch-in"
 (cd "$STAGE" && "$TORCH" o2r "$STAGE/torch-in/triforce_objects.z64" -s "$STAGE/torch-in" -d "$STAGE/torch-out")
 
-# 3. One archive for SoH's mods folder.
+# 3. Unicorn Fountain scene, in the unused Test01 debug slot. Its title card ships as a PNG in the Triforce% repo.
+"$PY" "$ROOT/scenes/unicorn_fountain/export_fountain.py" \
+    --blend "$TP/triforce-percent/scene/UnicornFountain/UnicornFountain.blend" \
+    --fast64 "$TP/addons" \
+    --soh-include "$TP/Shipwright/soh" \
+    --out "$STAGE/fountain-scene"
+python3 "$ROOT/scenes/unicorn_fountain/make_title_card.py" "$STAGE/fountain-title" \
+    "$TP/triforce-percent/scene/UnicornFountain/title.ia8.png"
+
+# 4. One archive for SoH's mods folder.
 python3 "$ROOT/tools/pack_o2r.py" "$ROOT/build/TrifoolPercent.o2r" \
-    "$STAGE/scene" "$STAGE/title" "$STAGE/torch-out/TrifoolPercent-objects.o2r"
+    "$STAGE/scene" "$STAGE/title" "$STAGE/torch-out/TrifoolPercent-objects.o2r" \
+    "$STAGE/fountain-scene" "$STAGE/fountain-title"

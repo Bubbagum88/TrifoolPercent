@@ -20,7 +20,7 @@ The research settled the shape of the project (§1, §6):
 | **Assets**: an `.o2r` archive in SoH's `mods/` folder | Scenes, rooms, objects, textures, Link animations, music | SoH loads these as resource overrides |
 | **This repo** | Source assets (`.blend`), actor and quest source, docs, build scripts | One place to track the port. Code is synced into the fork |
 
-**Scene slots.** Reuse rarely visited vanilla or debug scene slots (currently: Besitu → Triforce Room; later: Granny's Potion Shop → Unicorn Fountain, Dampé's Hut → Ending) and rewire entrances. Adding real scene-table entries is a later, optional cleanup (Phase 6).
+**Scene slots.** Reuse rarely visited vanilla or debug scene slots (currently: Besitu → Triforce Room, Test01 → Unicorn Fountain; later: Dampé's Hut → Ending) and rewire entrances. Adding real scene-table entries is a later, optional cleanup (Phase 6).
 
 **Reuse before porting.** SoH already has Bunny Hood speed/jump, Ocarina time travel without the Master Sword, custom music, and the save editor. The Arwing is vanilla `En_Clear_Tag` and only needs a spawn trigger.
 
@@ -80,8 +80,9 @@ Goal: prove custom songs, warps and in-engine cutscenes.
 ### Phase 4: Key of Wisdom (Zora's Domain and the Unicorn Fountain)
 
 - [ ] Zora's Domain ice melting (`z_bg_spot07_taki`)
-- [ ] Reroute the Domain → Lake Hylia exit to the Unicorn Fountain (Granny's Potion Shop slot)
-- [ ] Unicorn Fountain scene, Pedestal of the Ocarina, and the Beta Great Fairy with her cutscene
+- [ ] Reroute the Domain → Lake Hylia exit to the Unicorn Fountain (Test01 slot)
+- [x] Unicorn Fountain scene exported into the Test01 slot (scene only; actor/cutscene pending)
+- [ ] Pedestal of the Ocarina and the Beta Great Fairy with her cutscene (ported actors)
 - [ ] She teaches the Overture of Sages (replacing the Phase 3 debug unlock)
 
 **Exit check:** from a fresh file with the right flags, learn the Overture from the Beta Great Fairy.
