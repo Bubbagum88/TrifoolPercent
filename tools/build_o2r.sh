@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
-# Build build/TrifoolPercent.o2r: the Triforce Room scene plus the Triforce piece, chest and light models.
-# Run tools/setup.sh first.
+# Build build/TrifoolPercent.o2r: the Triforce Room and Unicorn Fountain scenes, plus the Triforce piece,
+# chest and light models. Run tools/setup.sh first.
+#
+# Published assets (the shipped textures and actor zobjs) live in this repo at $ROOT/assets/, mirrored from
+# Triforce%'s repo so we don't depend on it staying up at build time. The scene .blend files are too big to
+# mirror sensibly and are still iterable upstream, so they come from the Triforce% clone under
+# $TP/triforce-percent/. Blender's Fast64 reads a .blend's textures from the folder next to it, so this
+# script copies our mirror into that folder before each scene export.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -20,7 +26,9 @@ if [ ! -x "$TORCH" ]; then
     cmake --build "$ROOT/build/torch" --target torch -j"$(nproc)"
 fi
 
-# 1. Triforce Room scene and its title card. Triforce% did not publish the room's textures, so stand-ins fill any that are missing.
+# 1. Triforce Room scene and its title card. Published textures from assets/, missing ones from placeholders.
+mkdir -p "$TP/triforce-percent/scene/TriforceRoom/textures"
+cp -f "$ROOT/assets/scene/TriforceRoom/textures/"*.png "$TP/triforce-percent/scene/TriforceRoom/textures/"
 python3 "$ROOT/scenes/triforce_chamber/make_placeholder_textures.py" \
     "$TP/triforce-percent/scene/TriforceRoom/textures"
 "$PY" "$ROOT/scenes/triforce_chamber/export_room.py" \
@@ -30,12 +38,14 @@ python3 "$ROOT/scenes/triforce_chamber/make_placeholder_textures.py" \
     --out "$STAGE/scene"
 python3 "$ROOT/scenes/triforce_chamber/make_title_card.py" "$STAGE/title"
 
-# 2. Triforce actor objects, converted from Triforce%'s compiled zobj files.
-python3 "$ROOT/actors/triforce_actor/make_torch_input.py" "$TP/triforce-percent" "$STAGE/torch-in"
+# 2. Triforce actor objects, converted from Triforce%'s compiled zobj files mirrored at assets/actor/.
+python3 "$ROOT/actors/triforce_actor/make_torch_input.py" "$ROOT/assets" "$STAGE/torch-in"
 (cd "$STAGE" && "$TORCH" o2r "$STAGE/torch-in/triforce_objects.z64" -s "$STAGE/torch-in" -d "$STAGE/torch-out")
 
-# 3. Unicorn Fountain scene, in the unused Test01 debug slot. Its title card ships as a PNG in the Triforce% repo;
-#    many of the room textures were ripped from the ROM at build time and are not shipped, so placeholders fill in.
+# 3. Unicorn Fountain scene, in the unused Test01 debug slot. Same shape as the Triforce Room: mirror ships
+#    the four published textures, the placeholder script fills the ones Triforce% never published.
+mkdir -p "$TP/triforce-percent/scene/UnicornFountain/textures"
+cp -f "$ROOT/assets/scene/UnicornFountain/textures/"*.png "$TP/triforce-percent/scene/UnicornFountain/textures/"
 python3 "$ROOT/scenes/unicorn_fountain/make_placeholder_textures.py" \
     "$TP/triforce-percent/scene/UnicornFountain/textures"
 "$PY" "$ROOT/scenes/unicorn_fountain/export_fountain.py" \
@@ -44,7 +54,7 @@ python3 "$ROOT/scenes/unicorn_fountain/make_placeholder_textures.py" \
     --soh-include "$TP/Shipwright/soh" \
     --out "$STAGE/fountain-scene"
 python3 "$ROOT/scenes/unicorn_fountain/make_title_card.py" "$STAGE/fountain-title" \
-    "$TP/triforce-percent/scene/UnicornFountain/title.ia8.png"
+    "$ROOT/assets/scene/UnicornFountain/title.ia8.png"
 
 # 4. One archive for SoH's mods folder.
 python3 "$ROOT/tools/pack_o2r.py" "$ROOT/build/TrifoolPercent.o2r" \
