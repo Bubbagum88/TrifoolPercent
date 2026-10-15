@@ -1,0 +1,525 @@
+https://www.youtube.com/watch?v=SN-RW4Yd0as
+0:00
+[Music]
+0:05
+thank you
+0:08
+hello Kung Fu fruit cup here joining you
+0:11
+all this evening tonight we have on
+0:12
+duengo AC and Soren who've been showing
+0:14
+off Triforce percent showcase was
+0:16
+amazing and so it's so cool to learn
+0:18
+more about it this is the Triforce room
+0:20
+scene this is how it looks to make
+0:22
+custom scenes in blender for Ocarina of
+0:25
+Time there is a plugin called fast64 and
+0:27
+a plugin called zcam edit there are
+0:30
+probably like 10 people who have made
+0:33
+major contributions and many people have
+0:35
+made minor contributions to fast64 and
+0:38
+zcam was written by me and I actually
+0:41
+wrote it because the existing tools for
+0:44
+creating cutscenes in Ocarina of Time
+0:46
+were pretty difficult to work with so uh
+0:50
+this is you know I made this as a as a
+0:52
+replacement so for example this is the
+0:54
+cutscene when link hits the Triforce you
+0:57
+will see
+0:58
+um let me restart this on the left is
+1:01
+the scene and on the right is the view
+1:03
+from the camera which is flying around
+1:05
+and let me select the camera if I can
+1:07
+find it here
+1:08
+here no no that's link where did it go
+1:13
+here it is
+1:15
+so this is the camera and you'll see the
+1:16
+camera flying around and the left these
+1:19
+black things which turn orange when I
+1:22
+select them these are
+1:24
+representing the camera motion so for
+1:27
+example so for example this one is
+1:28
+representing how the camera swings
+1:31
+around
+1:32
+from the starting on the left side and
+1:34
+swings around and climbs up like this so
+1:37
+the process of creating the cutscene is
+1:38
+like editing these and moving them
+1:40
+around and like the previewing it and
+1:43
+looking on the right and seeing how it
+1:45
+looks and you know playing with it until
+1:47
+it looks good
+1:48
+um so you know this is the Triforce
+1:50
+scene in blender
+1:54
+and you can't hear it this is just on my
+1:56
+local computer but I have the music so I
+1:58
+you know uh you know it's playing the
+2:00
+music to me and I edited the scene to to
+2:03
+adjust to you know match the timing of
+2:04
+the music
+2:06
+um and I have to just guess what it
+2:07
+looks like when link is like you know
+2:09
+this is link this Arrow this is link he
+2:12
+walks in climbs up the stairs
+2:15
+um you know I have to sort of guess what
+2:16
+it will look like when he's in front of
+2:18
+the uh you know in front of the Triforce
+2:20
+chest and everything and you can
+2:21
+actually see if I if I zoom in here
+2:24
+um there's like a bunch of stuff here at
+2:27
+the origin that says there's the
+2:28
+Triforce chest there's
+2:30
+um the the Triforce pieces themselves so
+2:32
+there's three uh separate instances of
+2:34
+the same actor for the three Triforce
+2:36
+pieces which have some programmatic
+2:37
+animation that we'll go through and and
+2:39
+you know rotate around and everything
+2:42
+um that was actually I could have done
+2:43
+the animations as like properly animated
+2:46
+but that was back at a time when we
+2:47
+didn't really know how we were going to
+2:49
+do everything
+2:50
+um in the project and we thought we
+2:51
+might have only a few you know a few
+2:53
+dozen in kilobytes of code that we can
+2:55
+inject and so everything had to be
+2:57
+really small so the Triforce it's it's
+2:59
+programs that run the animation it
+3:02
+doesn't have the animations pre-baked
+3:04
+it's like generating them
+3:06
+um and so it's only like a few hundred
+3:08
+bytes of code a few hundred bytes for
+3:10
+the Triforce Behavior because it's
+3:12
+because it was created that way but
+3:13
+anyway this this goes through
+3:16
+um you know he gets the Triforce and
+3:17
+then this is the scene for
+3:19
+um you know he walks down he's hearing
+3:20
+the goddesses and when we want to put in
+3:23
+text boxes and stuff I select the cut
+3:25
+scene then I go in here this is like
+3:28
+editing the cutscene I have text box
+3:29
+list and then I have all of these
+3:32
+different you know text box messages you
+3:34
+know message ID message ID and it comes
+3:37
+up at this Frame It exits at this Frame
+3:39
+and then what those look like is yeah
+3:42
+this is what the messages look like so
+3:44
+you know it is we the golden goddesses
+3:46
+unskippable everywhere
+3:48
+um you know changing color Tech speed
+3:49
+and everything
+3:51
+um what do you link what do you wish for
+3:52
+three choices that kind of of stuff
+3:56
+and here in the scene I also want to
+3:58
+mention
+4:00
+um
+4:00
+the message ID for the text that says
+4:04
+you got the Triforce is hex Ace
+4:07
+that's perfect
+4:11
+here it is you got the Triforce after
+4:14
+you know you got the color yellow
+4:16
+Triforce color white quicksticks
+4:18
+disabled new line after 23 years you
+4:21
+know so that that's how this works
+4:23
+um you know when we want to make things
+4:24
+like this
+4:26
+um you know Chic dialogue and everything
+4:27
+the whole the whole thing is in here so
+4:29
+we had to inject this also this is part
+4:31
+of that statically linked data that I
+4:34
+talked about before
+4:36
+um so let me just talk about another
+4:38
+show a couple of quick scenes here
+4:42
+so this is link this is breath of the
+4:44
+wild link this was mostly made by
+4:47
+ali1234
+4:48
+um took the uh actual model from breath
+4:51
+of the wild and then put it through a
+4:53
+bunch of programmatic reductions in like
+4:56
+poly count like you know smesh
+4:58
+simplifications and then did a bunch of
+4:59
+extra ones by hand and redid the
+5:02
+textures by hand
+5:03
+um or like sort of fixed fix them up by
+5:05
+hand and then I rigged link I created
+5:09
+this the Armature
+5:11
+um and he has
+5:13
+um like no bones in his hands
+5:17
+um
+5:18
+so there's like this is this is his
+5:21
+lower arm it just you know that's all
+5:22
+there's no there's no bones in the hands
+5:24
+or the fingers but he has six bones in
+5:27
+his hair because the hair is important
+5:29
+we have these ones that move around we
+5:31
+have these that move like multiple parts
+5:32
+so they can just like wiggle in the wind
+5:35
+and look realistic the ponytail
+5:38
+um six bones in the tunic to move each
+5:41
+part of it so that um well they just
+5:43
+rotate
+5:44
+um so that it looks realistic with the
+5:45
+physics and then
+5:47
+um we have his animation so the
+5:49
+animations were done by several several
+5:50
+people
+5:52
+um they're in the credits but here's
+5:54
+here's link speaking
+6:01
+and I'm sure you folks in the chat can
+6:03
+correct my Japanese pronunciation I
+6:05
+don't speak Japanese I just you know
+6:07
+memorize those two lines
+6:09
+um so yeah we had to you know I did the
+6:11
+lip flaps I created his lip flaps for
+6:13
+all of the the lines and so you know
+6:15
+listening to this over and over and
+6:18
+and uh you know animating the the
+6:20
+rotation of these corners of his mouth
+6:22
+and everything
+6:24
+um and then you you can also see the
+6:25
+hair is not is uh is dynamic the hair
+6:28
+does not move the animation just has the
+6:30
+hair just stuck there
+6:32
+um so that's calculated on the Fly the
+6:33
+code for the hair physics is released
+6:36
+um so you can use that in your own ROM
+6:37
+hacks if you want so this scene actually
+6:39
+has references to the breath and breath
+6:42
+of the wild Lincoln Zelda sorry this is
+6:44
+taking so long to load I'm actually sure
+6:45
+what's happening with that I have a
+6:46
+pretty pretty fast
+6:50
+I have a lot of cores it should be
+6:52
+should be fine but um
+6:54
+anyway so it has references to the other
+6:56
+scenes
+6:58
+um so breath of the wild
+6:59
+um oh it's compiling shaders that's what
+7:01
+it's doing
+7:02
+um so breath of wild Link and Zelda can
+7:04
+be in the scene but they're not actually
+7:06
+properly
+7:07
+um like they'll just slide around
+7:10
+um so like here's the cutscene camera
+7:12
+comes in goes up Link's body goes around
+7:15
+and then
+7:17
+he just
+7:18
+slides forward so that's you know it
+7:21
+tells him to change to you know forward
+7:25
+walk mid-pace action and then slide him
+7:30
+around to there and then you know Zelda
+7:32
+comes in and changes her to from
+7:34
+invisible to visible and then descends
+7:39
+[Music]
+7:39
+um
+7:40
+and yeah this was you know there's a lot
+7:43
+of a lot of effort put into getting all
+7:46
+of these shots just perfect
+7:49
+um I must have a hundred times gone back
+7:53
+and you know tweaked a camera position
+7:55
+and then watched the ending again and
+7:59
+you know I mean this happens in any
+8:00
+production this isn't like me this is
+8:02
+just this is how you make games so you
+8:06
+know that's what we had to do
+8:08
+um
+8:09
+here's the you know camera goes out into
+8:11
+the sky for the twitch messages talks
+8:13
+they they uh zeldo says you asked to see
+8:16
+our future here it is gesturing at the
+8:18
+audience
+8:19
+um and then you know links dialogue and
+8:21
+then that's that's that so uh yeah
+8:24
+twitch messages you can see is an actor
+8:27
+out here in the sky
+8:28
+um that is that is rendering the
+8:30
+messages uh we we have the you know
+8:33
+injected all of the twitch emotes and
+8:35
+all the twitch Badges and everything and
+8:36
+it parses the what you what it gets from
+8:39
+the Twitch API and sends that over
+8:41
+controller input and
+8:43
+uh you know for any more questions get
+8:45
+Triforce dot link is our website
+8:49
+um you know we have an FAQ that has a
+8:51
+lot of things explained it has the full
+8:52
+list of what things were left on the
+8:54
+cartridge what things were beta content
+8:55
+that was not on the cartridge that we
+8:57
+remade and what things we completely
+8:59
+made up that's other than the list is
+9:01
+there on the website a lot of resources
+9:03
+there's a link to the source there's all
+9:05
+the code that we that we created that we
+9:06
+released there's a link there there's a
+9:08
+link to all of our partners videos
+9:09
+please check them out the Swanky Box
+9:11
+video is at like 1.2 million views so
+9:13
+we're very thankful about that wow
+9:15
+um
+9:16
+foreign
+9:18
+[Music]
+9:29
+[Music]
+9:40
+[Music]
+9:53
+[Music]
+10:04
+thank you
