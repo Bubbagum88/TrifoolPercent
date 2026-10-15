@@ -57,6 +57,7 @@ Goal: make Phase 1 repeatable before scaling it up.
 - [ ] A dev save or debug warp for each story beat, mirroring `Statics_TestShortcuts`
 - [ ] Build the Triforce% romhack ROM (`rom-setup/romhack`) as a side-by-side reference (§7)
 - [ ] CI that at least builds the fork
+- [ ] Check whether SoH can load compiled code from a mod package (needed for drag-and-drop, see Phase 7)
 - [ ] Turn `run/triforcepercent_data.run` into a tracked porting checklist in `docs/references/import_status.md`
 
 **Exit check:** a fresh clone can produce a playable Triforce Room build by following `docs/build.md`.
