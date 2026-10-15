@@ -57,6 +57,7 @@ Goal: make Phase 1 repeatable before scaling it up.
 - [ ] A dev save or debug warp for each story beat, mirroring `Statics_TestShortcuts`
 - [ ] Build the Triforce% romhack ROM (`rom-setup/romhack`) as a side-by-side reference (§7)
 - [ ] CI that at least builds the fork
+- [ ] Check whether SoH can load compiled code from a mod package (needed for drag-and-drop, see Phase 7)
 - [ ] Turn `run/triforcepercent_data.run` into a tracked porting checklist in `docs/references/import_status.md`
 
 **Exit check:** a fresh clone can produce a playable Triforce Room build by following `docs/build.md`.
@@ -120,8 +121,39 @@ Key of Power:
 - [ ] Playtest the full quest, fix soft-locks and missing flags
 - [ ] Confirm vanilla saves and other SoH features still work with the CVar off
 - [ ] Credits and licensing pass on every asset (`docs/references/creators.md`)
-- [ ] Release: fork build plus `.o2r`, with install steps
+- [ ] Release as a drag-and-drop package (see below), with install steps
+- [ ] List it on modding sites such as GameBanana, with downloads for the base mod and the optional HD textures
 - [ ] Community testing round
+
+**Goal: drag-and-drop install.** The finished mod should be one package a player drops into SoH's `mods` folder (or installs through a common mod loader), with no custom SoH build.
+
+That conflicts with how the mod is built today. Assets can already ship as a plain `.o2r`, but new actor code has to be compiled into SoH, which is why the plan uses a Shipwright fork. Three ways to close that gap, best first:
+
+1. **SoH code mods.** libultraship has a newer C mod system (`manifest.json` plus events, see its scripting guide). If the SoH release we target can load compiled code from a mod package, the actors and quest logic ship inside the package and the fork goes away. Check this early, in Phase 2, because it changes how all the code is organised.
+2. **Upstream the module.** Get the `TrifoolPercent` module (or the generic hooks it needs) merged into Shipwright behind an off-by-default toggle. The download is then just the `.o2r`.
+3. **Fallback.** Ship a prebuilt SoH build together with the `.o2r` in one zip. Still one download, but not drag-and-drop into an existing install.
+
+Either way, keep all code inside the module and hooks from Phase 1, so it can move to option 1 or 2 without a rewrite.
+
+## Textures: original and HD
+
+Every texture we make ships in two versions, so players can pick the look that matches the rest of their game:
+
+- **Original:** N64 resolution and formats, matching vanilla OoT. This is the default and must always work on its own.
+- **HD:** upscaled versions made to sit alongside HD texture packs such as OoT Reloaded, so our scenes don't look low-res next to an HD Hyrule.
+
+How we plan to do it:
+
+- **One source, two exports.** Keep each texture's master in `assets/textures/` at the higher resolution, and generate the N64 version from it with a script, so the two sets never drift apart.
+- **Same resource paths.** The HD texture replaces the original at the same path, so the code and scenes don't care which one is loaded. SoH can load higher-resolution replacements and has an alternate-assets toggle; confirm the exact mechanism in the Phase 2 toolchain work.
+- **Packaging.** Ship the HD set as a separate, optional `.o2r` next to the base archive, so the base mod stays small and the HD pack can be updated on its own.
+- **Load order with other HD packs.** Our hijacked scene slots (Goron Shop, Granny's Potion Shop, Dampé's Hut) are also retextured by HD packs. Test that our textures win in those scenes, and document the load order players need.
+- **Free wins.** Where our scenes reuse vanilla textures, leave them as vanilla references, so an installed HD pack upgrades them for free.
+
+Checklist:
+- [ ] Phase 2: decide the HD mechanism (separate archive or alternate assets) and add the HD export to the build script
+- [ ] Phase 1 onward: every new texture lands with both an original and an HD version
+- [ ] Phase 7: test with no HD pack, with our HD pack only, and alongside OoT Reloaded
 
 ## Biggest risks
 
@@ -132,6 +164,8 @@ Key of Power:
 | Missing models (BotW Link/Zelda, Running Man boss) | Phases 5–6 | Commission or build new ones, or swap in stand-ins. Not blocking until late |
 | Cel shading has no direct SoH equivalent | Phase 6 | Treat as stretch. Ship without it if needed |
 | Custom flags clashing with randomizer | Phases 3–5 | Use a custom save section in `SaveManager`, not unused vanilla bits |
+| Drag-and-drop needs SoH to load our code without a fork | Phases 2, 7 | Check SoH code mods in Phase 2; otherwise upstream the module or ship a bundled build |
+| Our textures clash with, or get overridden by, HD texture packs | Phases 1–7 | Keep both texture sets, test with OoT Reloaded installed, and document the load order |
 
 ## Stretch goals
 
