@@ -22,6 +22,7 @@ extern PlayState* gPlayState;
 }
 
 #define CVAR_VALUE CVarGetInteger(CVAR_TRIFOOL_TRIFORCE_ROOM, 1)
+#define CVAR_FOUNTAIN_VALUE CVarGetInteger(CVAR_TRIFOOL_UNICORN_FOUNTAIN, 1)
 
 // Triforce% hijacked the Goron Shop's scene slot for its Triforce Room. TrifoolPercent uses the unused debug scene
 // Besitu instead (map select "116:Test Room"), so the Goron Shop stays vanilla.
@@ -30,12 +31,18 @@ extern PlayState* gPlayState;
 #define TRIFORCE_ROOM_EXIT ENTR_KOKIRI_FOREST_OUTSIDE_LINKS_HOUSE
 #define TRIFORCE_ROOM_ENTRANCE ENTR_BESITU_0
 
-#define CVAR_TEST_ENTRANCE_VALUE CVarGetInteger(CVAR_TRIFOOL_TEST_ENTRANCE, 1)
+// Unicorn Fountain lands in the Test01 debug slot (map select "115:Test Map 1"), the next unused slot after Besitu.
+#define UNICORN_FOUNTAIN_SCENE SCENE_TEST01
+#define UNICORN_FOUNTAIN_ENTRANCE ENTR_TEST01_0
 
-// Test loading zone into the Triforce Room on the ground in front of Link's house, marked by a blue flame. The spot
-// was picked from Kokiri Forest's collision: flat floor at y -80, 135 units from the nearest spawn point and well
-// clear of walls, so no spawn lands inside it.
+#define CVAR_TEST_ENTRANCE_VALUE CVarGetInteger(CVAR_TRIFOOL_TEST_ENTRANCE, 1)
+#define CVAR_FOUNTAIN_ENTRANCE_VALUE CVarGetInteger(CVAR_TRIFOOL_FOUNTAIN_ENTRANCE, 1)
+
+// Test loading zones in Kokiri Forest, each marked by a blue flame. The Triforce Room one is by Link's house (west);
+// the fountain one is a few steps further north so the two flames don't overlap. Both spots are flat ground clear of
+// spawns and walls.
 static Vec3f sTestEntrancePos = { -18.0f, -80.0f, 816.0f };
+static Vec3f sFountainEntrancePos = { 80.0f, -80.0f, 816.0f };
 #define TEST_ENTRANCE_RADIUS 40.0f
 #define TEST_ENTRANCE_HEIGHT 40.0f
 #define TEST_ENTRANCE_FLAME_PARAMS 0x0002 // En_Light: blue flame
@@ -43,6 +50,7 @@ static Vec3f sTestEntrancePos = { -18.0f, -80.0f, 816.0f };
 static s16 sTriforcePieceId = -1;
 static s16 sTriforceChestId = -1;
 static s16 sTriforceLightId = -1;
+static s16 sBetaGreatFairyId = -1;
 
 static s16 AddActor(const char* name, const char* desc, size_t instanceSize, ActorFunc init, ActorFunc destroy,
                     ActorFunc update, ActorFunc draw) {
@@ -74,6 +82,15 @@ static void AddActorsToDB() {
     sTriforceLightId = AddActor("Tf_Triforce_Light", "Triforce Light (TrifoolPercent)", sizeof(TfTriforceLight),
                                 TfTriforceLight_Init, TfTriforceLight_Destroy, TfTriforceLight_Update,
                                 TfTriforceLight_Draw);
+}
+
+static void AddFountainActorsToDB() {
+    if (sBetaGreatFairyId >= 0) {
+        return;
+    }
+    sBetaGreatFairyId = AddActor("Tf_Beta_Great_Fairy", "Beta Great Fairy (TrifoolPercent)", sizeof(TfBetaGreatFairy),
+                                 TfBetaGreatFairy_Init, TfBetaGreatFairy_Destroy, TfBetaGreatFairy_Update,
+                                 TfBetaGreatFairy_Draw);
 }
 
 static bool IsTriforceRoom() {
@@ -124,6 +141,25 @@ static bool IsKokiriForest() {
     return gPlayState != nullptr && gPlayState->sceneNum == SCENE_KOKIRI_FOREST;
 }
 
+static bool IsUnicornFountain() {
+    return gPlayState != nullptr && gPlayState->sceneNum == UNICORN_FOUNTAIN_SCENE;
+}
+
+// Triforce% placed the fairy as part of the room's actor list; we spawn her from code so the actor id can be
+// assigned at runtime. The actor positions itself from its home.pos, so it needs the room origin.
+static void SpawnUnicornFountain() {
+    if (!IsUnicornFountain()) {
+        return;
+    }
+    AddFountainActorsToDB();
+
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, sBetaGreatFairyId, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0);
+
+    // Debug scenes have no place name, so the fountain brings its own title card.
+    TitleCard_InitPlaceName(gPlayState, &gPlayState->actorCtx.titleCtx, (void*)gTrifoolUnicornFountainTitleCardTex,
+                            160, 120, 144, 24, 20);
+}
+
 static void SpawnTestEntranceMarker() {
     if (!IsKokiriForest()) {
         return;
@@ -132,17 +168,41 @@ static void SpawnTestEntranceMarker() {
                 sTestEntrancePos.z, 0, 0, 0, TEST_ENTRANCE_FLAME_PARAMS);
 }
 
+static void SpawnFountainEntranceMarker() {
+    if (!IsKokiriForest()) {
+        return;
+    }
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_LIGHT, sFountainEntrancePos.x, sFountainEntrancePos.y,
+                sFountainEntrancePos.z, 0, 0, 0, TEST_ENTRANCE_FLAME_PARAMS);
+}
+
+static bool PlayerAt(const Vec3f* pos) {
+    Player* player = GET_PLAYER(gPlayState);
+    f32 dy = player->actor.world.pos.y - pos->y;
+    return dy >= -TEST_ENTRANCE_HEIGHT && dy <= TEST_ENTRANCE_HEIGHT &&
+           Math_Vec3f_DistXZ(&player->actor.world.pos, (Vec3f*)pos) <= TEST_ENTRANCE_RADIUS;
+}
+
 static void EnterTriforceRoomFromTestEntrance() {
     if (!IsKokiriForest() || gPlayState->transitionTrigger != TRANS_TRIGGER_OFF) {
         return;
     }
-    Player* player = GET_PLAYER(gPlayState);
-    f32 dy = player->actor.world.pos.y - sTestEntrancePos.y;
-    if (dy < -TEST_ENTRANCE_HEIGHT || dy > TEST_ENTRANCE_HEIGHT ||
-        Math_Vec3f_DistXZ(&player->actor.world.pos, &sTestEntrancePos) > TEST_ENTRANCE_RADIUS) {
+    if (!PlayerAt(&sTestEntrancePos)) {
         return;
     }
     gPlayState->nextEntranceIndex = TRIFORCE_ROOM_ENTRANCE;
+    gPlayState->transitionTrigger = TRANS_TRIGGER_START;
+    gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
+}
+
+static void EnterUnicornFountainFromTestEntrance() {
+    if (!IsKokiriForest() || gPlayState->transitionTrigger != TRANS_TRIGGER_OFF) {
+        return;
+    }
+    if (!PlayerAt(&sFountainEntrancePos)) {
+        return;
+    }
+    gPlayState->nextEntranceIndex = UNICORN_FOUNTAIN_ENTRANCE;
     gPlayState->transitionTrigger = TRANS_TRIGGER_START;
     gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
 }
@@ -219,8 +279,19 @@ static void RegisterTrifoolTestEntrance() {
     COND_HOOK(OnPlayerUpdate, CVAR_TEST_ENTRANCE_VALUE, EnterTriforceRoomFromTestEntrance);
 }
 
+static void RegisterTrifoolUnicornFountain() {
+    COND_HOOK(OnSceneSpawnActors, CVAR_FOUNTAIN_VALUE, SpawnUnicornFountain);
+}
+
+static void RegisterTrifoolFountainEntrance() {
+    COND_HOOK(OnSceneSpawnActors, CVAR_FOUNTAIN_ENTRANCE_VALUE, SpawnFountainEntranceMarker);
+    COND_HOOK(OnPlayerUpdate, CVAR_FOUNTAIN_ENTRANCE_VALUE, EnterUnicornFountainFromTestEntrance);
+}
+
 static RegisterShipInitFunc initFunc(RegisterTrifoolTriforceRoom, { CVAR_TRIFOOL_TRIFORCE_ROOM });
 static RegisterShipInitFunc testEntranceInitFunc(RegisterTrifoolTestEntrance, { CVAR_TRIFOOL_TEST_ENTRANCE });
+static RegisterShipInitFunc fountainInitFunc(RegisterTrifoolUnicornFountain, { CVAR_TRIFOOL_UNICORN_FOUNTAIN });
+static RegisterShipInitFunc fountainEntranceInitFunc(RegisterTrifoolFountainEntrance, { CVAR_TRIFOOL_FOUNTAIN_ENTRANCE });
 
 namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
@@ -240,6 +311,17 @@ static void RegisterTrifoolPercentWidgets() {
         .Options(UIWidgets::CheckboxOptions().DefaultValue(true).Tooltip(
             "Adds a loading zone into the Triforce Room in front of Link's house in Kokiri Forest, marked by a blue "
             "flame, for quick testing."));
+    SohGui::mSohMenu->AddWidget(path, "Unicorn Fountain", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_TRIFOOL_UNICORN_FOUNTAIN)
+        .Options(UIWidgets::CheckboxOptions().DefaultValue(true).Tooltip(
+            "The Triforce% Unicorn Fountain (in the debug Test Map 1 slot): the Beta Great Fairy who teaches the "
+            "Overture of Sages. Needs TrifoolPercent.o2r in the mods folder for the room itself. The fairy's mesh "
+            "and the cutscene are not available yet; a column of golden sparkles stands in for her."));
+    SohGui::mSohMenu->AddWidget(path, "Fountain Entrance in Kokiri Forest", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_TRIFOOL_FOUNTAIN_ENTRANCE)
+        .Options(UIWidgets::CheckboxOptions().DefaultValue(true).Tooltip(
+            "Adds a second blue flame in Kokiri Forest near Link's house that loads into the Unicorn Fountain, for "
+            "quick testing."));
 }
 
 static RegisterMenuInitFunc menuInitFunc(RegisterTrifoolPercentWidgets);
