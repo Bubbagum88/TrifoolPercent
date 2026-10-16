@@ -23,6 +23,7 @@
 #define CVAR_TRIFOOL_FOUNTAIN_OVERWORLD CVAR_ENHANCEMENT("TrifoolPercent.FountainOverworld")
 #define CVAR_TRIFOOL_DOT_ADULT CVAR_ENHANCEMENT("TrifoolPercent.DoorOfTimeAdult")
 #define CVAR_TRIFOOL_FOUNTAIN_ENTRY_CS CVAR_ENHANCEMENT("TrifoolPercent.FountainEntryCs")
+#define CVAR_TRIFOOL_MIMIC_CHEST CVAR_ENHANCEMENT("TrifoolPercent.MimicChest")
 
 // Butterfly rides a slot that vanilla OoT ships but never uses. The gameplay-item id
 // 0x68 (object_gi_butterfly, documented on TCRF) has no in-game pickup wired to it, so
@@ -168,6 +169,22 @@ void TfBetaKokiri_Init(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Destroy(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Update(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Draw(Actor* thisx, PlayState* play);
+
+// MimicChest (Triforce% actor/MimicChest/MimicChest.c). Object data (skeleton + two
+// animations) compiles into the SoH module directly from mimic_chest_obj.c and the two
+// anim files; no vanilla or Torch object bank is involved.
+typedef struct {
+    Actor actor;
+    SkelAnime skelAnime;
+    ColliderCylinder collider;
+    Vec3s jointTable[3];
+    Vec3s morphTable[3];
+} TfMimicChest;
+
+void TfMimicChest_Init(Actor* thisx, PlayState* play);
+void TfMimicChest_Destroy(Actor* thisx, PlayState* play);
+void TfMimicChest_Update(Actor* thisx, PlayState* play);
+void TfMimicChest_Draw(Actor* thisx, PlayState* play);
 
 // Unused-flame billboard built from OBJECT_FIRE (vanilla slot 0x0F, TCRF "Dancing
 // Flame"). Spawned by TrifoolPercent.cpp in Kokiri Forest as the test-entrance marker.
