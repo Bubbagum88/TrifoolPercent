@@ -1,0 +1,200 @@
+/*
+ * TfBetaKokiri: the unused beta Kokiri child, standing in Sacred Forest Meadow after Link walks
+ * the Lost Woods secret path (N -> W -> S -> W). Beat 1.1 ships the actor with just the body +
+ * head combo upstream used; the full variant table is scaffolded for later expansion.
+ *
+ * Ported from Triforce% actor/BetaKokiri/betakokiri.c (c) 2019-2022 The Triforce% Team, used
+ * under upstream/TRIFORCE-PERCENT-LICENSE.txt (condition 1: Credits). Object slot facts come
+ * from zeldaret/oot's assets/xml/objects/object_oE4.xml, object_oE9.xml, object_oE_anime.xml.
+ *
+ * TrifoolPercent-side differences vs. upstream:
+ *   - PlayState / GET_PLAYER everywhere instead of GlobalContext / PLAYER;
+ *   - the beta-head-turn-toward-player (func_80034A14) is omitted for Beat 1.1 (polish, not
+ *     functional) and will land with the dialogue trade in Beat 1.3;
+ *   - the Butterfly trade branch is left in place but inert until the Butterfly item exists
+ *     (Beat 1.3) -- EXCH_ITEM_BUTTERFLY never arrives today, so this always walks the
+ *     "I'm looking for a bug" path on text 0x0B10;
+ *   - the SPAWNED flag is read via TrifoolBeat1_IsBetaKokiriSpawned() rather than a borrowed
+ *     infTable bit, so we never clobber vanilla save state.
+ */
+
+#include "../TrifoolPercent.h"
+
+// Vanilla OoT object symbols published by Torch when it extracts the beta object slots from
+// the user's ROM. Offsets and names come straight from zeldaret/oot's XML descriptors.
+extern SkeletonHeader object_oE4_Skel_000260;
+extern Gfx object_oE9_DL_000800[];
+extern u8 object_oE9_Tex_000E90[]; // eyes open   (ci8 32x32, TLUT 0xC90)
+extern u8 object_oE9_Tex_001290[]; // eyes half   (ci8 32x32)
+extern u8 object_oE9_Tex_001690[]; // eyes closed (ci8 32x32)
+extern AnimationHeader object_oE_anime_Anim_00001034; // kokiriStanding (upstream's choice)
+
+// Object slots. These are vanilla OoT slot IDs; SoH's object loader indexes them the same way.
+#define TF_BK_OBJ_ANIM 0x34 // object_oE_anime
+#define TF_BK_OBJ_BODY 0x4C // object_oE4
+#define TF_BK_OBJ_HEAD 0x52 // object_oE9
+
+#define TF_BK_LIMB_HEAD 23
+#define TF_BK_NUM_LIMBS 39
+#define TF_BK_SHADOW_SIZE 25.0f
+
+bool TrifoolBeat1_IsBetaKokiriSpawned(void); // defined in Beat1KeyOfCourage.cpp
+
+static ColliderCylinderInitType1 sCylinderInit = {
+    { COLTYPE_HIT0, AT_NONE, AC_NONE, OC1_ON | OC1_TYPE_PLAYER, COLSHAPE_CYLINDER, },
+    { ELEMTYPE_UNK0, { 0x00000000, 0x00, 0x00 }, { 0x00000000, 0x00, 0x00 },
+      TOUCH_NONE, BUMP_NONE, OCELEM_ON, },
+    { 20, 80, 0, { 0, 0, 0 } },
+};
+
+static void* sEyeTextures[3] = {
+    (void*)object_oE9_Tex_000E90,
+    (void*)object_oE9_Tex_001290,
+    (void*)object_oE9_Tex_001690,
+};
+
+static void TfBetaKokiri_SetBank(TfBetaKokiri* this, PlayState* play, s32 bank, s32 alsoRCP) {
+    void* segment = play->objectCtx.status[bank].segment;
+    gSegments[6] = VIRTUAL_TO_PHYSICAL(segment);
+    if (alsoRCP) {
+        OPEN_DISPS(play->state.gfxCtx);
+        gSPSegment(POLY_OPA_DISP++, 0x06, segment);
+        CLOSE_DISPS(play->state.gfxCtx);
+    }
+}
+
+static void TfBetaKokiri_UpdateEyes(TfBetaKokiri* this) {
+    if (this->blinkTimer == 0) {
+        this->blinkTimer = Rand_S16Offset(60, 60);
+    } else {
+        --this->blinkTimer;
+    }
+    this->eyeTextureIndex = (this->blinkTimer < 3) ? this->blinkTimer : 0;
+}
+
+static s32 TfBetaKokiri_ObjectsLoaded(TfBetaKokiri* this, PlayState* play) {
+    return Object_IsLoaded(&play->objectCtx, this->animBankIdx) &&
+           Object_IsLoaded(&play->objectCtx, this->bodyBankIdx) &&
+           Object_IsLoaded(&play->objectCtx, this->headBankIdx);
+}
+
+static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play);
+
+void TfBetaKokiri_Init(Actor* thisx, PlayState* play) {
+    TfBetaKokiri* this = (TfBetaKokiri*)thisx;
+
+    if (!TrifoolBeat1_IsBetaKokiriSpawned()) {
+        Actor_Kill(&this->actor);
+        return;
+    }
+
+    this->initState = 0;
+    this->blinkTimer = 0;
+    this->eyeTextureIndex = 0;
+    this->actor.textId = 0x0B10;
+
+    ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, TF_BK_SHADOW_SIZE);
+    Collider_InitCylinder(play, &this->collider);
+    Collider_SetCylinderType1(play, &this->collider, &this->actor, &sCylinderInit);
+
+    this->animBankIdx = Object_GetIndex(&play->objectCtx, TF_BK_OBJ_ANIM);
+    this->bodyBankIdx = Object_GetIndex(&play->objectCtx, TF_BK_OBJ_BODY);
+    this->headBankIdx = Object_GetIndex(&play->objectCtx, TF_BK_OBJ_HEAD);
+    if (this->animBankIdx < 0 || this->bodyBankIdx < 0 || this->headBankIdx < 0) {
+        Actor_Kill(&this->actor);
+        return;
+    }
+    this->initState = 1;
+    this->actor.update = TfBetaKokiri_UpdateWaitTalk;
+}
+
+void TfBetaKokiri_Destroy(Actor* thisx, PlayState* play) {
+    TfBetaKokiri* this = (TfBetaKokiri*)thisx;
+    if (this->initState >= 1) {
+        Collider_DestroyCylinder(play, &this->collider);
+    }
+    if (this->initState == 2) {
+        SkelAnime_Free(&this->skelAnime, play);
+    }
+}
+
+static s32 TfBetaKokiri_UpdateCommon(TfBetaKokiri* this, PlayState* play) {
+    if (!TfBetaKokiri_ObjectsLoaded(this, play)) {
+        return -1;
+    }
+    if (this->initState == 1) {
+        this->initState = 2;
+        TfBetaKokiri_SetBank(this, play, this->bodyBankIdx, 0);
+        SkelAnime_Init(play, &this->skelAnime, &object_oE4_Skel_000260, NULL,
+                       this->jointTable, this->morphTable, TF_BK_NUM_LIMBS);
+        TfBetaKokiri_SetBank(this, play, this->animBankIdx, 0);
+        Animation_Change(&this->skelAnime, &object_oE_anime_Anim_00001034, 1.0f, 0.0f,
+                         Animation_GetLastFrame(&object_oE_anime_Anim_00001034),
+                         ANIMMODE_LOOP, 0.0f);
+    }
+
+    Collider_UpdateCylinder(&this->actor, &this->collider);
+    CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
+    Actor_UpdateBgCheckInfo(play, &this->actor, 75.0f, 30.0f, 30.0f, 5);
+    TfBetaKokiri_UpdateEyes(this);
+    return SkelAnime_Update(&this->skelAnime);
+}
+
+static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play) {
+    TfBetaKokiri* this = (TfBetaKokiri*)thisx;
+    Player* player = GET_PLAYER(play);
+
+    if (TfBetaKokiri_UpdateCommon(this, play) < 0) {
+        return;
+    }
+
+    if (Actor_IsTalking(&this->actor, play)) {
+        // Beat 1.3 will wire EXCH_ITEM_BUTTERFLY here. Until then every talk lands on the
+        // "I'm looking for a bug" line, which matches the upstream pre-trade state.
+        this->actor.textId = 0x0B10;
+        player->actor.textId = this->actor.textId;
+        return;
+    }
+    Actor_RequestToTalk(&this->actor, play);
+}
+
+static s32 TfBetaKokiri_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList,
+                                         Vec3f* pos, Vec3s* rot, void* thisx) {
+    TfBetaKokiri* this = (TfBetaKokiri*)thisx;
+    if (limbIndex == TF_BK_LIMB_HEAD) {
+        TfBetaKokiri_SetBank(this, play, this->headBankIdx, 1);
+        OPEN_DISPS(play->state.gfxCtx);
+        gSPSegment(POLY_OPA_DISP++, 0x08,
+                   SEGMENTED_TO_VIRTUAL(sEyeTextures[this->eyeTextureIndex]));
+        CLOSE_DISPS(play->state.gfxCtx);
+        *dList = object_oE9_DL_000800;
+    }
+    return false;
+}
+
+static void TfBetaKokiri_PostLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList, Vec3s* rot,
+                                      void* thisx) {
+    TfBetaKokiri* this = (TfBetaKokiri*)thisx;
+    if (limbIndex == TF_BK_LIMB_HEAD) {
+        static Vec3f sHeadBoneToCenter = { 700.0f, 0.0f, 0.0f };
+        TfBetaKokiri_SetBank(this, play, this->bodyBankIdx, 1);
+        Matrix_MultVec3f(&sHeadBoneToCenter, &this->actor.focus.pos);
+    }
+}
+
+void TfBetaKokiri_Update(Actor* thisx, PlayState* play) {
+    TfBetaKokiri_UpdateWaitTalk(thisx, play);
+}
+
+void TfBetaKokiri_Draw(Actor* thisx, PlayState* play) {
+    TfBetaKokiri* this = (TfBetaKokiri*)thisx;
+    if (this->initState != 2) {
+        return;
+    }
+    TfBetaKokiri_SetBank(this, play, this->bodyBankIdx, 1);
+    OPEN_DISPS(play->state.gfxCtx);
+    gDPSetEnvColor(POLY_OPA_DISP++, 20, 110, 50, 255);
+    CLOSE_DISPS(play->state.gfxCtx);
+    SkelAnime_DrawOpa(play, this->skelAnime.skeleton, this->skelAnime.jointTable,
+                      TfBetaKokiri_OverrideLimbDraw, TfBetaKokiri_PostLimbDraw, this);
+}

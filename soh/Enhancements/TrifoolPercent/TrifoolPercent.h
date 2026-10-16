@@ -15,6 +15,8 @@
 #define CVAR_TRIFOOL_SETUP_PRESET CVAR_ENHANCEMENT("TrifoolPercent.SetupPreset")
 #define CVAR_TRIFOOL_DEV_INPUTS CVAR_ENHANCEMENT("TrifoolPercent.DevInputs")
 #define CVAR_TRIFOOL_PAUSE_DEBUG_INV CVAR_ENHANCEMENT("TrifoolPercent.PauseDebugInv")
+#define CVAR_TRIFOOL_LOST_WOODS_PATH CVAR_ENHANCEMENT("TrifoolPercent.LostWoodsPath")
+#define CVAR_TRIFOOL_BETA_KOKIRI CVAR_ENHANCEMENT("TrifoolPercent.BetaKokiri")
 
 // Resources shipped in TrifoolPercent.o2r (built by actors/triforce_actor/make_torch_input.py).
 #define dgTrifoolTriforcePieceDL "__OTR__objects/object_trifool_triforce_piece/gTrifoolTriforcePieceDL"
@@ -106,6 +108,28 @@ void TfBetaGreatFairy_Init(Actor* thisx, PlayState* play);
 void TfBetaGreatFairy_Destroy(Actor* thisx, PlayState* play);
 void TfBetaGreatFairy_Update(Actor* thisx, PlayState* play);
 void TfBetaGreatFairy_Draw(Actor* thisx, PlayState* play);
+
+// Beta Kokiri (Beat 1.1). Uses the same body+head combo upstream Triforce% wires
+// (object_oE4 skeleton, object_oE9 head DL, object_oE_anime standing anim); the variant
+// table is scaffolded in Beat1KeyOfCourage.cpp for later expansion.
+typedef struct {
+    Actor actor;
+    SkelAnime skelAnime;
+    ColliderCylinder collider;
+    Vec3s jointTable[39];
+    Vec3s morphTable[39];
+    u8 initState;
+    u8 eyeTextureIndex;
+    u8 blinkTimer;
+    s32 animBankIdx;
+    s32 bodyBankIdx;
+    s32 headBankIdx;
+} TfBetaKokiri;
+
+void TfBetaKokiri_Init(Actor* thisx, PlayState* play);
+void TfBetaKokiri_Destroy(Actor* thisx, PlayState* play);
+void TfBetaKokiri_Update(Actor* thisx, PlayState* play);
+void TfBetaKokiri_Draw(Actor* thisx, PlayState* play);
 
 #ifdef __cplusplus
 }
