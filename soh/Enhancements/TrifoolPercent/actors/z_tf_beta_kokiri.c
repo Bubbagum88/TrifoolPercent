@@ -9,13 +9,15 @@
  *
  * TrifoolPercent-side differences vs. upstream:
  *   - PlayState / GET_PLAYER everywhere instead of GlobalContext / PLAYER;
- *   - the beta-head-turn-toward-player (func_80034A14) is omitted for Beat 1.1 (polish, not
- *     functional) and will land with the dialogue trade in Beat 1.3;
- *   - the Butterfly trade branch is left in place but inert until the Butterfly item exists
- *     (Beat 1.3) -- EXCH_ITEM_BUTTERFLY never arrives today, so this always walks the
- *     "I'm looking for a bug" path on text 0x0B10;
- *   - the SPAWNED flag is read via TrifoolBeat1_IsBetaKokiriSpawned() rather than a borrowed
- *     infTable bit, so we never clobber vanilla save state.
+ *   - the beta-head-turn-toward-player (func_80034A14) is omitted (polish, not functional);
+ *   - the trade branch uses vanilla exchangeItemId with EXCH_ITEM_BUG covered and
+ *     EXCH_ITEM_BUTTERFLY left as a Beat 1.3 hook -- today Butterfly never arrives, so
+ *     Link ends up on the "crawlies are dumb" / "what is that?" paths or the greeting,
+ *     exactly like upstream pre-trade;
+ *   - the SPAWNED and DONE flags live behind TrifoolBeat1_* accessors rather than borrowed
+ *     infTable / itemGetInf bits, so we never clobber vanilla save state;
+ *   - the "give Odd Potion" / Bottle-swap branch stays scaffolded but inert until the
+ *     Butterfly item (Beat 1.3) can hand Link EXCH_ITEM_BUTTERFLY in the first place.
  */
 
 #include "../TrifoolPercent.h"
@@ -39,6 +41,8 @@ extern AnimationHeader object_oE_anime_Anim_00001034; // kokiriStanding (upstrea
 #define TF_BK_SHADOW_SIZE 25.0f
 
 bool TrifoolBeat1_IsBetaKokiriSpawned(void); // defined in Beat1KeyOfCourage.cpp
+bool TrifoolBeat1_IsBetaKokiriDone(void);
+void TrifoolBeat1_SetBetaKokiriDone(void);
 
 static ColliderCylinderInitType1 sCylinderInit = {
     { COLTYPE_HIT0, AT_NONE, AC_NONE, OC1_ON | OC1_TYPE_PLAYER, COLSHAPE_CYLINDER, },
@@ -149,13 +153,45 @@ static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play) {
     }
 
     if (Actor_IsTalking(&this->actor, play)) {
-        // Beat 1.3 will wire EXCH_ITEM_BUTTERFLY here. Until then every talk lands on the
-        // "I'm looking for a bug" line, which matches the upstream pre-trade state.
-        this->actor.textId = 0x0B10;
+        s8 exch = player->exchangeItemId;
+        if (TrifoolBeat1_IsBetaKokiriDone()) {
+            // Beat 1.3 will arm this once the Butterfly trade is accepted; until then it
+            // never fires, matching upstream's pre-trade behaviour.
+            this->actor.textId = 0x0B16;
+        } else if (exch == EXCH_ITEM_BUG) {
+            // Vanilla "Bug in a Bottle" (child trade slot). She rejects it as a crawly.
+            this->actor.textId = 0x0B12;
+            func_80078884(NA_SE_SY_ERROR);
+#ifdef EXCH_ITEM_BUTTERFLY
+        } else if (exch == EXCH_ITEM_BUTTERFLY) {
+            // Reserved for Beat 1.3: swap the Butterfly bottle for an Odd Potion and advance.
+            // The EXCH_ITEM_BUTTERFLY enum lands with the Butterfly item itself, so this
+            // branch stays guarded until then.
+            this->actor.textId = 0x0B13;
+            func_80078884(NA_SE_SY_TRE_BOX_APPEAR);
+            Player_UpdateBottleHeld(play, player, ITEM_BOTTLE, PLAYER_AP_BOTTLE);
+            TrifoolBeat1_SetBetaKokiriDone();
+#endif
+        } else if (exch != EXCH_ITEM_NONE) {
+            // Any other trade item on offer: Zelda's Letter, egg, chicken, etc. She rejects.
+            this->actor.textId = 0x0B11;
+        } else {
+            // Default greeting: she's looking for a flying bug.
+            this->actor.textId = 0x0B10;
+        }
         player->actor.textId = this->actor.textId;
         return;
     }
+
     Actor_RequestToTalk(&this->actor, play);
+    // Prime the vanilla "accept trade item" slot so Link can offer trade items at her.
+    // EXCH_ITEM_BLUE_FIRE is upstream's choice; it is a harmless placeholder (nothing in
+    // Lost Woods / Sacred Forest Meadow actually consumes blue fire from Link) and tells
+    // the engine the NPC accepts trade exchange attempts at all. Cleared once Beat 1.3
+    // marks the trade done.
+    if (!TrifoolBeat1_IsBetaKokiriDone()) {
+        player->exchangeItemId = EXCH_ITEM_BLUE_FIRE;
+    }
 }
 
 static s32 TfBetaKokiri_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** dList,
