@@ -191,16 +191,15 @@ static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play) {
             // Vanilla "Bug in a Bottle" (child trade slot). She rejects it as a crawly.
             this->actor.textId = 0x0B12;
             func_80078884(NA_SE_SY_ERROR);
-#ifdef EXCH_ITEM_BUTTERFLY
-        } else if (exch == EXCH_ITEM_BUTTERFLY) {
-            // Reserved for Beat 1.3: swap the Butterfly bottle for an Odd Potion and advance.
-            // The EXCH_ITEM_BUTTERFLY enum lands with the Butterfly item itself, so this
-            // branch stays guarded until then.
+        } else if (exch == EXCH_ITEM_BIG_POE) {
+            // Beat 1.3: the Butterfly rides the vanilla ITEM_BIG_POE slot, exactly as
+            // upstream Triforce% did. When Link offers "Big Poe in a bottle" to Beta
+            // Kokiri she treats it as the Butterfly: swap the bottle for an empty one and
+            // the Odd Potion give lands through the Actor_PickUp loop below.
             this->actor.textId = 0x0B13;
             func_80078884(NA_SE_SY_TRE_BOX_APPEAR);
             Player_UpdateBottleHeld(play, player, ITEM_BOTTLE, PLAYER_AP_BOTTLE);
             TrifoolBeat1_SetBetaKokiriDone();
-#endif
         } else if (exch != EXCH_ITEM_NONE) {
             // Any other trade item on offer: Zelda's Letter, egg, chicken, etc. She rejects.
             this->actor.textId = 0x0B11;
