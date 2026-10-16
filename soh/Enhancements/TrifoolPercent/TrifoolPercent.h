@@ -18,6 +18,7 @@
 #define CVAR_TRIFOOL_BETA_KOKIRI CVAR_ENHANCEMENT("TrifoolPercent.BetaKokiri")
 #define CVAR_TRIFOOL_BUTTERFLY CVAR_ENHANCEMENT("TrifoolPercent.Butterfly")
 #define CVAR_TRIFOOL_TEST_ROOM CVAR_ENHANCEMENT("TrifoolPercent.TestRoom")
+#define CVAR_TRIFOOL_TEST_ROOM_PROTOTYPE_CS CVAR_ENHANCEMENT("TrifoolPercent.TestRoomPrototypeCs")
 #define CVAR_TRIFOOL_ONBOARDING CVAR_ENHANCEMENT("TrifoolPercent.Onboarding")
 
 // Butterfly rides a slot that vanilla OoT ships but never uses. The gameplay-item id
@@ -62,6 +63,13 @@ extern "C" {
 extern CutsceneData gTrifoolTriforceRoomCs[];
 // Frame at which Triforce% handed over to its ending scene. The proof of concept leaves the room here instead.
 #define TRIFOOL_TRIFORCE_ROOM_CS_EXIT_FRAME 1885
+
+// Test Room prototype cutscene (TestRoomCs.c): hand-written orbit around the hex hub, three
+// textboxes, no actors. Proves the Fast64-free authoring path end-to-end.
+extern CutsceneData gTrifoolTestRoomPrototypeCs[];
+extern const u16 gTrifoolTestRoomPrototypeCsTextBase;
+extern const u8 gTrifoolTestRoomPrototypeCsTextCount;
+#define TRIFOOL_TEST_ROOM_PROTOTYPE_CS_EXIT_FRAME 290
 
 // TriforcePiece params: which piece, plus "the end" mode in bits 2+ (used by the Ending scene, not the room).
 typedef enum {
