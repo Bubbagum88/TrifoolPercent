@@ -171,6 +171,13 @@ static void RegisterBetaKokiriActor() {
                  TfBetaKokiri_Draw);
 }
 
+// Shared with Beat1_0Onboarding.cpp so the kick-off Kokiri near Link's house uses the
+// same ActorDB entry (same TfBetaKokiri actor, params=1 variant).
+extern "C" s16 TrifoolBeat1_RegisterBetaKokiri(void) {
+    RegisterBetaKokiriActor();
+    return sBetaKokiriActorId;
+}
+
 static void SpawnBetaKokiriIfReady() {
     if (CVarGetInteger(CVAR_TRIFOOL_BETA_KOKIRI, 0) == 0 || gPlayState == nullptr) {
         return;
