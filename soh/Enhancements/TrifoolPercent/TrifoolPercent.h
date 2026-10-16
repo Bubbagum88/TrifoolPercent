@@ -118,6 +118,7 @@ typedef struct {
     ColliderCylinder collider;
     Vec3s jointTable[39];
     Vec3s morphTable[39];
+    NpcInteractInfo interactInfo; // head/body tracking state for Npc_TrackPoint (func_80034A14)
     u8 initState;
     u8 eyeTextureIndex;
     u8 blinkTimer;
