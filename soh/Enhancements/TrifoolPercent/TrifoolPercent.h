@@ -11,7 +11,6 @@
 #define CVAR_TRIFOOL_TRIFORCE_ROOM CVAR_ENHANCEMENT("TrifoolPercent.TriforceRoom")
 #define CVAR_TRIFOOL_TEST_ENTRANCE CVAR_ENHANCEMENT("TrifoolPercent.TestEntrance")
 #define CVAR_TRIFOOL_UNICORN_FOUNTAIN CVAR_ENHANCEMENT("TrifoolPercent.UnicornFountain")
-#define CVAR_TRIFOOL_FOUNTAIN_ENTRANCE CVAR_ENHANCEMENT("TrifoolPercent.FountainEntrance")
 #define CVAR_TRIFOOL_SETUP_PRESET CVAR_ENHANCEMENT("TrifoolPercent.SetupPreset")
 #define CVAR_TRIFOOL_DEV_INPUTS CVAR_ENHANCEMENT("TrifoolPercent.DevInputs")
 #define CVAR_TRIFOOL_PAUSE_DEBUG_INV CVAR_ENHANCEMENT("TrifoolPercent.PauseDebugInv")
@@ -98,6 +97,8 @@ typedef struct {
     Actor actor;
     u8 state;
     u8 frames;
+    u8 dialoguePhase; // DIALOGUE_* in z_tf_beta_great_fairy.c
+    u8 floatFrames;   // frames spent in state 2 before the first textbox opens
     f32 ratio;
     f32 lastFloatY;
     Vec3f wingtip;
@@ -124,6 +125,11 @@ void TfBetaGreatFairy_Destroy(Actor* thisx, PlayState* play);
 void TfBetaGreatFairy_Update(Actor* thisx, PlayState* play);
 void TfBetaGreatFairy_Draw(Actor* thisx, PlayState* play);
 
+// Set by TfBetaGreatFairy when her fall animation ends; the Unicorn Fountain glue polls it to fade
+// Link back to Kokiri Forest after the visit. Cleared when the fairy actor is re-created on scene load.
+bool TrifoolUnicornFountain_IsFairyDone(void);
+void TrifoolUnicornFountain_ClearFairyDone(void);
+
 // Beta Kokiri (Beat 1.1). Uses the same body+head combo upstream Triforce% wires
 // (object_oE4 skeleton, object_oE9 head DL, object_oE_anime standing anim); the variant
 // table is scaffolded in Beat1KeyOfCourage.cpp for later expansion.
@@ -146,6 +152,22 @@ void TfBetaKokiri_Init(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Destroy(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Update(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Draw(Actor* thisx, PlayState* play);
+
+// Unused-flame billboard built from OBJECT_FIRE (vanilla slot 0x0F, TCRF "Dancing
+// Flame"). Spawned by TrifoolPercent.cpp in Kokiri Forest as the test-entrance marker.
+typedef struct {
+    Actor actor;
+    s32 objBankIdx;
+    u8 ready;
+    u32 frames;
+    LightNode* lightNode;
+    LightInfo light;
+} TfUnusedFlame;
+
+void TfUnusedFlame_Init(Actor* thisx, PlayState* play);
+void TfUnusedFlame_Destroy(Actor* thisx, PlayState* play);
+void TfUnusedFlame_Update(Actor* thisx, PlayState* play);
+void TfUnusedFlame_Draw(Actor* thisx, PlayState* play);
 
 #ifdef __cplusplus
 }
