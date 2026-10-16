@@ -56,7 +56,15 @@ python3 "$ROOT/scenes/unicorn_fountain/make_placeholder_textures.py" \
 python3 "$ROOT/scenes/unicorn_fountain/make_title_card.py" "$STAGE/fountain-title" \
     "$ROOT/assets/scene/UnicornFountain/title.ia8.png"
 
-# 4. One archive for SoH's mods folder.
+# 4. Hex Test Room: procedurally built, no upstream .blend needed. Lands in the unused Syotes slot.
+"$PY" "$ROOT/scenes/TestRoom/export_test_room.py" \
+    --fast64 "$TP/addons" \
+    --soh-include "$TP/Shipwright/soh" \
+    --out "$STAGE/testroom-scene"
+python3 "$ROOT/scenes/TestRoom/make_title_card.py" "$STAGE/testroom-title"
+
+# 5. One archive for SoH's mods folder.
 python3 "$ROOT/tools/pack_o2r.py" "$ROOT/build/TrifoolPercent.o2r" \
     "$STAGE/scene" "$STAGE/title" "$STAGE/torch-out/TrifoolPercent-objects.o2r" \
-    "$STAGE/fountain-scene" "$STAGE/fountain-title"
+    "$STAGE/fountain-scene" "$STAGE/fountain-title" \
+    "$STAGE/testroom-scene" "$STAGE/testroom-title"
