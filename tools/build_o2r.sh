@@ -56,8 +56,10 @@ python3 "$ROOT/scenes/unicorn_fountain/make_placeholder_textures.py" \
 python3 "$ROOT/scenes/unicorn_fountain/make_title_card.py" "$STAGE/fountain-title" \
     "$ROOT/assets/scene/UnicornFountain/title.ia8.png"
 
-# 4. Hex Test Room: procedurally built, no upstream .blend needed. Lands in the unused Syotes slot.
+# 4. Hex Test Room: procedurally built on top of TriforceRoom.blend (we only reuse its F3D materials
+#    and Scene / Room / Entrance empties). Lands in the unused Syotes slot.
 "$PY" "$ROOT/scenes/TestRoom/export_test_room.py" \
+    --template "$TP/triforce-percent/scene/TriforceRoom/TriforceRoom.blend" \
     --fast64 "$TP/addons" \
     --soh-include "$TP/Shipwright/soh" \
     --out "$STAGE/testroom-scene"
