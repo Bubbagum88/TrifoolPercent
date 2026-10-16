@@ -2,10 +2,11 @@
 //
 // Ports upstream Triforce% statics/statics.c (Statics_PatchShop, Statics_MoveOddPotionToChild,
 // LOOKING_FOR_BUTTERFLY flag) to Ship of Harkinian idioms (GameInteractor hooks, CVars).
-// Follows isaac's call: "do same as triforcepercent to patch item" -- the Butterfly rides
-// the vanilla ITEM_BIG_POE slot, same as upstream. No new ITEM_* / EXCH_ITEM_* enums are
-// introduced; SoH's inventory, trade and shop code reads the Butterfly as a Big Poe
-// everywhere TrifoolPercent is not actively intercepting.
+// Follows isaac's call: use an unused OoT slot rather than override any shipped item.
+// Vanilla OoT already carries object_gi_butterfly and gameplay-item id 0x68 but never
+// wires a pickup to it (TCRF: OoT/Unused Actors & Objects -> Items -> object_gi_butterfly).
+// We claim 0x68 as the Butterfly and the matching unused exchange-item id 0x18, so no in-use
+// item is displaced; Beta Kokiri's trade branch reads 0x18 directly.
 //
 // (c) 2019-2022 The Triforce% Team, used under upstream/TRIFORCE-PERCENT-LICENSE.txt.
 //
@@ -265,9 +266,9 @@ static void RegisterTrifoolBeat1_3Widgets() {
     SohGui::mSohMenu->AddWidget(path, "Beat 1.3 - Butterfly trade", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_BUTTERFLY)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
-            "Turns on the Butterfly trade. The Butterfly rides the vanilla ITEM_BIG_POE "
-            "slot (same choice upstream Triforce% made) so no new inventory enum is "
-            "introduced. Flow: Beta Kokiri's first greeting arms the hunt; the Bazaar "
+            "Turns on the Butterfly trade. The Butterfly claims unused OoT slot 0x68 "
+            "(object_gi_butterfly) and unused exchange id 0x18, so no shipped item is "
+            "overridden. Flow: Beta Kokiri's first greeting arms the hunt; the Bazaar "
             "shopkeeper's 'flying bug' text turns shelf 3 into the Butterfly; buying it "
             "fills a bottle; offering that bottle to the Beta Kokiri walks dialogue "
             "0x0B13 and hands Link the Odd Potion, which is auto-moved into the child "
