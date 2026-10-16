@@ -9,7 +9,10 @@
  *
  * TrifoolPercent-side differences vs. upstream:
  *   - PlayState / GET_PLAYER everywhere instead of GlobalContext / PLAYER;
- *   - the beta-head-turn-toward-player (func_80034A14) is omitted (polish, not functional);
+ *   - the beta-head-turn-toward-player (func_80034A14 / Npc_TrackPoint) is restored, mode 2,
+ *     with a 30 degree deadband before the actor's body yaw starts following the head;
+ *   - targetMode is set to the "friendly NPC" range (same tier Kokiri children / shop NPCs
+ *     use) and ACTOR_FLAG_FRIENDLY is on so Z-target reads her as an NPC, not a hostile;
  *   - the trade branch uses vanilla exchangeItemId with EXCH_ITEM_BUG covered and
  *     EXCH_ITEM_BUTTERFLY left as a Beat 1.3 hook -- today Butterfly never arrives, so
  *     Link ends up on the "crawlies are dumb" / "what is that?" paths or the greeting,
@@ -39,6 +42,17 @@ extern AnimationHeader object_oE_anime_Anim_00001034; // kokiriStanding (upstrea
 #define TF_BK_LIMB_HEAD 23
 #define TF_BK_NUM_LIMBS 39
 #define TF_BK_SHADOW_SIZE 25.0f
+
+// Head-tracking tuning. 0x1555 binang (~30 deg) is the deadband before the body starts
+// following the head; 0x2000 (~45 deg) is where upstream's natural head limit sits, so by
+// the time the head is near its stop the body is already catching up. Smooth-step speeds
+// are picked so the body turn reads as deliberate, not snappy.
+#define TF_BK_HEAD_FOLLOW_PRESET 0xC  // same value upstream Triforce% passed (kREG(17)+0xC)
+#define TF_BK_BODY_FOLLOW_DEADBAND 0x1555  // 30 degrees in binang
+#define TF_BK_BODY_FOLLOW_SCALE 4      // Math_SmoothStepToS reciprocal; 1/4 per frame
+#define TF_BK_BODY_FOLLOW_STEP 0x200   // ~2.8 deg max step per frame
+#define TF_BK_BODY_FOLLOW_MIN_STEP 0x80 // ~0.7 deg minimum step so the turn always finishes
+#define TF_BK_PLAYER_EYE_HEIGHT 9.0f
 
 bool TrifoolBeat1_IsBetaKokiriSpawned(void); // defined in Beat1KeyOfCourage.cpp
 bool TrifoolBeat1_IsBetaKokiriDone(void);
@@ -97,6 +111,13 @@ void TfBetaKokiri_Init(Actor* thisx, PlayState* play) {
     this->eyeTextureIndex = 0;
     this->actor.textId = 0x0B10;
 
+    // NPC lock-on, not enemy. ACTOR_FLAG_FRIENDLY makes Z-target treat her as a talkable
+    // NPC (green reticle, no attack prompt); ACTOR_FLAG_TARGETABLE was already set at
+    // ActorDB registration time. targetMode 6 is the vanilla "friendly NPC" range tier
+    // (what shopkeepers and Kokiri children use).
+    this->actor.flags |= ACTOR_FLAG_FRIENDLY;
+    this->actor.targetMode = 6;
+
     ActorShape_Init(&this->actor.shape, 0.0f, ActorShadow_DrawCircle, TF_BK_SHADOW_SIZE);
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinderType1(play, &this->collider, &this->actor, &sCylinderInit);
@@ -122,6 +143,28 @@ void TfBetaKokiri_Destroy(Actor* thisx, PlayState* play) {
     }
 }
 
+static void TfBetaKokiri_UpdateTracking(TfBetaKokiri* this, PlayState* play) {
+    Player* player = GET_PLAYER(play);
+
+    // Feed Npc_TrackPoint the player's eyeline so the head yaws toward them (mode 2 is the
+    // same "head + torso" preset upstream Triforce% used for the Beta Kokiri).
+    this->interactInfo.trackPos = player->actor.world.pos;
+    this->interactInfo.yOffset = TF_BK_PLAYER_EYE_HEIGHT;
+    func_80034A14(&this->actor, &this->interactInfo, TF_BK_HEAD_FOLLOW_PRESET, 2);
+
+    // Body yaw deadband: let the head rotate freely up to ~30 degrees before the body
+    // starts chasing it. Once the head is past the deadband, smooth-step the actor's
+    // facing toward the player so the head angle naturally shrinks back down.
+    if (ABS(this->interactInfo.headRot.y) > TF_BK_BODY_FOLLOW_DEADBAND) {
+        s16 towardPlayer =
+            Math_Vec3f_Yaw(&this->actor.world.pos, &player->actor.world.pos);
+        Math_SmoothStepToS(&this->actor.shape.rot.y, towardPlayer,
+                           TF_BK_BODY_FOLLOW_SCALE,
+                           TF_BK_BODY_FOLLOW_STEP, TF_BK_BODY_FOLLOW_MIN_STEP);
+        this->actor.world.rot.y = this->actor.shape.rot.y;
+    }
+}
+
 static s32 TfBetaKokiri_UpdateCommon(TfBetaKokiri* this, PlayState* play) {
     if (!TfBetaKokiri_ObjectsLoaded(this, play)) {
         return -1;
@@ -141,6 +184,7 @@ static s32 TfBetaKokiri_UpdateCommon(TfBetaKokiri* this, PlayState* play) {
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
     Actor_UpdateBgCheckInfo(play, &this->actor, 75.0f, 30.0f, 30.0f, 5);
     TfBetaKokiri_UpdateEyes(this);
+    TfBetaKokiri_UpdateTracking(this, play);
     return SkelAnime_Update(&this->skelAnime);
 }
 
@@ -204,6 +248,11 @@ static s32 TfBetaKokiri_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** d
                    SEGMENTED_TO_VIRTUAL(sEyeTextures[this->eyeTextureIndex]));
         CLOSE_DISPS(play->state.gfxCtx);
         *dList = object_oE9_DL_000800;
+        // Apply the Npc_TrackPoint head rot on top of the skeleton pose so she visibly
+        // looks at Link. Upstream swapped Y onto X and X onto Z here; the beta skeleton's
+        // head bone is set up the same way the vanilla Kokiri head is.
+        rot->x += this->interactInfo.headRot.y;
+        rot->z += this->interactInfo.headRot.x;
     }
     return false;
 }
