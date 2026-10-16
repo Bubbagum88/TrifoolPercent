@@ -1,6 +1,11 @@
-// TrifoolPercent Beat 1 (Key of Courage), slice 1.1:
-//   - Lost Woods secret-path tracker (N -> W -> S -> W) sets BETAKOKIRI_SPAWNED
-//   - Beta Kokiri actor registration + spawn in Sacred Forest Meadow once the flag is set
+// TrifoolPercent Beat 1 (Key of Courage), slices 1.1 and 1.2:
+//   - 1.1: Lost Woods secret-path tracker (N -> W -> S -> W) sets BETAKOKIRI_SPAWNED,
+//          Beta Kokiri actor registration + spawn in Sacred Forest Meadow once the flag is set.
+//   - 1.2: Full Beta Kokiri dialogue tree 0x0B10-0x0B16 wired through CustomMessage, with the
+//          trade branch driven by the vanilla exchangeItemId mechanic (no new engine code);
+//          the "mystery discovered" sound and the actor spawn are both deferred to the next
+//          scene entry after the path completes, instead of firing the moment Link leaves
+//          Lost Woods -- matches isaac's call on how the beat should read in-game.
 //
 // Adapted from Triforce% statics/statics.c (Statics_LostWoods) and actor/BetaKokiri/
 // (c) 2019-2022 The Triforce% Team, used under upstream/TRIFORCE-PERCENT-LICENSE.txt.
@@ -37,24 +42,33 @@ extern PlayState* gPlayState;
 // SaveManager custom section so these persist per-save-file; until then the flag resets
 // on game restart and the dev-warps in Setup.cpp still cover testing.
 static bool sBetaKokiriSpawned = false;
+// Deferred "mystery discovered" announcement: the sound and the first spawn both land on the
+// NEXT scene entry after the Lost Woods sequence completes, so completing the path mid-step
+// in Lost Woods itself is quiet and the player hears the cue the moment the Beta Kokiri
+// becomes visible in Sacred Forest Meadow.
+static bool sBetaKokiriAnnounced = false;
+static bool sBetaKokiriDone = false; // set once Link has traded the Butterfly (Beat 1.3)
 
 extern "C" bool TrifoolBeat1_IsBetaKokiriSpawned(void) {
     return sBetaKokiriSpawned;
 }
 
+extern "C" bool TrifoolBeat1_IsBetaKokiriDone(void) {
+    return sBetaKokiriDone;
+}
+
+extern "C" void TrifoolBeat1_SetBetaKokiriDone(void) {
+    sBetaKokiriDone = true;
+}
+
 static void SetBetaKokiriSpawned() {
-    if (sBetaKokiriSpawned) {
-        return;
-    }
     sBetaKokiriSpawned = true;
-    if (gPlayState != nullptr) {
-        Player* player = GET_PLAYER(gPlayState);
-        Audio_PlayActorSound2(&player->actor, 0x4802); // the "secret found" cue upstream plays
-    }
 }
 
 static void ResetBeat1Flags() {
     sBetaKokiriSpawned = false;
+    sBetaKokiriAnnounced = false;
+    sBetaKokiriDone = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -174,34 +188,95 @@ static void SpawnBetaKokiriIfReady() {
     Actor_Spawn(&gPlayState->actorCtx, gPlayState, sBetaKokiriActorId,
                 kBetaKokiriSpawnPos.x, kBetaKokiriSpawnPos.y, kBetaKokiriSpawnPos.z,
                 0, kBetaKokiriSpawnRotY, 0, 0);
+
+    // First time the actor actually appears in-game: play the "mystery discovered" cue
+    // Triforce% used (0x4802). Any later re-entries into Sacred Forest Meadow are quiet.
+    if (!sBetaKokiriAnnounced) {
+        sBetaKokiriAnnounced = true;
+        Player* player = GET_PLAYER(gPlayState);
+        Audio_PlayActorSound2(&player->actor, 0x4802);
+    }
 }
 
 // -----------------------------------------------------------------------------
-// Dialogue text (0x0B10 only for Beat 1.1).
+// Dialogue text (0x0B10-0x0B16).
 // -----------------------------------------------------------------------------
-// Upstream's full set is 0x0B10-0x0B16; the trade / "thanks" lines land with the Butterfly
-// item in Beat 1.3. 0x0B10 is the "I'm looking for a bug" greeting Link gets before any
-// trade is possible, which matches today's actor behaviour.
+// Full Beta Kokiri dialogue tree, lifted from upstream assets/text/messages.c and wired
+// through CustomMessage so SoH's native text box renders every line. Picked by the actor
+// using the vanilla exchangeItemId plumbing -- no new engine code, same path the vanilla
+// trade NPCs use (Granny, Anju, etc).
+//
+//   0x0B10  greeting, "looking for bugs?"
+//   0x0B11  Link offered a non-bug trade item -> "what is that?"
+//   0x0B12  Link offered a (vanilla) bug      -> "crawlies are dumb, I want a flying bug"
+//   0x0B13  Link offered the Butterfly        -> accept + hand over Odd Potion (Beat 1.3)
+//   0x0B15  tail of the Odd Potion give line
+//   0x0B16  after the trade is done
+//
+// The 0x0B13/0x0B15 lines are present already so Beat 1.3 only has to wire the Butterfly
+// exchange item itself; today the actor never offers that branch (sBetaKokiriDone stays
+// false until Butterfly lands) and the dialogue tree reads as the pre-trade state.
 
 #define MSG_NEWLINE "\x01"
 #define MSG_END "\x02"
-#define MSG_COLOR_GREEN "\x05\x42"
-#define MSG_COLOR_WHITE "\x05\x40"
+#define MSG_BOX_BREAK "\x04"
+#define MSG_QUICKTEXT_ON "\x1B"
+#define MSG_QUICKTEXT_OFF "\x1C"
 
-static const char kBetaKokiriBugText[] =
-    "Hey, hey, " MSG_COLOR_GREEN "Mr. Hero" MSG_COLOR_WHITE "!" MSG_NEWLINE
-    "I'm looking for a flying bug..." MSG_NEWLINE
-    "A pretty one. Have you seen one?" MSG_END;
+static const char kBeta0B10[] =
+    "Oh um. Are you looking for bugs," MSG_NEWLINE
+    "too? I love bugs! But I can't" MSG_NEWLINE
+    "find any. How's your luck?" MSG_END;
+
+static const char kBeta0B11[] =
+    "What is that? I asked you for a" MSG_NEWLINE
+    "bug!" MSG_END;
+
+static const char kBeta0B12[] =
+    "No, no! These are crawlies!" MSG_NEWLINE
+    "Crawlies are dumb. I want a flying" MSG_NEWLINE
+    "bug. You know, colorful, with wings." MSG_BOX_BREAK
+    "They like flowers, so you might" MSG_NEWLINE
+    "find one somewhere people grow lots" MSG_NEWLINE
+    "of different kinds of flowers." MSG_END;
+
+static const char kBeta0B13[] =
+    "Wow, you actually brought it!" MSG_NEWLINE
+    MSG_QUICKTEXT_ON "Thanks!" MSG_QUICKTEXT_OFF MSG_BOX_BREAK
+    "You're a nice guy, unlike that Mido..." MSG_NEWLINE
+    "He never talks to me. Except one" MSG_NEWLINE
+    "time he gave me this, and ordered" MSG_NEWLINE
+    "me to keep it safe." MSG_BOX_BREAK
+    "But I don't really want it... You can" MSG_NEWLINE
+    "have it!" MSG_END;
+
+static const char kBeta0B15[] =
+    "I don't think you can use it by" MSG_NEWLINE
+    "yourself, though..." MSG_END;
+
+static const char kBeta0B16[] =
+    "Thanks for bringing me that bug!" MSG_END;
+
+static void LoadOneMessage(u16 textId, const char* body, size_t bodyLen, bool* loadFromMessageTable) {
+    std::string s(body, bodyLen);
+    CustomMessage msg(s, s, s, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_MIDDLE);
+    msg.LoadIntoFont();
+    *loadFromMessageTable = false;
+    (void)textId;
+}
 
 static void LoadBeat1Message(u16* textId, bool* loadFromMessageTable) {
     if (CVarGetInteger(CVAR_TRIFOOL_BETA_KOKIRI, 0) == 0) {
         return;
     }
-    if (*textId == 0x0B10) {
-        std::string body(kBetaKokiriBugText, sizeof(kBetaKokiriBugText) - 1);
-        CustomMessage msg(body, body, body, TEXTBOX_TYPE_BLUE, TEXTBOX_POS_BOTTOM);
-        msg.LoadIntoFont();
-        *loadFromMessageTable = false;
+    switch (*textId) {
+        case 0x0B10: LoadOneMessage(*textId, kBeta0B10, sizeof(kBeta0B10) - 1, loadFromMessageTable); break;
+        case 0x0B11: LoadOneMessage(*textId, kBeta0B11, sizeof(kBeta0B11) - 1, loadFromMessageTable); break;
+        case 0x0B12: LoadOneMessage(*textId, kBeta0B12, sizeof(kBeta0B12) - 1, loadFromMessageTable); break;
+        case 0x0B13: LoadOneMessage(*textId, kBeta0B13, sizeof(kBeta0B13) - 1, loadFromMessageTable); break;
+        case 0x0B15: LoadOneMessage(*textId, kBeta0B15, sizeof(kBeta0B15) - 1, loadFromMessageTable); break;
+        case 0x0B16: LoadOneMessage(*textId, kBeta0B16, sizeof(kBeta0B16) - 1, loadFromMessageTable); break;
+        default: break;
     }
 }
 
@@ -233,14 +308,17 @@ static void RegisterTrifoolBeat1Widgets() {
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
             "Walking N -> W -> S -> W out of Lost Woods arms the Beta Kokiri spawn in Sacred "
             "Forest Meadow, same path trigger as the Triforce% showcase. The 'secret found' "
-            "sound plays when the sequence completes."));
+            "cue is deferred until the next time Link enters Sacred Forest Meadow after the "
+            "path finishes, matching the moment the Beta Kokiri first appears."));
     SohGui::mSohMenu->AddWidget(path, "Beat 1 - Beta Kokiri", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_BETA_KOKIRI)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
             "Once the Lost Woods path is armed, spawns the unused beta Kokiri NPC "
             "(object_oE4 skeleton + object_oE9 head + object_oE_anime standing anim, same "
-            "combo Triforce% used) in Sacred Forest Meadow. Talking plays the 'I'm looking "
-            "for a bug' text (0x0B10). The Butterfly trade lands in Beat 1.3."));
+            "combo Triforce% used) in Sacred Forest Meadow. Talking walks the full dialogue "
+            "tree (0x0B10-0x0B16) using the vanilla exchangeItemId trade mechanic: show a "
+            "non-bug item and she rejects it, show a vanilla bug and she asks for a flying "
+            "one. The Butterfly trade and its reward land in Beat 1.3."));
 }
 
 static RegisterMenuInitFunc beat1MenuInitFunc(RegisterTrifoolBeat1Widgets);
