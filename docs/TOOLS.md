@@ -1,8 +1,15 @@
 # Tools & Ecosystem
 
-The wider OoT / Ship of Harkinian tooling TrifoolPercent is built on and around. For the specific pipeline this repo runs on each build, see [BUILD_TOOLS.md](BUILD_TOOLS.md).
+> See also: [BUILD_TOOLS.md](BUILD_TOOLS.md) (pipeline this repo runs) · [BUILDING.md](BUILDING.md) (how to build)
 
-Every link below was checked against a live repository in October 2026.
+The wider OoT / Ship of Harkinian tooling TrifoolPercent is built on and around. Every link was checked against a live repository in October 2026.
+
+**Contents**
+- [Ship of Harkinian](#ship-of-harkinian)
+- [Building mod archives (`.o2r`)](#building-mod-archives-o2r)
+- [Models, scenes and actors](#models-scenes-and-actors)
+- [Audio](#audio)
+- [Reference code](#reference-code)
 
 ## Ship of Harkinian
 | Tool | What we use it for |
