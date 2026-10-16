@@ -17,6 +17,16 @@
 #define CVAR_TRIFOOL_PAUSE_DEBUG_INV CVAR_ENHANCEMENT("TrifoolPercent.PauseDebugInv")
 #define CVAR_TRIFOOL_LOST_WOODS_PATH CVAR_ENHANCEMENT("TrifoolPercent.LostWoodsPath")
 #define CVAR_TRIFOOL_BETA_KOKIRI CVAR_ENHANCEMENT("TrifoolPercent.BetaKokiri")
+#define CVAR_TRIFOOL_BUTTERFLY CVAR_ENHANCEMENT("TrifoolPercent.Butterfly")
+
+// Butterfly rides a slot that vanilla OoT ships but never uses. The gameplay-item id
+// 0x68 (object_gi_butterfly, documented on TCRF) has no in-game pickup wired to it, so
+// claiming it as the Butterfly displaces nothing. The exchange-item id 0x18 sits in the
+// same gap -- the vanilla EXCH_ITEM_* enum stops before it -- so Z-targeting Beta
+// Kokiri with the Butterfly bottle maps cleanly to its own trade branch without
+// repurposing an existing trade item.
+#define TRIFOOL_ITEM_BUTTERFLY 0x68
+#define TRIFOOL_EXCH_ITEM_BUTTERFLY 0x18
 
 // Resources shipped in TrifoolPercent.o2r (built by actors/triforce_actor/make_torch_input.py).
 #define dgTrifoolTriforcePieceDL "__OTR__objects/object_trifool_triforce_piece/gTrifoolTriforcePieceDL"
