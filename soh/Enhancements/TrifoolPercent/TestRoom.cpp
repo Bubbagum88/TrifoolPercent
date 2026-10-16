@@ -49,21 +49,61 @@ extern PlayState* gPlayState;
 #define HEX_SIDE_MIDPOINT_OOT 346.0f // = HEX_RADIUS * cos(30deg) * 10
 #define SIGN_INSET_OOT        140.0f // = SIGN_INSET * 10
 
-// Reserved TrifoolPercent text-id block for the test room signs (0x1600..0x1605).
+// Reserved TrifoolPercent text-id blocks for the test room signs:
+//   0x1600..0x1605 - six doorway signs (destinations the hex's exit list points at).
+//   0x1610..0x1612 - the prototype cutscene's three textboxes (TestRoomCs.c).
+//   0x1620..0x162D - beta/unused-content gallery plaques scattered around the room interior
+//                    (TCRF-sourced descriptions + commemorative plaques for TrifoolPercent assets).
 #define TEST_ROOM_SIGN_TEXT_BASE 0x1600
+#define TEST_ROOM_EXHIBIT_TEXT_BASE 0x1620
 
-struct TestRoomDoor {
-    const char* label;   // "Kokiri Forest", "Triforce Room", ...
+struct TestRoomSign {
+    const char* label;   // "Kokiri Forest", "En_Bird (object_bird)", ...
     const char* detail;  // longer description shown on the sign
 };
 
-static constexpr std::array<TestRoomDoor, 6> kTestRoomDoors = { {
+static constexpr std::array<TestRoomSign, 6> kTestRoomDoors = { {
     { "Kokiri Forest",         "Back to the main game,\nby Link's house." },
     { "Triforce Room",         "The Triforce% Triforce\nRoom (POC)." },
     { "Modified Sacred Realm", "Not built yet. Lands you\nin the Chamber of Sages\nfor now." },
     { "Unicorn Fountain",      "The Triforce% Unicorn\nFountain (POC)." },
     { "(reserved)",             "Open slot for the next\nroom we iterate on." },
     { "(reserved)",             "Open slot for the next\nroom we iterate on." },
+} };
+
+// Beta/unused-content gallery. Each entry is a plaque explaining one OoT beta or unused asset
+// (addresses and descriptions sourced from TCRF: "Unused Actors & Objects" and "Unused Content in
+// Used Actors & Objects"), plus a few commemorative plaques for the Triforce% assets we've
+// already landed on the TrifoolPercent side. Line breaks are hand-wrapped for OoT's narrow textbox.
+static constexpr std::array<TestRoomSign, 14> kTestRoomExhibits = { {
+    { "En_Part  (0x0007)",
+      "Beta disembodied body-part\nactor. Spawns a floating head\nor hand with the vanilla\nStalfos skeleton." },
+    { "En_Scene_Change  (0x0024)",
+      "Unused trigger that was\nmeant to swap scene headers\nmid-room. Nothing in the\nretail game spawns it." },
+    { "En_OE2  (0x004F)",
+      "Unused child NPC built from\nobject_oE2. Early sibling of\nthe oE4 Kokiri we repurpose\nfor Beta Kokiri." },
+    { "En_Horse_Zelda  (0x005B)",
+      "Unused mounted Zelda horse.\nZelda rides Impa's horse in\nthe final escape cutscene\ninstead of her own." },
+    { "En_Bird  (0x0072, object_bird)",
+      "Unused blue swallow. Was\nmeant to flock around Hyrule\nField; the chirping SFX\nstill ship in the ROM." },
+    { "En_Lightbox  (0x007C)",
+      "Unused glowing crate actor.\nLikely a scrapped Shadow\nTemple light-source puzzle\nprop." },
+    { "En_Pu_box  (0x007D)",
+      "Unused pushable box. Beta\nice-cavern or Spirit Temple\npush-block, pre-dating the\nfinal Obj_Oshihiki." },
+    { "En_Vase  (0x0082)",
+      "Unused Hyrule Castle vase.\nBeta castle courtyard decor;\nreplaced by the vanilla\nbreakable pots." },
+    { "En_Nwc  (0x0135)",
+      "Unused chick. Lon Lon Ranch\nconcepts had a baby-cucco\npet; its model and chirp\nremain in the ROM." },
+    { "En_Clear_Tag  (0x013B)",
+      "Beta silver sparkle. Death\nMountain / Spirit Temple test\neffect, superseded by the\nfinal Clear_Tag_Switch." },
+    { "Item_Inbox  (0x0137)",
+      "Unused chest-like container.\nEarly treasure-pickup actor\nreplaced by En_Box before\nrelease." },
+    { "Obj_Elevator  (0x012B)",
+      "Unused beta elevator. Lift\nactor from the pre-release\nJabu-Jabu / Shadow Temple\nprototypes." },
+    { "object_gi_butterfly  (0x0175)",
+      "Vanilla OoT ships this gift\nitem with no in-game pickup.\nTrifoolPercent claims the\nslot for its Butterfly bottle." },
+    { "object_fire  (unused dancing flame)",
+      "Vanilla OoT slot 0x000F has\na 'Dancing Flame' DL with no\nspawner. We use it for the\ntest-entrance marker." },
 } };
 
 static bool IsTestRoom() {
@@ -92,13 +132,17 @@ static ColliderCylinderInitType1 sSignColliderInit = {
 extern "C" void TfTestRoomSign_Init(Actor* thisx, PlayState* play) {
     TfTestRoomSign* this_ = (TfTestRoomSign*)thisx;
     this_->initState = 0;
-    // params carries the sign slot (0..5); clamp defensively.
-    u16 slot = (u16)(thisx->params & 0xFFFF);
-    if (slot >= kTestRoomDoors.size()) {
+    // params carries the full text id (0x1600+door or 0x1620+exhibit); validate before trusting it.
+    u16 textId = (u16)(thisx->params & 0xFFFF);
+    bool isDoor = textId >= TEST_ROOM_SIGN_TEXT_BASE &&
+                  textId < TEST_ROOM_SIGN_TEXT_BASE + kTestRoomDoors.size();
+    bool isExhibit = textId >= TEST_ROOM_EXHIBIT_TEXT_BASE &&
+                     textId < TEST_ROOM_EXHIBIT_TEXT_BASE + kTestRoomExhibits.size();
+    if (!isDoor && !isExhibit) {
         Actor_Kill(thisx);
         return;
     }
-    thisx->textId = TEST_ROOM_SIGN_TEXT_BASE + slot;
+    thisx->textId = textId;
     thisx->flags |= ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY;
     thisx->targetMode = 6; // same "friendly NPC" range tier as Kokiri children / shop NPCs
     Collider_InitCylinder(play, &this_->collider);
@@ -189,7 +233,36 @@ static void SpawnTestRoomSigns() {
         float x = cosf(angle) * distFromCenter;
         float z = -sinf(angle) * distFromCenter; // OoT Z axis flipped relative to Blender Y
         Actor_Spawn(&gPlayState->actorCtx, gPlayState, sTestRoomSignActorId,
-                    x, 0.0f, z, 0, kSignYaws[slot], 0, slot);
+                    x, 0.0f, z, 0, kSignYaws[slot], 0, TEST_ROOM_SIGN_TEXT_BASE + slot);
+    }
+}
+
+// Spawn the beta-content gallery plaques on an inner ring, well clear of the doorway signs and
+// the room centre. Each plaque faces the centre so Link can walk the ring and read them in order.
+static void SpawnTestRoomExhibits() {
+    if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0) {
+        return;
+    }
+    if (sTestRoomSignActorId < 0) {
+        sTestRoomSignActorId = AddSignActor();
+    }
+    if (sTestRoomSignActorId < 0) {
+        return;
+    }
+    constexpr float kExhibitRingRadius = 220.0f;         // OoT units from room centre
+    constexpr float kTwoPi = 6.2831853071795864f;
+    constexpr s32 count = (s32)kTestRoomExhibits.size(); // 14 plaques
+    for (s32 slot = 0; slot < count; ++slot) {
+        float angle = kTwoPi * (float)slot / (float)count;
+        float x = cosf(angle) * kExhibitRingRadius;
+        float z = -sinf(angle) * kExhibitRingRadius;
+        // Yaw: face the centre. In OoT yaw-s16, Math_Vec3f_Yaw(from->to) is +Z basis; here the sign
+        // sits at (x, z) and should look at (0, 0), so the outward yaw is atan2f(x, z) in OoT units.
+        float outwardAngle = atan2f(x, z); // radians, OoT yaw = radians * 0x8000 / M_PI
+        s16 outwardYaw = (s16)(outwardAngle * (32768.0f / 3.14159265358979f));
+        s16 inwardYaw = (s16)(outwardYaw + (s16)0x8000);
+        Actor_Spawn(&gPlayState->actorCtx, gPlayState, sTestRoomSignActorId,
+                    x, 0.0f, z, 0, inwardYaw, 0, TEST_ROOM_EXHIBIT_TEXT_BASE + slot);
     }
 }
 
@@ -203,7 +276,7 @@ static void SpawnTestRoomSigns() {
 #define MSG_COLOR_YELLOW "\x05\x46"
 
 static std::string BuildSignMessage(s32 slot) {
-    const TestRoomDoor& door = kTestRoomDoors[slot];
+    const TestRoomSign& door = kTestRoomDoors[slot];
     std::string body;
     body += MSG_COLOR_YELLOW "Entrance ";
     body += (char)('1' + slot);
@@ -217,6 +290,19 @@ static std::string BuildSignMessage(s32 slot) {
     return body;
 }
 
+static std::string BuildExhibitMessage(s32 slot) {
+    const TestRoomSign& ex = kTestRoomExhibits[slot];
+    std::string body;
+    body += MSG_COLOR_YELLOW;
+    body += ex.label;
+    body += MSG_NEWLINE;
+    body += MSG_NEWLINE;
+    body += MSG_COLOR_WHITE;
+    body += ex.detail;
+    body += MSG_END;
+    return body;
+}
+
 static void LoadTestRoomSignMessage(u16* textId, bool* loadFromMessageTable) {
     if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0) {
         return;
@@ -224,6 +310,16 @@ static void LoadTestRoomSignMessage(u16* textId, bool* loadFromMessageTable) {
     if (*textId >= TEST_ROOM_SIGN_TEXT_BASE && *textId < TEST_ROOM_SIGN_TEXT_BASE + kTestRoomDoors.size()) {
         s32 slot = (s32)(*textId - TEST_ROOM_SIGN_TEXT_BASE);
         std::string body = BuildSignMessage(slot);
+        CustomMessage msg(body, body, body, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_MIDDLE);
+        msg.LoadIntoFont();
+        *loadFromMessageTable = false;
+        return;
+    }
+
+    if (*textId >= TEST_ROOM_EXHIBIT_TEXT_BASE &&
+        *textId < TEST_ROOM_EXHIBIT_TEXT_BASE + kTestRoomExhibits.size()) {
+        s32 slot = (s32)(*textId - TEST_ROOM_EXHIBIT_TEXT_BASE);
+        std::string body = BuildExhibitMessage(slot);
         CustomMessage msg(body, body, body, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_MIDDLE);
         msg.LoadIntoFont();
         *loadFromMessageTable = false;
@@ -270,6 +366,7 @@ static void PlayTestRoomPrototypeCs() {
 
 static void RegisterTrifoolTestRoom() {
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomSigns);
+    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomExhibits);
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, PlayTestRoomPrototypeCs);
     COND_HOOK(OnOpenText, CVAR_TEST_ROOM_VALUE, LoadTestRoomSignMessage);
 }
@@ -288,7 +385,9 @@ static void RegisterTrifoolTestRoomWidgets() {
             "A hexagonal dev hub (in the unused Syotes debug slot, map select \"118:Syotes\") "
             "with six doorways: Kokiri Forest, Triforce Room, Modified Sacred Realm (placeholder), "
             "Unicorn Fountain, and two reserved slots. Each doorway's loading zone is baked into "
-            "the scene; the six signs are invisible talk-triggers for now. Needs TrifoolPercent.o2r "
+            "the scene; the six signs are invisible talk-triggers for now. An inner ring of 14 "
+            "exhibit plaques describes beta/unused OoT actors and the TrifoolPercent assets we've "
+            "landed (TCRF-sourced). Needs TrifoolPercent.o2r "
             "in the mods folder for the room itself. Reach it via the Dev inputs' warp cycle "
             "(the \"Test Room (hex hub)\" slot) or the OoT debug map select (\"118:Syotes\")."));
     SohGui::mSohMenu->AddWidget(path, "Test Room prototype cutscene", WIDGET_CVAR_CHECKBOX)
