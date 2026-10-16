@@ -36,6 +36,7 @@ extern PlayState* gPlayState;
 }
 
 #define CVAR_TEST_ROOM_VALUE CVarGetInteger(CVAR_TRIFOOL_TEST_ROOM, 1)
+#define CVAR_TEST_ROOM_PROTOTYPE_CS_VALUE CVarGetInteger(CVAR_TRIFOOL_TEST_ROOM_PROTOTYPE_CS, 0)
 
 // Vanilla OoT scene slot: SCENE_SYOTES (0x68). Nothing in the base game loads it, so the hex
 // room displaces nothing.
@@ -220,14 +221,47 @@ static void LoadTestRoomSignMessage(u16* textId, bool* loadFromMessageTable) {
     if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0) {
         return;
     }
-    if (*textId < TEST_ROOM_SIGN_TEXT_BASE || *textId >= TEST_ROOM_SIGN_TEXT_BASE + kTestRoomDoors.size()) {
+    if (*textId >= TEST_ROOM_SIGN_TEXT_BASE && *textId < TEST_ROOM_SIGN_TEXT_BASE + kTestRoomDoors.size()) {
+        s32 slot = (s32)(*textId - TEST_ROOM_SIGN_TEXT_BASE);
+        std::string body = BuildSignMessage(slot);
+        CustomMessage msg(body, body, body, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_MIDDLE);
+        msg.LoadIntoFont();
+        *loadFromMessageTable = false;
         return;
     }
-    s32 slot = (s32)(*textId - TEST_ROOM_SIGN_TEXT_BASE);
-    std::string body = BuildSignMessage(slot);
-    CustomMessage msg(body, body, body, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_MIDDLE);
-    msg.LoadIntoFont();
-    *loadFromMessageTable = false;
+
+    if (*textId >= gTrifoolTestRoomPrototypeCsTextBase &&
+        *textId < gTrifoolTestRoomPrototypeCsTextBase + gTrifoolTestRoomPrototypeCsTextCount) {
+        s32 slot = (s32)(*textId - gTrifoolTestRoomPrototypeCsTextBase);
+        static const char* const kLines[] = {
+            MSG_COLOR_YELLOW "Prototype cutscene" MSG_NEWLINE MSG_COLOR_WHITE
+                             "running in the Test Room." MSG_END,
+            MSG_COLOR_YELLOW "Camera authored" MSG_NEWLINE MSG_COLOR_WHITE
+                             "against z64cutscene_commands.h." MSG_END,
+            MSG_COLOR_YELLOW "Pipeline check:" MSG_NEWLINE MSG_COLOR_WHITE
+                             "scene > actor > cutscene." MSG_END,
+        };
+        std::string body = kLines[slot];
+        CustomMessage msg(body, body, body, TEXTBOX_TYPE_BLACK, TEXTBOX_POS_MIDDLE);
+        msg.LoadIntoFont();
+        *loadFromMessageTable = false;
+        return;
+    }
+}
+
+// -----------------------------------------------------------------------------
+// Prototype cutscene trigger.
+// -----------------------------------------------------------------------------
+// The cutscene itself (gTrifoolTestRoomPrototypeCs) is a plain CutsceneData[] in TestRoomCs.c -
+// authored by hand against z64cutscene_commands.h, no Fast64 export in the loop. Here we only
+// decide when to play it: on each scene-spawn of SCENE_SYOTES, when the prototype CVar is on.
+
+static void PlayTestRoomPrototypeCs() {
+    if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0 || CVAR_TEST_ROOM_PROTOTYPE_CS_VALUE == 0) {
+        return;
+    }
+    gPlayState->csCtx.segment = gTrifoolTestRoomPrototypeCs;
+    gSaveContext.cutsceneTrigger = 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -236,6 +270,7 @@ static void LoadTestRoomSignMessage(u16* textId, bool* loadFromMessageTable) {
 
 static void RegisterTrifoolTestRoom() {
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomSigns);
+    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, PlayTestRoomPrototypeCs);
     COND_HOOK(OnOpenText, CVAR_TEST_ROOM_VALUE, LoadTestRoomSignMessage);
 }
 
@@ -256,6 +291,13 @@ static void RegisterTrifoolTestRoomWidgets() {
             "the scene; the six signs are invisible talk-triggers for now. Needs TrifoolPercent.o2r "
             "in the mods folder for the room itself. Reach it via the Dev inputs' warp cycle "
             "(the \"Test Room (hex hub)\" slot) or the OoT debug map select (\"118:Syotes\")."));
+    SohGui::mSohMenu->AddWidget(path, "Test Room prototype cutscene", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_TRIFOOL_TEST_ROOM_PROTOTYPE_CS)
+        .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
+            "Plays a 300-frame hand-written cutscene (orbit around the hex hub, three textboxes) "
+            "every time you enter the Test Room. Proves the authoring + trigger pipeline from "
+            "docs/cutscene-plan.md end-to-end with no Fast64 export. Leave off for ordinary "
+            "test-room navigation; turn it on to see or iterate on the cutscene."));
 }
 
 static RegisterMenuInitFunc testRoomMenuInitFunc(RegisterTrifoolTestRoomWidgets);
