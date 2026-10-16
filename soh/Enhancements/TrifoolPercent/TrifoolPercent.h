@@ -97,6 +97,8 @@ typedef struct {
     Actor actor;
     u8 state;
     u8 frames;
+    u8 dialoguePhase; // DIALOGUE_* in z_tf_beta_great_fairy.c
+    u8 floatFrames;   // frames spent in state 2 before the first textbox opens
     f32 ratio;
     f32 lastFloatY;
     Vec3f wingtip;
@@ -122,6 +124,11 @@ void TfBetaGreatFairy_Init(Actor* thisx, PlayState* play);
 void TfBetaGreatFairy_Destroy(Actor* thisx, PlayState* play);
 void TfBetaGreatFairy_Update(Actor* thisx, PlayState* play);
 void TfBetaGreatFairy_Draw(Actor* thisx, PlayState* play);
+
+// Set by TfBetaGreatFairy when her fall animation ends; the Unicorn Fountain glue polls it to fade
+// Link back to Kokiri Forest after the visit. Cleared when the fairy actor is re-created on scene load.
+bool TrifoolUnicornFountain_IsFairyDone(void);
+void TrifoolUnicornFountain_ClearFairyDone(void);
 
 // Beta Kokiri (Beat 1.1). Uses the same body+head combo upstream Triforce% wires
 // (object_oE4 skeleton, object_oE9 head DL, object_oE_anime standing anim); the variant
