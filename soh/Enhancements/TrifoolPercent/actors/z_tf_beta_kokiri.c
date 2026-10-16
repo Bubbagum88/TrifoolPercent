@@ -96,7 +96,11 @@ static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Init(Actor* thisx, PlayState* play) {
     TfBetaKokiri* this = (TfBetaKokiri*)thisx;
 
-    if (!TrifoolBeat1_IsBetaKokiriSpawned()) {
+    // params == 1: onboarding variant used by Beat 1.0 to spawn the kick-off Kokiri by
+    // Link's house. She is always alive while her CVar is on and uses her own text id;
+    // she does not gate on the Lost Woods path or carry the trade branch.
+    bool onboarding = (this->actor.params == 1);
+    if (!onboarding && !TrifoolBeat1_IsBetaKokiriSpawned()) {
         Actor_Kill(&this->actor);
         return;
     }
@@ -104,7 +108,7 @@ void TfBetaKokiri_Init(Actor* thisx, PlayState* play) {
     this->initState = 0;
     this->blinkTimer = 0;
     this->eyeTextureIndex = 0;
-    this->actor.textId = 0x0B10;
+    this->actor.textId = onboarding ? 0x0100 : 0x0B10;
 
     // NPC lock-on, not enemy. ACTOR_FLAG_FRIENDLY makes Z-target treat her as a talkable
     // NPC (green reticle, no attack prompt); ACTOR_FLAG_TARGETABLE was already set at
@@ -181,7 +185,17 @@ static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play) {
         return;
     }
 
+    bool onboarding = (this->actor.params == 1);
+
     if (Actor_IsTalking(&this->actor, play)) {
+        if (onboarding) {
+            // The onboarding Kokiri always speaks text 0x0100. The 3-choice box lives in
+            // the CustomMessage loader; the picked branch is applied in Beat1_0Onboarding
+            // on close. Nothing to switch on here.
+            this->actor.textId = 0x0100;
+            player->actor.textId = this->actor.textId;
+            return;
+        }
         s8 exch = player->exchangeItemId;
         if (TrifoolBeat1_IsBetaKokiriDone()) {
             // Beat 1.3 will arm this once the Butterfly trade is accepted; until then it
@@ -216,8 +230,8 @@ static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play) {
     // EXCH_ITEM_BLUE_FIRE is upstream's choice; it is a harmless placeholder (nothing in
     // Lost Woods / Sacred Forest Meadow actually consumes blue fire from Link) and tells
     // the engine the NPC accepts trade exchange attempts at all. Cleared once Beat 1.3
-    // marks the trade done.
-    if (!TrifoolBeat1_IsBetaKokiriDone()) {
+    // marks the trade done. The onboarding variant doesn't need a trade channel.
+    if (!onboarding && !TrifoolBeat1_IsBetaKokiriDone()) {
         player->exchangeItemId = EXCH_ITEM_BLUE_FIRE;
     }
 }
