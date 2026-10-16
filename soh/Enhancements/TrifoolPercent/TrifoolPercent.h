@@ -18,6 +18,7 @@
 #define CVAR_TRIFOOL_LOST_WOODS_PATH CVAR_ENHANCEMENT("TrifoolPercent.LostWoodsPath")
 #define CVAR_TRIFOOL_BETA_KOKIRI CVAR_ENHANCEMENT("TrifoolPercent.BetaKokiri")
 #define CVAR_TRIFOOL_BUTTERFLY CVAR_ENHANCEMENT("TrifoolPercent.Butterfly")
+#define CVAR_TRIFOOL_TEST_ROOM CVAR_ENHANCEMENT("TrifoolPercent.TestRoom")
 
 // Butterfly rides a slot that vanilla OoT ships but never uses. The gameplay-item id
 // 0x68 (object_gi_butterfly, documented on TCRF) has no in-game pickup wired to it, so
@@ -46,6 +47,9 @@ static const ALIGN_ASSET(2) char gTrifoolTriforceRoomTitleCardTex[] = dgTrifoolT
 
 #define dgTrifoolUnicornFountainTitleCardTex "__OTR__textures/trifool_place_title_cards/gTrifoolUnicornFountainTitleCardTex"
 static const ALIGN_ASSET(2) char gTrifoolUnicornFountainTitleCardTex[] = dgTrifoolUnicornFountainTitleCardTex;
+
+#define dgTrifoolTestRoomTitleCardTex "__OTR__textures/trifool_place_title_cards/gTrifoolTestRoomTitleCardTex"
+static const ALIGN_ASSET(2) char gTrifoolTestRoomTitleCardTex[] = dgTrifoolTestRoomTitleCardTex;
 
 #define dgTrifoolTriforceLightAnim "__OTR__objects/object_trifool_triforce_light/gTrifoolTriforceLightAnim"
 static const ALIGN_ASSET(2) char gTrifoolTriforceLightAnim[] = dgTrifoolTriforceLightAnim;

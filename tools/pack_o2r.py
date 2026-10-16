@@ -22,7 +22,7 @@ MANIFEST = {
     "version": "0.1.0",
     "website": "https://github.com/Bubbagum88/TrifoolPercent",
     "description": "Proof of concept: Triforce% scenes ported to unused SoH debug slots. "
-    "Triforce Room in Besitu (0x66); Unicorn Fountain in Test01 (0x65). "
+    "Triforce Room in Besitu (0x66); Unicorn Fountain in Test01 (0x65); hex Test Room hub in Syotes (0x68). "
     "The actors, cutscenes and hooks need a Ship of Harkinian build with the TrifoolPercent module.",
     "license": "Triforce% license: credit the Triforce% contributors, no implied endorsement, no warranty.",
 }

@@ -129,6 +129,7 @@ static const DevWarp kDevWarps[] = {
     { "Unicorn Fountain",        0x0560,                      0,  0      },
     { "Chamber of Sages",        0x006B,                      0,  (s16)0xFFF0 },
     { "Staff Roll",              0x00CD,                      1,  (s16)0xFFF8 },
+    { "Test Room (hex hub)",     ENTR_SYOTES_0,               1,  0      },
 };
 
 static constexpr size_t kDevWarpCount = sizeof(kDevWarps) / sizeof(kDevWarps[0]);
