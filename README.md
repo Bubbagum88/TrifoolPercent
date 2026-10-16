@@ -67,12 +67,112 @@ and the [roadmap](docs/roadmap.md) for every phase from here to release.
 Every mechanic, scene, actor, cutscene and asset from the original Triforce% that needs to land in TrifoolPercent, categorized with checkboxes: [docs/porting-checklist.md](docs/porting-checklist.md).
 
 ## How to Use
-TrifoolPercent is a small Ship of Harkinian code module plus an `.o2r` asset pack. On Linux or WSL:
 
-1. `tools/setup.sh` fetches the pinned Triforce%, Shipwright and HarbourMasters Fast64 sources, and a Python venv with Blender's `bpy`.
-2. `tools/build_o2r.sh` builds `build/TrifoolPercent.o2r` (the Triforce Room scene and the Triforce actor models).
-3. `tools/build_soh.sh` copies [`soh/Enhancements/TrifoolPercent`](soh/Enhancements/TrifoolPercent) into Shipwright and builds the game.
-4. Put `TrifoolPercent.o2r` in SoH's `mods` folder, launch, and walk through the blue flame by Link's house in Kokiri Forest. The feature can be switched off under Enhancements > TrifoolPercent.
+TrifoolPercent ships as two pieces:
+
+1. **`TrifoolPercent.o2r`** — the asset archive (custom scenes + actor models) that drops into Ship of Harkinian's `mods/` folder.
+2. **The `TrifoolPercent` SoH module** — the C code under [`soh/Enhancements/TrifoolPercent`](soh/Enhancements/TrifoolPercent) that must be compiled into `soh.exe`. The `.o2r` loads the scene geometry; the module provides the custom actors, cutscene hooks, text and quest flags.
+
+### Just want to try it (no build)
+
+1. Open the latest green run of the [**build-o2r** workflow](../../actions/workflows/build-o2r.yml) in this repo.
+2. Scroll to **Artifacts** and download `TrifoolPercent.o2r`.
+3. Drop it into your Ship of Harkinian `mods/` folder.
+4. Launch SoH (needs a build that includes the TrifoolPercent module — see Building below) and walk through the blue flame by Link's house in Kokiri Forest.
+5. Toggle on/off under **Enhancements → TrifoolPercent** in the SoH menu.
+
+> The GitHub-built `.o2r` alone will load the scenes, but the custom actors and cutscenes only appear with a SoH build that has the module compiled in. Until public module-enabled builds exist, you need to build SoH yourself (see Building the game below).
+
+## Building
+
+Supported hosts: **Linux** (Ubuntu 24.04 is the canonical CI target) or **WSL** on Windows. macOS is unverified. The scripts assume a POSIX shell, `git`, `python3`, `cmake`, `ninja` and a C/C++ toolchain.
+
+### 1. One-time setup
+
+```bash
+tools/setup.sh
+```
+
+This clones the pinned third-party sources into `third_party/`:
+
+| Dependency | Why it's needed | Pinned to |
+|---|---|---|
+| [triforce-percent](https://github.com/triforce-percent/triforce-percent) | Source `.blend` files, text and reference zobjs | `12a4bb30…` (last upstream commit, 2023-08-06) |
+| [HarbourMasters/fast64](https://github.com/HarbourMasters/fast64) | Blender exporter that produces SoH scene resources | `a1808d81…` (2026-10-11) |
+| [HarbourMasters/Shipwright](https://github.com/HarbourMasters/Shipwright) | SoH source, include headers, and the Torch asset tool | `6b4edce4…` on `develop` (2026-10-14) |
+| `.venv-blender` | Python 3.13 venv with `bpy==5.2.2` (Blender as a Python module), so Fast64 runs headless | — |
+
+Pins live at the top of [`tools/setup.sh`](tools/setup.sh); edit there to bump.
+
+On Ubuntu you also need Shipwright's build deps before `tools/build_soh.sh`:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y $(cat third_party/Shipwright/linux-build-deps/apt.txt)
+pip install pillow   # for the title-card renderer
+```
+
+### 2. Build the mod archive
+
+```bash
+tools/build_o2r.sh
+```
+
+Writes `build/TrifoolPercent.o2r`. The script:
+
+1. Builds [**Torch**](https://github.com/HarbourMasters/Torch) (HarbourMasters' asset converter) from the Shipwright checkout, OoT support only.
+2. Copies this repo's mirrored textures from `assets/scene/<SceneName>/textures/` into the Triforce% clone, then fills any still-missing textures with generated placeholders.
+3. Runs **Fast64** headlessly (via `bpy`) on `TriforceRoom.blend` and `UnicornFountain.blend` to export SoH scene/room resources, and renders their `title.ia8` title cards with Pillow.
+4. Runs **Torch** on the mirrored Triforce% zobjs under `assets/actor/` to produce the three actor models (Triforce piece, chest, light) as a resource archive.
+5. Calls [`tools/pack_o2r.py`](tools/pack_o2r.py) to merge all of the above into one `.o2r` with a `manifest.json` libultraship reads. The Torch-stamped `version` / `portVersion` files are stripped so libultraship doesn't reject the archive for an unknown game version.
+
+Everything stages under `build/stage/`; delete that dir to force a clean rebuild.
+
+### 3. Build the game (optional)
+
+```bash
+tools/build_soh.sh
+```
+
+Copies [`soh/Enhancements/TrifoolPercent/`](soh/Enhancements/TrifoolPercent) into `third_party/Shipwright/soh/soh/Enhancements/`, then runs Shipwright's normal CMake + Ninja build. Shipwright globs `soh/soh/**`, so there's no CMakeLists to edit. See [Shipwright's BUILDING guide](https://github.com/HarbourMasters/Shipwright/blob/develop/docs/BUILDING.md) for its own prerequisites. First launch still needs a legal OoT ROM so SoH can extract `oot.o2r` — nothing in this repo ships Nintendo data.
+
+The output is `third_party/Shipwright/build/soh/soh.elf` (or `soh.exe` on Windows); drop `TrifoolPercent.o2r` into its `mods/` folder next to that binary.
+
+### CI / automated builds
+
+[`.github/workflows/build-o2r.yml`](.github/workflows/build-o2r.yml) runs the mod-archive build on every push that touches `scenes/`, `actors/`, `tools/` or the workflow itself, and on manual **Run workflow** dispatch. It is the canonical reference for a clean build: if `tools/build_o2r.sh` ever stops working locally, compare against the latest green run. The resulting `.o2r` is uploaded as a workflow artifact with 30-day retention. The game build (`tools/build_soh.sh`) is not run in CI yet.
+
+## Build Tools Walkthrough
+
+A map of the tools the build touches, in roughly the order it uses them, and what each one actually does for TrifoolPercent.
+
+### `tools/setup.sh` — pinned source fetcher
+Shell script. Shallow-clones the three upstream repos at pinned commits and creates `.venv-blender` with `bpy==5.2.2`. Pins (not branch tips) are deliberate: moved submodule branches or upstream refactors won't silently change what a build pulls. Re-running is cheap and idempotent.
+
+### Blender's `bpy` + HarbourMasters Fast64 — scene exporter
+[Fast64](https://github.com/HarbourMasters/fast64) is a Blender add-on that exports OoT scenes, rooms, collision, actor placements and cutscenes. We run it **headless** by importing Blender as a Python module (`bpy`) from `.venv-blender`, pointing it at the Triforce% `.blend` files, and loading HM's fork of the exporter as the add-on. The result is a tree of SoH scene/room resources under `build/stage/scene/`. Fast64 reads textures from the folder next to each `.blend`, which is why `build_o2r.sh` copies this repo's `assets/scene/<Name>/textures/` mirror into the clone before each export.
+
+### Pillow — title-card renderer
+`scenes/<scene>/make_title_card.py` uses [Pillow](https://pillow.readthedocs.io/) to render each scene's `title.ia8` (the "Besitu" / "Test01" title text SoH shows on entry). Pulled in via `pip install pillow` in CI; `tools/setup.sh` doesn't install it itself, so run it manually or let the workflow do it.
+
+### Torch — asset converter (OoT mode)
+[Torch](https://github.com/HarbourMasters/Torch) is the HarbourMasters tool that turns ROM-era asset definitions into libultraship resources. Here it's built from the Shipwright submodule with only `-DBUILD_OOT=ON`, and pointed at the Triforce% zobjs mirrored in `assets/actor/` plus a tiny YAML config generated by [`actors/triforce_actor/make_torch_input.py`](actors/triforce_actor). Output is a resource archive under `build/stage/torch-out/`.
+
+### `tools/pack_o2r.py` — archive merger
+A small Python script that walks each input directory or `.o2r`, collects every entry as `{path: bytes}`, and writes one zip. It drops `version` / `portVersion` (Torch stamps the ROM version it read, which isn't a real SoH game version) and writes a fresh `manifest.json` — libultraship reads that for the mod's name, author, website and description shown in SoH's Mods list. `.o2r` is just a zip; you can `unzip -l build/TrifoolPercent.o2r` to see what shipped.
+
+### Shipwright + CMake/Ninja — the game build
+[`tools/build_soh.sh`](tools/build_soh.sh) copies the module source into the Shipwright checkout and runs its normal Release build (`cmake -G Ninja … && cmake --build`). The module itself is plain C using Shipwright's hook/event system — custom actors register in [`soh/Enhancements/TrifoolPercent`](soh/Enhancements/TrifoolPercent) and are wired into scenes by the `.o2r`.
+
+### GitHub Actions — reproducible builds
+The `build-o2r` workflow runs the whole pipeline on `ubuntu-24.04`: checkout, Python 3.13, Pillow, `tools/setup.sh`, Shipwright's apt deps, `GenerateSohOtr` (needed to seed Torch's include tables), `tools/build_o2r.sh`, then `actions/upload-artifact` for the `.o2r`. `concurrency` cancels in-flight runs on the same ref so pushes don't pile up. If you ever need to debug a build, click into a run → the first red step name says exactly where it broke.
+
+### How we built and modify the mod
+- **Scenes** live as `.blend` files upstream in `third_party/triforce-percent/scene/`; iterate on them in Blender, re-run `tools/build_o2r.sh`, drop the new `.o2r` in SoH's `mods/` folder.
+- **Textures** that need to ship with the mod go in `assets/scene/<Scene>/textures/` and are picked up on the next build.
+- **Actor models** are the Triforce% zobjs under `assets/actor/`; swap the bytes or re-export via z64convert/Fast64, then rebuild.
+- **Gameplay changes** (new actors, cutscene hooks, quest flags, menu toggles) live in [`soh/Enhancements/TrifoolPercent`](soh/Enhancements/TrifoolPercent) and ride along with `tools/build_soh.sh`.
+- **Reference code** for original behavior sits in `third_party/triforce-percent/` after setup, and the breakdown at [`research/triforce-percent-code-breakdown.md`](research/triforce-percent-code-breakdown.md) maps the pieces we're porting.
 
 ## Inspiration
 - Original Triforce% project
