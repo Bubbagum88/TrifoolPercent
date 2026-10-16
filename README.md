@@ -197,4 +197,15 @@ Vendored source trees from the upstream repo in this project (all authored by th
 
 Per the upstream license, members of the Triforce% Team **must be credited in the TrifoolPercent in-game Staff Roll** when the mod ships. Builds of TrifoolPercent do not and will not redistribute ROM data or any assets copyrighted by Nintendo.
 
+## Special Thanks
+
+Huge thanks to the broader **Ocarina of Time modding and preservation community** — decades of their reverse engineering, cataloguing and documentation of OoT's unused content is what makes a project like this feasible for one person. In particular, these references saved an enormous amount of work:
+
+- [**TCRF — Unused Actors & Objects**](https://tcrf.net/The_Legend_of_Zelda:_Ocarina_of_Time/Unused_Actors_%26_Objects) — every unused actor and object listed with its ID/address. Goated.
+- [**TCRF — Unused Content in Used Actors & Objects**](https://tcrf.net/The_Legend_of_Zelda:_Ocarina_of_Time/Unused_Content_in_Used_Actors_%26_Objects) — same, for content hiding inside shipped actors and objects.
+- [**Zelda Wiki — Unused Content (OoT)**](https://zelda.fandom.com/wiki/Unused_Content) — overview, screenshots and historical context for beta/cut material.
+- [**jaytheham.com — OoT Beta Content**](https://www.jaytheham.com/zcw/Ocarina_of_Time_Beta_Content.html) — ready-to-use access to beta assets without hunting addresses. Massive for iterating on this mod.
+
+And of course the people and projects behind the tooling TrifoolPercent is built on: **HarbourMasters** (Ship of Harkinian, Fast64 fork, Torch, Retro), the **OoT decompilation team** at [zeldaret/oot](https://github.com/zeldaret/oot), **HackerOoT**, **Fast64**, **z64me**, **Sauraen** (SEQ64), **Random06457** (Z64Utils), and everyone contributing to the SoH modding community.
+
 Contributions welcome!
