@@ -22,6 +22,7 @@
 #define CVAR_TRIFOOL_ONBOARDING CVAR_ENHANCEMENT("TrifoolPercent.Onboarding")
 #define CVAR_TRIFOOL_FOUNTAIN_OVERWORLD CVAR_ENHANCEMENT("TrifoolPercent.FountainOverworld")
 #define CVAR_TRIFOOL_DOT_ADULT CVAR_ENHANCEMENT("TrifoolPercent.DoorOfTimeAdult")
+#define CVAR_TRIFOOL_ENDING CVAR_ENHANCEMENT("TrifoolPercent.Ending")
 #define CVAR_TRIFOOL_FOUNTAIN_ENTRY_CS CVAR_ENHANCEMENT("TrifoolPercent.FountainEntryCs")
 #define CVAR_TRIFOOL_MIMIC_CHEST CVAR_ENHANCEMENT("TrifoolPercent.MimicChest")
 
