@@ -383,6 +383,13 @@ static void RegisterTrifoolPercentWidgets() {
             "The Triforce% Unicorn Fountain (in the debug Test Map 1 slot): the Beta Great Fairy who teaches the "
             "Overture of Sages. Needs TrifoolPercent.o2r in the mods folder for the room itself. The fairy's mesh "
             "and the cutscene are not available yet; a column of golden sparkles stands in for her."));
+    SohGui::mSohMenu->AddWidget(path, "Unicorn Fountain entry cutscene", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_TRIFOOL_FOUNTAIN_ENTRY_CS)
+        .Options(UIWidgets::CheckboxOptions().DefaultValue(true).Tooltip(
+            "Plays a 240-frame camera-only arrival pan when Link enters the Unicorn Fountain. The fairy "
+            "holds off rising until the cutscene finishes. Turn off to iterate on the room without the "
+            "cutscene running every entry. A Fast64 export of UnicornFountain.blend will replace the "
+            "hand-written data in a later pass; the trigger stays the same."));
     SohGui::mSohMenu->AddWidget(path, "Overworld entrance to Unicorn Fountain", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_FOUNTAIN_OVERWORLD)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
