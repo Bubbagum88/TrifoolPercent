@@ -146,6 +146,22 @@ void TfBetaKokiri_Destroy(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Update(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Draw(Actor* thisx, PlayState* play);
 
+// Unused-flame billboard built from OBJECT_FIRE (vanilla slot 0x0F, TCRF "Dancing
+// Flame"). Spawned by TrifoolPercent.cpp in Kokiri Forest as the test-entrance marker.
+typedef struct {
+    Actor actor;
+    s32 objBankIdx;
+    u8 ready;
+    u32 frames;
+    LightNode* lightNode;
+    LightInfo light;
+} TfUnusedFlame;
+
+void TfUnusedFlame_Init(Actor* thisx, PlayState* play);
+void TfUnusedFlame_Destroy(Actor* thisx, PlayState* play);
+void TfUnusedFlame_Update(Actor* thisx, PlayState* play);
+void TfUnusedFlame_Draw(Actor* thisx, PlayState* play);
+
 #ifdef __cplusplus
 }
 #endif

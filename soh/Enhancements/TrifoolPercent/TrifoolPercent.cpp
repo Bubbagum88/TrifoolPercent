@@ -43,16 +43,14 @@ extern PlayState* gPlayState;
 // now reached from inside the hub instead, so testing is one keypress away whichever room
 // is being iterated on.
 //
-// Visually marked with an En_Light "large blue flame" (params 0x0003) rather than the small
-// 0x0002 flame the POC used, so a player who has run the mod before notices the change. The
-// upstream TCRF list carries an unused "object_fire" (Dancing Flame) slot that'd be a
-// better fit visually -- treating that as the follow-up asset task; swapping En_Light for a
-// custom actor driven by object_fire is a drop-in replacement, nothing above it has to
-// change.
+// Visually marked with a custom TfUnusedFlame actor driven by vanilla OoT's unused
+// OBJECT_FIRE slot (0x0F, TCRF "Dancing Flame"). The slot ships gFire0Tex..gFire7Tex
+// as an eight-frame ia8 32x64 loop but no retail actor references it; this one does.
+// Falls back on a dynamic blue point light if the extract pipeline leaves object_fire
+// out, so the warp spot is still legible either way.
 static Vec3f sTestEntrancePos = { -18.0f, -80.0f, 816.0f };
 #define TEST_ENTRANCE_RADIUS 40.0f
 #define TEST_ENTRANCE_HEIGHT 40.0f
-#define TEST_ENTRANCE_FLAME_PARAMS 0x0003 // En_Light: large blue flame
 
 // SCENE_SYOTES (0x68) ships in vanilla as an unused "test room" slot. TrifoolPercent's hex
 // Test Room hub lives there (PR #30 lands the actual geometry); the entrance id below works
@@ -63,6 +61,7 @@ static s16 sTriforcePieceId = -1;
 static s16 sTriforceChestId = -1;
 static s16 sTriforceLightId = -1;
 static s16 sBetaGreatFairyId = -1;
+static s16 sUnusedFlameId = -1;
 
 static s16 AddActor(const char* name, const char* desc, size_t instanceSize, ActorFunc init, ActorFunc destroy,
                     ActorFunc update, ActorFunc draw) {
@@ -172,12 +171,24 @@ static void SpawnUnicornFountain() {
                             160, 120, 144, 24, 20);
 }
 
+static void AddUnusedFlameActorToDB() {
+    if (sUnusedFlameId >= 0) {
+        return;
+    }
+    sUnusedFlameId = AddActor("Tf_Unused_Flame", "Unused Flame (TrifoolPercent)", sizeof(TfUnusedFlame),
+                              TfUnusedFlame_Init, TfUnusedFlame_Destroy, TfUnusedFlame_Update, TfUnusedFlame_Draw);
+}
+
 static void SpawnTestEntranceMarker() {
     if (!IsKokiriForest()) {
         return;
     }
-    Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_LIGHT, sTestEntrancePos.x, sTestEntrancePos.y,
-                sTestEntrancePos.z, 0, 0, 0, TEST_ENTRANCE_FLAME_PARAMS);
+    AddUnusedFlameActorToDB();
+    if (sUnusedFlameId < 0) {
+        return;
+    }
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, sUnusedFlameId, sTestEntrancePos.x, sTestEntrancePos.y,
+                sTestEntrancePos.z, 0, 0, 0, 0);
 }
 
 static bool PlayerAt(const Vec3f* pos) {
@@ -295,8 +306,9 @@ static void RegisterTrifoolPercentWidgets() {
     SohGui::mSohMenu->AddWidget(path, "Test Flame by Link's House", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_TEST_ENTRANCE)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(true).Tooltip(
-            "Spawns a large blue flame in front of Link's house in Kokiri Forest. Walking into it warps Link into "
-            "SCENE_SYOTES (the debug Test Room slot) where the hex hub exits to every WIP TrifoolPercent room. "
+            "Spawns a flame in front of Link's house in Kokiri Forest, drawn from vanilla OoT's unused "
+            "object_fire slot (TCRF \"Dancing Flame\"). Walking into it warps Link into SCENE_SYOTES "
+            "(the debug Test Room slot) where the hex hub exits to every WIP TrifoolPercent room. "
             "Replaces the two POC-era flames that pointed at the Triforce Room and Unicorn Fountain directly."));
     SohGui::mSohMenu->AddWidget(path, "Unicorn Fountain", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_UNICORN_FOUNTAIN)
