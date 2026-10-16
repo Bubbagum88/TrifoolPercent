@@ -1,0 +1,96 @@
+# Builds the full Ship of Harkinian engine with the TrifoolPercent module compiled in, together with
+# the mod .o2r. Downstream users only need the `.o2r` on top of a stock SoH install (that is what
+# build-o2r.yml ships); this workflow is for when the module itself changes and we want a ready-to-run
+# soh.elf + TrifoolPercent.o2r pair to hand around.
+#
+# Steps read top-to-bottom like a recipe. When a build fails, open the run, click the red job, and
+# the first red step's name says where to look.
+#
+# To use the result: open the completed run on GitHub -> scroll to "Artifacts" -> download
+# "TrifoolPercent-soh-linux" -> extract -> run `./soh.elf` (first launch extracts oot.o2r from your
+# own ROM, same as a stock SoH install).
+name: build-soh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "soh/**"
+      - "scenes/**"
+      - "actors/**"
+      - "tools/**"
+      - ".github/workflows/build-soh.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build soh.elf + TrifoolPercent.o2r
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out TrifoolPercent
+        uses: actions/checkout@v4
+
+      - name: Install Python 3.13 (for Blender's bpy and the asset scripts)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Pillow (needed by the title-card renderer)
+        run: pip install pillow
+
+      - name: Fetch upstream sources (Triforce%, HM Fast64, Shipwright + submodules)
+        # tools/setup.sh pins and clones everything; it uses --depth 1 so moved submodule branches
+        # don't matter. Shipwright is both the engine and the Torch toolchain host.
+        run: tools/setup.sh
+
+      - name: Install Shipwright's Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(cat third_party/Shipwright/linux-build-deps/apt.txt)
+
+      - name: Build Shipwright's asset tools (needed to produce the mod .o2r)
+        working-directory: third_party/Shipwright
+        run: |
+          cmake --no-warn-unused-cli -H. -Bbuild-cmake -GNinja \
+                -DCMAKE_BUILD_TYPE:STRING=Release -DSOH_TOOLS_ONLY=ON
+          cmake --build build-cmake --config Release --target GenerateSohOtr -j4
+
+      - name: Build TrifoolPercent.o2r (the Triforce Room, Unicorn Fountain and Test Room scenes)
+        run: tools/build_o2r.sh
+
+      - name: Build the full Ship of Harkinian engine with the TrifoolPercent module
+        # tools/build_soh.sh copies soh/Enhancements/TrifoolPercent/ into Shipwright's tree and runs
+        # a Release cmake build. Shipwright globs soh/soh/** so no build-file edits are needed.
+        run: tools/build_soh.sh
+
+      - name: Stage the drop (soh.elf + TrifoolPercent.o2r + a README)
+        run: |
+          STAGE="build/soh-drop"
+          mkdir -p "$STAGE/mods"
+          cp third_party/Shipwright/build/soh/soh.elf "$STAGE/soh.elf"
+          cp build/TrifoolPercent.o2r "$STAGE/mods/TrifoolPercent.o2r"
+          cat > "$STAGE/README.txt" <<'EOF'
+          TrifoolPercent build for Ship of Harkinian (Linux).
+
+          Files in this archive:
+            soh.elf                   The engine with the TrifoolPercent module compiled in.
+            mods/TrifoolPercent.o2r   The scenes (Triforce Room, Unicorn Fountain, hex Test Room)
+                                      and actor models. soh.elf picks it up automatically from mods/.
+
+          Running it:
+            1. Put your Ocarina of Time 1.0 ROM in the folder next to soh.elf on first launch;
+               soh.elf extracts oot.o2r from it, same as a stock SoH install.
+            2. ./soh.elf
+            3. Enable the TrifoolPercent menu entries under Enhancements -> TrifoolPercent.
+          EOF
+
+      - name: Upload the TrifoolPercent + soh.elf drop
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrifoolPercent-soh-linux
+          path: build/soh-drop
+          retention-days: 30
