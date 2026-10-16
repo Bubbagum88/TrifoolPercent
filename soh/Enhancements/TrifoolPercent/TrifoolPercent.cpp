@@ -23,6 +23,8 @@ extern PlayState* gPlayState;
 
 #define CVAR_VALUE CVarGetInteger(CVAR_TRIFOOL_TRIFORCE_ROOM, 1)
 #define CVAR_FOUNTAIN_VALUE CVarGetInteger(CVAR_TRIFOOL_UNICORN_FOUNTAIN, 1)
+#define CVAR_FOUNTAIN_OVERWORLD_VALUE CVarGetInteger(CVAR_TRIFOOL_FOUNTAIN_OVERWORLD, 0)
+#define CVAR_DOT_ADULT_VALUE CVarGetInteger(CVAR_TRIFOOL_DOT_ADULT, 0)
 
 // Triforce% hijacked the Goron Shop's scene slot for its Triforce Room. TrifoolPercent uses the unused debug scene
 // Besitu instead (map select "116:Test Room"), so the Goron Shop stays vanilla.
@@ -210,6 +212,59 @@ static void EnterTestRoomFromFlame() {
     gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
 }
 
+// Overworld entrance to the Unicorn Fountain, in Lost Woods. Triforce% repurposed the
+// vanilla Zora's Fountain entrance (0x0560) by patching the entrance table; we take the
+// native path instead -- a cvar-gated TfUnusedFlame on the Lost Woods floor that warps
+// Link into the TrifoolPercent fountain scene. Coordinates are provisional (west side of
+// SCENE_LOST_WOODS, away from the N/W/S path-matching zones), tune by eye.
+static Vec3f sFountainOverworldPos = { -600.0f, 0.0f, 400.0f };
+
+static bool IsLostWoods() {
+    return gPlayState != nullptr && gPlayState->sceneNum == SCENE_LOST_WOODS;
+}
+
+static void SpawnFountainOverworldMarker() {
+    if (!IsLostWoods()) {
+        return;
+    }
+    AddUnusedFlameActorToDB();
+    if (sUnusedFlameId < 0) {
+        return;
+    }
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, sUnusedFlameId, sFountainOverworldPos.x,
+                sFountainOverworldPos.y, sFountainOverworldPos.z, 0, 0, 0, 0);
+}
+
+static void EnterFountainFromOverworld() {
+    if (!IsLostWoods() || gPlayState->transitionTrigger != TRANS_TRIGGER_OFF) {
+        return;
+    }
+    if (!PlayerAt(&sFountainOverworldPos)) {
+        return;
+    }
+    gPlayState->nextEntranceIndex = UNICORN_FOUNTAIN_ENTRANCE;
+    gPlayState->transitionTrigger = TRANS_TRIGGER_START;
+    gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
+}
+
+// Door of Time adult-side fix. Vanilla OoT sets EVENTCHKINF_OPENED_DOOR_OF_TIME (0x4B)
+// as part of the child Master Sword cutscene, which gates both the Door_Toki collision
+// (z_door_toki.c) and the door's visual state. If a player warps into Temple of Time as
+// adult via Setup/dev warps -- the TrifoolPercent default path -- the flag may still be
+// clear, so the door blocks Link. This hook mirrors what the opening cutscene would have
+// done, idempotently: on adult entry to SCENE_TEMPLE_OF_TIME, set the flag.
+static void FixDoorOfTimeOnAdultEntry() {
+    if (gPlayState == nullptr || gPlayState->sceneNum != SCENE_TEMPLE_OF_TIME) {
+        return;
+    }
+    if (!LINK_IS_ADULT) {
+        return;
+    }
+    if (!GET_EVENTCHKINF(EVENTCHKINF_OPENED_DOOR_OF_TIME)) {
+        SET_EVENTCHKINF(EVENTCHKINF_OPENED_DOOR_OF_TIME);
+    }
+}
+
 // Text from Triforce% text/messages.c. The strings are raw OoT message bytes, so every control code below is a
 // separate literal to stop a following letter being read as part of a hex escape.
 #define MSG_NEWLINE "\x01"
@@ -286,9 +341,21 @@ static void RegisterTrifoolUnicornFountain() {
     COND_HOOK(OnSceneSpawnActors, CVAR_FOUNTAIN_VALUE, SpawnUnicornFountain);
 }
 
+static void RegisterTrifoolFountainOverworld() {
+    COND_HOOK(OnSceneSpawnActors, CVAR_FOUNTAIN_OVERWORLD_VALUE, SpawnFountainOverworldMarker);
+    COND_HOOK(OnPlayerUpdate, CVAR_FOUNTAIN_OVERWORLD_VALUE, EnterFountainFromOverworld);
+}
+
+static void RegisterTrifoolDoorOfTimeAdult() {
+    COND_HOOK(OnSceneSpawnActors, CVAR_DOT_ADULT_VALUE, FixDoorOfTimeOnAdultEntry);
+}
+
 static RegisterShipInitFunc initFunc(RegisterTrifoolTriforceRoom, { CVAR_TRIFOOL_TRIFORCE_ROOM });
 static RegisterShipInitFunc testEntranceInitFunc(RegisterTrifoolTestEntrance, { CVAR_TRIFOOL_TEST_ENTRANCE });
 static RegisterShipInitFunc fountainInitFunc(RegisterTrifoolUnicornFountain, { CVAR_TRIFOOL_UNICORN_FOUNTAIN });
+static RegisterShipInitFunc fountainOverworldInitFunc(RegisterTrifoolFountainOverworld,
+                                                      { CVAR_TRIFOOL_FOUNTAIN_OVERWORLD });
+static RegisterShipInitFunc dotAdultInitFunc(RegisterTrifoolDoorOfTimeAdult, { CVAR_TRIFOOL_DOT_ADULT });
 
 namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
@@ -316,6 +383,19 @@ static void RegisterTrifoolPercentWidgets() {
             "The Triforce% Unicorn Fountain (in the debug Test Map 1 slot): the Beta Great Fairy who teaches the "
             "Overture of Sages. Needs TrifoolPercent.o2r in the mods folder for the room itself. The fairy's mesh "
             "and the cutscene are not available yet; a column of golden sparkles stands in for her."));
+    SohGui::mSohMenu->AddWidget(path, "Overworld entrance to Unicorn Fountain", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_TRIFOOL_FOUNTAIN_OVERWORLD)
+        .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
+            "Spawns a TfUnusedFlame in Lost Woods that warps Link into the Unicorn Fountain scene. "
+            "The vanilla Triforce% route patched the Zora's Fountain entrance (0x0560); the native "
+            "path uses our own loading zone instead, so Zora's Domain stays untouched. Coordinates "
+            "are provisional -- tune in-game if the flame lands behind a wall."));
+    SohGui::mSohMenu->AddWidget(path, "Door of Time opens for adult Link", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_TRIFOOL_DOT_ADULT)
+        .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
+            "Sets EVENTCHKINF_OPENED_DOOR_OF_TIME on adult entry to the Temple of Time, so the Door of "
+            "Time has no collision and reads as open. Fixes the case where a Setup / dev warp drops "
+            "adult Link into Temple of Time before the vanilla child Master Sword cutscene has run."));
 }
 
 static RegisterMenuInitFunc menuInitFunc(RegisterTrifoolPercentWidgets);
