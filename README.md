@@ -70,7 +70,7 @@ Want to build it yourself? See [docs/BUILDING.md](docs/BUILDING.md). Want to und
 
 ## Acknowledgements
 
-TrifoolPercent stands on the work of **The Triforce% Team**, the **Ocarina of Time modding and preservation community** (TCRF, Zelda Wiki, [jaytheham.com](https://www.jaytheham.com/zcw/Ocarina_of_Time_Beta_Content.html) and many more), **HarbourMasters** and the **zeldaret/oot decomp team**. Full roll in [docs/ACKNOWLEDGEMENTS.md](docs/ACKNOWLEDGEMENTS.md).
+TrifoolPercent stands on the work of **The Triforce% Team**, the **Ocarina of Time modding and preservation community** (TCRF, Zelda Wiki, [The Spriters Resource](https://models.spriters-resource.com/nintendo_64/thelegendofzeldaocarinaoftime/) and many more), **HarbourMasters** and the **zeldaret/oot decomp team**. Full roll in [docs/ACKNOWLEDGEMENTS.md](docs/ACKNOWLEDGEMENTS.md).
 
 Builds of TrifoolPercent do not and will not redistribute ROM data or any assets copyrighted by Nintendo.
 
