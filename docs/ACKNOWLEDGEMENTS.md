@@ -1,5 +1,12 @@
 # Acknowledgements & Special Thanks
 
+> See also: [CREDITS.md](../CREDITS.md) for the per-contributor roll.
+
+**Contents**
+- [The Triforce% Team](#the-triforce-team)
+- [Special Thanks — the OoT community](#special-thanks--the-oot-community)
+- [Inspiration](#inspiration)
+
 ## The Triforce% Team
 
 TrifoolPercent would not exist without the pioneering work of **The Triforce% Team (2019–2022)**. Their original ACE/TAS showcase, source code and custom assets are the foundation this project ports onto Ship of Harkinian.
@@ -25,7 +32,7 @@ Huge thanks to the broader **Ocarina of Time modding and preservation community*
 - [**TCRF — Unused Actors & Objects**](https://tcrf.net/The_Legend_of_Zelda:_Ocarina_of_Time/Unused_Actors_%26_Objects) — every unused actor and object listed with its ID/address. Goated.
 - [**TCRF — Unused Content in Used Actors & Objects**](https://tcrf.net/The_Legend_of_Zelda:_Ocarina_of_Time/Unused_Content_in_Used_Actors_%26_Objects) — same, for content hiding inside shipped actors and objects.
 - [**Zelda Wiki — Unused Content (OoT)**](https://zelda.fandom.com/wiki/Unused_Content) — overview, screenshots and historical context for beta/cut material.
-- [**jaytheham.com — OoT Beta Content**](https://www.jaytheham.com/zcw/Ocarina_of_Time_Beta_Content.html) — ready-to-use access to beta assets without hunting addresses. Massive for iterating on this mod.
+- [**The Spriters Resource — Ocarina of Time models**](https://models.spriters-resource.com/nintendo_64/thelegendofzeldaocarinaoftime/) — downloadable rips of OoT models (shipped, unused and beta) with ready-to-use geometry. Massive for iterating on this mod without hunting addresses.
 
 And of course the people and projects behind the tooling TrifoolPercent is built on: **HarbourMasters** (Ship of Harkinian, Fast64 fork, Torch, Retro), the **OoT decompilation team** at [zeldaret/oot](https://github.com/zeldaret/oot), **HackerOoT**, **Fast64**, **z64me**, **Sauraen** (SEQ64), **Random06457** (Z64Utils), and everyone contributing to the SoH modding community.
 

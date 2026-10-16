@@ -32,6 +32,7 @@ extern SaveContext gSaveContext;
 }
 
 #define CVAR_FOUNTAIN_VALUE CVarGetInteger(CVAR_TRIFOOL_UNICORN_FOUNTAIN, 1)
+#define CVAR_FOUNTAIN_ENTRY_CS_VALUE CVarGetInteger(CVAR_TRIFOOL_FOUNTAIN_ENTRY_CS, 1)
 #define UNICORN_FOUNTAIN_SCENE SCENE_TEST01
 
 // Where Link lands when the fountain visit ends. Matches the "test harness" convention the Triforce
@@ -122,6 +123,17 @@ static void ResetFountainStateOnEntry() {
     }
 }
 
+// Entry cutscene: a camera arrival pan around the fountain, hand-written in UnicornFountainCs.c
+// in the same pattern as TriforceRoomCs.c and TestRoomCs.c (see docs/cutscene-plan.md). The
+// fairy's auto-rise waits for CS_STATE_IDLE, so this cutscene reliably lands before she appears.
+static void PlayUnicornFountainEntryCs() {
+    if (!IsUnicornFountain() || CVAR_FOUNTAIN_VALUE == 0 || CVAR_FOUNTAIN_ENTRY_CS_VALUE == 0) {
+        return;
+    }
+    gPlayState->csCtx.segment = gTrifoolUnicornFountainEntryCs;
+    gSaveContext.cutsceneTrigger = 1;
+}
+
 static void LeaveUnicornFountainWhenFairyDone() {
     if (!IsUnicornFountain() || CVAR_FOUNTAIN_VALUE == 0) {
         return;
@@ -149,6 +161,7 @@ static void LeaveUnicornFountainWhenFairyDone() {
 static void RegisterTrifoolUnicornFountainExtras() {
     COND_HOOK(OnOpenText, CVAR_FOUNTAIN_VALUE, LoadFountainMessage);
     COND_HOOK(OnSceneSpawnActors, CVAR_FOUNTAIN_VALUE, ResetFountainStateOnEntry);
+    COND_HOOK(OnSceneSpawnActors, CVAR_FOUNTAIN_VALUE, PlayUnicornFountainEntryCs);
     COND_HOOK(OnPlayerUpdate, CVAR_FOUNTAIN_VALUE, LeaveUnicornFountainWhenFairyDone);
 }
 

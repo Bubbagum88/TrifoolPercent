@@ -1,5 +1,19 @@
 # Building TrifoolPercent
 
+> See also: [BUILD_TOOLS.md](BUILD_TOOLS.md) (what each tool does) · [TOOLS.md](TOOLS.md) (wider ecosystem) · [CONTRIBUTING.md](../CONTRIBUTING.md)
+
+**Contents**
+- [What it ships](#what-it-ships)
+- [Just want to try it (no build)](#just-want-to-try-it-no-build)
+- [Prerequisites](#prerequisites)
+- [1. One-time setup](#1-one-time-setup)
+- [2. Build the mod archive](#2-build-the-mod-archive)
+- [3. Build the game (optional)](#3-build-the-game-optional)
+- [CI / automated builds](#ci--automated-builds)
+- [Troubleshooting](#troubleshooting)
+
+## What it ships
+
 TrifoolPercent ships as two pieces:
 
 1. **`TrifoolPercent.o2r`** — the asset archive (custom scenes + actor models) that drops into Ship of Harkinian's `mods/` folder.
@@ -75,3 +89,15 @@ The output is `third_party/Shipwright/build/soh/soh.elf` (or `soh.exe` on Window
 [`.github/workflows/build-o2r.yml`](../.github/workflows/build-o2r.yml) runs the mod-archive build on every push that touches `scenes/`, `actors/`, `tools/` or the workflow itself, and on manual **Run workflow** dispatch. It is the canonical reference for a clean build: if `tools/build_o2r.sh` ever stops working locally, compare against the latest green run. The resulting `.o2r` is uploaded as a workflow artifact with 30-day retention. The game build (`tools/build_soh.sh`) is not run in CI yet.
 
 See also: [BUILD_TOOLS.md](BUILD_TOOLS.md) for a tool-by-tool walkthrough of what each piece of the pipeline does.
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `bpy==5.2.2` wheel won't install | Not on Python 3.13 (the pinned bpy wheel is Python-version-specific) | Install Python 3.13 and recreate `.venv-blender`. |
+| `tools/build_o2r.sh` fails inside Fast64 with `has faces assigned to a material which is not a F3D material` | A scene mesh has a plain Blender material instead of an F3D material | Open the `.blend` in Blender, re-slot the mesh's material onto an F3D-aware one (see the `TriforceRoom.blend` → `TestRoom.blend` donor pattern). |
+| `Torch` build fails on first run | Missing C/C++ toolchain or wrong CMake version | Install the Shipwright `linux-build-deps` listed in step 1. |
+| `pack_o2r.py` writes a `.o2r` that SoH refuses with "unknown version" | A `version` or `portVersion` entry slipped past the archive merger | Delete `build/stage/` and rebuild from a clean tree. |
+| `tools/build_soh.sh` fails before CMake runs | `third_party/Shipwright/` not checked out | Run `tools/setup.sh` again. |
+
+If something else goes wrong, open an issue with the exact command, the terminal output, and whether CI reproduces it. The `build-o2r` workflow is the canonical reference — if a step is green there and red for you, the delta is almost always your environment.
