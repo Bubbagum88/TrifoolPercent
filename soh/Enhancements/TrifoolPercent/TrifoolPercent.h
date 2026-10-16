@@ -22,6 +22,7 @@
 #define CVAR_TRIFOOL_ONBOARDING CVAR_ENHANCEMENT("TrifoolPercent.Onboarding")
 #define CVAR_TRIFOOL_FOUNTAIN_OVERWORLD CVAR_ENHANCEMENT("TrifoolPercent.FountainOverworld")
 #define CVAR_TRIFOOL_DOT_ADULT CVAR_ENHANCEMENT("TrifoolPercent.DoorOfTimeAdult")
+#define CVAR_TRIFOOL_FOUNTAIN_ENTRY_CS CVAR_ENHANCEMENT("TrifoolPercent.FountainEntryCs")
 
 // Butterfly rides a slot that vanilla OoT ships but never uses. The gameplay-item id
 // 0x68 (object_gi_butterfly, documented on TCRF) has no in-game pickup wired to it, so
@@ -72,6 +73,11 @@ extern CutsceneData gTrifoolTestRoomPrototypeCs[];
 extern const u16 gTrifoolTestRoomPrototypeCsTextBase;
 extern const u8 gTrifoolTestRoomPrototypeCsTextCount;
 #define TRIFOOL_TEST_ROOM_PROTOTYPE_CS_EXIT_FRAME 290
+
+// Unicorn Fountain entry cutscene (UnicornFountainCs.c): camera-only arrival pan around the
+// fountain centre, 240 frames. The fairy actor holds in state 0 while this plays.
+extern CutsceneData gTrifoolUnicornFountainEntryCs[];
+#define TRIFOOL_UNICORN_FOUNTAIN_ENTRY_CS_FRAMES 240
 
 // TriforcePiece params: which piece, plus "the end" mode in bits 2+ (used by the Ending scene, not the room).
 typedef enum {

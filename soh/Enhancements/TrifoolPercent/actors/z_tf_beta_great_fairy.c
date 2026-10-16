@@ -113,13 +113,17 @@ void TfBetaGreatFairy_Update(Actor* thisx, PlayState* play) {
 
     if (this->state == 0) {
         // Hidden, waiting to rise. The original waited for NPC action from the room's cutscene; we auto-advance.
+        // Hold the counter while a cutscene is running so the fountain's entry camera (UnicornFountainCs.c) can
+        // land before the fairy rises - otherwise the pan and the rise race.
         Actor_SetScale(&this->actor, SCALE_TINY);
         this->actor.world.pos.y -= 1000.0f;
         this->lastFloatY = FLOAT_CENTER_HEIGHT;
-        ++this->frames;
-        if (this->frames >= AUTO_RISE_FRAMES) {
-            this->frames = 0;
-            ++this->state;
+        if (play->csCtx.state == CS_STATE_IDLE) {
+            ++this->frames;
+            if (this->frames >= AUTO_RISE_FRAMES) {
+                this->frames = 0;
+                ++this->state;
+            }
         }
     } else if (this->state == 2) {
         // Floating. Upstream handed over to the cutscene for the song give and then fall. Without that cutscene we
