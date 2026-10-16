@@ -1,5 +1,12 @@
 # Acknowledgements & Special Thanks
 
+> See also: [CREDITS.md](../CREDITS.md) for the per-contributor roll.
+
+**Contents**
+- [The Triforce% Team](#the-triforce-team)
+- [Special Thanks — the OoT community](#special-thanks--the-oot-community)
+- [Inspiration](#inspiration)
+
 ## The Triforce% Team
 
 TrifoolPercent would not exist without the pioneering work of **The Triforce% Team (2019–2022)**. Their original ACE/TAS showcase, source code and custom assets are the foundation this project ports onto Ship of Harkinian.

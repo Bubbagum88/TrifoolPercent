@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Ship of Harkinian modding discussion
+    url: https://github.com/HarbourMasters/Shipwright/discussions
+    about: General SoH modding questions (not specific to TrifoolPercent) are best asked in the Shipwright community.
+  - name: Original Triforce% project
+    url: https://github.com/triforce-percent/triforce-percent
+    about: Questions about the original Triforce% source, scenes or assets belong upstream.

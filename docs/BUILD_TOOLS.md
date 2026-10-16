@@ -1,6 +1,18 @@
 # Build Tools Walkthrough
 
-A map of the tools the build touches, in roughly the order it uses them, and what each one actually does for TrifoolPercent. For the step-by-step commands, see [BUILDING.md](BUILDING.md). For the wider OoT/SoH tool ecosystem (editors, converters, audio tools) see [TOOLS.md](TOOLS.md).
+> See also: [BUILDING.md](BUILDING.md) (step-by-step commands) · [TOOLS.md](TOOLS.md) (wider ecosystem)
+
+A map of the tools the build touches, in roughly the order it uses them, and what each one actually does for TrifoolPercent.
+
+**Contents**
+- [`tools/setup.sh` — pinned source fetcher](#toolssetupsh--pinned-source-fetcher)
+- [Blender `bpy` + HarbourMasters Fast64 — scene exporter](#blenders-bpy--harbourmasters-fast64--scene-exporter)
+- [Pillow — title-card renderer](#pillow--title-card-renderer)
+- [Torch — asset converter (OoT mode)](#torch--asset-converter-oot-mode)
+- [`tools/pack_o2r.py` — archive merger](#toolspack_o2rpy--archive-merger)
+- [Shipwright + CMake/Ninja — the game build](#shipwright--cmakeninja--the-game-build)
+- [GitHub Actions — reproducible builds](#github-actions--reproducible-builds)
+- [How we built and modify the mod](#how-we-built-and-modify-the-mod)
 
 ## `tools/setup.sh` — pinned source fetcher
 Shell script. Shallow-clones the three upstream repos at pinned commits and creates `.venv-blender` with `bpy==5.2.2`. Pins (not branch tips) are deliberate: moved submodule branches or upstream refactors won't silently change what a build pulls. Re-running is cheap and idempotent.
