@@ -64,6 +64,7 @@ static s16 sTriforceChestId = -1;
 static s16 sTriforceLightId = -1;
 static s16 sBetaGreatFairyId = -1;
 static s16 sUnusedFlameId = -1;
+static s16 sMimicChestId = -1;
 
 static s16 AddActor(const char* name, const char* desc, size_t instanceSize, ActorFunc init, ActorFunc destroy,
                     ActorFunc update, ActorFunc draw) {
@@ -179,6 +180,36 @@ static void AddUnusedFlameActorToDB() {
     }
     sUnusedFlameId = AddActor("Tf_Unused_Flame", "Unused Flame (TrifoolPercent)", sizeof(TfUnusedFlame),
                               TfUnusedFlame_Init, TfUnusedFlame_Destroy, TfUnusedFlame_Update, TfUnusedFlame_Draw);
+}
+
+static void AddMimicChestActorToDB() {
+    if (sMimicChestId >= 0) {
+        return;
+    }
+    sMimicChestId = AddActor("Tf_Mimic_Chest", "Mimic Chest (TrifoolPercent)", sizeof(TfMimicChest),
+                             TfMimicChest_Init, TfMimicChest_Destroy, TfMimicChest_Update, TfMimicChest_Draw);
+}
+
+// Spawn position inside SCENE_SYOTES (the hex Test Room hub). Puts the Mimic Chest in the
+// middle of the room so Link can walk around it, trigger the lurch, then back off to see
+// the reset. Tune in-game.
+#define CVAR_MIMIC_CHEST_VALUE CVarGetInteger(CVAR_TRIFOOL_MIMIC_CHEST, 0)
+static Vec3f sMimicChestSpawnPos = { 0.0f, 0.0f, 0.0f };
+
+static bool IsTestRoomSceneForMimic() {
+    return gPlayState != nullptr && gPlayState->sceneNum == SCENE_SYOTES;
+}
+
+static void SpawnMimicChestInTestRoom() {
+    if (!IsTestRoomSceneForMimic()) {
+        return;
+    }
+    AddMimicChestActorToDB();
+    if (sMimicChestId < 0) {
+        return;
+    }
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, sMimicChestId, sMimicChestSpawnPos.x,
+                sMimicChestSpawnPos.y, sMimicChestSpawnPos.z, 0, 0, 0, 0);
 }
 
 static void SpawnTestEntranceMarker() {
@@ -350,12 +381,17 @@ static void RegisterTrifoolDoorOfTimeAdult() {
     COND_HOOK(OnSceneSpawnActors, CVAR_DOT_ADULT_VALUE, FixDoorOfTimeOnAdultEntry);
 }
 
+static void RegisterTrifoolMimicChest() {
+    COND_HOOK(OnSceneSpawnActors, CVAR_MIMIC_CHEST_VALUE, SpawnMimicChestInTestRoom);
+}
+
 static RegisterShipInitFunc initFunc(RegisterTrifoolTriforceRoom, { CVAR_TRIFOOL_TRIFORCE_ROOM });
 static RegisterShipInitFunc testEntranceInitFunc(RegisterTrifoolTestEntrance, { CVAR_TRIFOOL_TEST_ENTRANCE });
 static RegisterShipInitFunc fountainInitFunc(RegisterTrifoolUnicornFountain, { CVAR_TRIFOOL_UNICORN_FOUNTAIN });
 static RegisterShipInitFunc fountainOverworldInitFunc(RegisterTrifoolFountainOverworld,
                                                       { CVAR_TRIFOOL_FOUNTAIN_OVERWORLD });
 static RegisterShipInitFunc dotAdultInitFunc(RegisterTrifoolDoorOfTimeAdult, { CVAR_TRIFOOL_DOT_ADULT });
+static RegisterShipInitFunc mimicChestInitFunc(RegisterTrifoolMimicChest, { CVAR_TRIFOOL_MIMIC_CHEST });
 
 namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
@@ -403,6 +439,13 @@ static void RegisterTrifoolPercentWidgets() {
             "Sets EVENTCHKINF_OPENED_DOOR_OF_TIME on adult entry to the Temple of Time, so the Door of "
             "Time has no collision and reads as open. Fixes the case where a Setup / dev warp drops "
             "adult Link into Temple of Time before the vanilla child Master Sword cutscene has run."));
+    SohGui::mSohMenu->AddWidget(path, "Mimic Chest in Test Room", WIDGET_CVAR_CHECKBOX)
+        .CVar(CVAR_TRIFOOL_MIMIC_CHEST)
+        .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
+            "Spawns the Triforce% MimicChest at the centre of the hex Test Room (SCENE_SYOTES). It "
+            "idles until Link steps inside ~100 units, then switches to the attack animation and "
+            "lurches toward him until he backs off ~300 units. Object data is compiled directly into "
+            "the SoH module -- no new .o2r is required."));
 }
 
 static RegisterMenuInitFunc menuInitFunc(RegisterTrifoolPercentWidgets);
