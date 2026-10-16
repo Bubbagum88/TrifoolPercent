@@ -9,8 +9,8 @@
  *
  * TrifoolPercent-side differences vs. upstream:
  *   - PlayState / GET_PLAYER everywhere instead of GlobalContext / PLAYER;
- *   - the beta-head-turn-toward-player (func_80034A14 / Npc_TrackPoint) is restored, mode 2,
- *     with a 30 degree deadband before the actor's body yaw starts following the head;
+ *   - the beta-head-turn-toward-player (func_80034A14 / Npc_TrackPoint) is restored, mode 1,
+ *     which is the vanilla "player auto-turn" preset: head leads, body follows naturally;
  *   - targetMode is set to the "friendly NPC" range (same tier Kokiri children / shop NPCs
  *     use) and ACTOR_FLAG_FRIENDLY is on so Z-target reads her as an NPC, not a hostile;
  *   - the trade branch uses vanilla exchangeItemId with EXCH_ITEM_BUG covered and
@@ -43,15 +43,10 @@ extern AnimationHeader object_oE_anime_Anim_00001034; // kokiriStanding (upstrea
 #define TF_BK_NUM_LIMBS 39
 #define TF_BK_SHADOW_SIZE 25.0f
 
-// Head-tracking tuning. 0x1555 binang (~30 deg) is the deadband before the body starts
-// following the head; 0x2000 (~45 deg) is where upstream's natural head limit sits, so by
-// the time the head is near its stop the body is already catching up. Smooth-step speeds
-// are picked so the body turn reads as deliberate, not snappy.
+// Head-tracking tuning. Mode 1 is vanilla "player auto-turn": the engine itself lets the
+// head lead and the body follow at a feel the rest of the game is tuned for.
 #define TF_BK_HEAD_FOLLOW_PRESET 0xC  // same value upstream Triforce% passed (kREG(17)+0xC)
-#define TF_BK_BODY_FOLLOW_DEADBAND 0x1555  // 30 degrees in binang
-#define TF_BK_BODY_FOLLOW_SCALE 4      // Math_SmoothStepToS reciprocal; 1/4 per frame
-#define TF_BK_BODY_FOLLOW_STEP 0x200   // ~2.8 deg max step per frame
-#define TF_BK_BODY_FOLLOW_MIN_STEP 0x80 // ~0.7 deg minimum step so the turn always finishes
+#define TF_BK_HEAD_FOLLOW_MODE 1      // vanilla NPC_TRACKING_PLAYER_AUTO_TURN
 #define TF_BK_PLAYER_EYE_HEIGHT 9.0f
 
 bool TrifoolBeat1_IsBetaKokiriSpawned(void); // defined in Beat1KeyOfCourage.cpp
@@ -146,23 +141,13 @@ void TfBetaKokiri_Destroy(Actor* thisx, PlayState* play) {
 static void TfBetaKokiri_UpdateTracking(TfBetaKokiri* this, PlayState* play) {
     Player* player = GET_PLAYER(play);
 
-    // Feed Npc_TrackPoint the player's eyeline so the head yaws toward them (mode 2 is the
-    // same "head + torso" preset upstream Triforce% used for the Beta Kokiri).
+    // Vanilla NPC tracking: mode 1 is the engine's own "head leads, body follows" preset
+    // (same one Kokiri children, shop NPCs, Nabooru, etc. use). Feed it the player's
+    // eyeline and let it tune the feel; no custom deadband here.
     this->interactInfo.trackPos = player->actor.world.pos;
     this->interactInfo.yOffset = TF_BK_PLAYER_EYE_HEIGHT;
-    func_80034A14(&this->actor, &this->interactInfo, TF_BK_HEAD_FOLLOW_PRESET, 2);
-
-    // Body yaw deadband: let the head rotate freely up to ~30 degrees before the body
-    // starts chasing it. Once the head is past the deadband, smooth-step the actor's
-    // facing toward the player so the head angle naturally shrinks back down.
-    if (ABS(this->interactInfo.headRot.y) > TF_BK_BODY_FOLLOW_DEADBAND) {
-        s16 towardPlayer =
-            Math_Vec3f_Yaw(&this->actor.world.pos, &player->actor.world.pos);
-        Math_SmoothStepToS(&this->actor.shape.rot.y, towardPlayer,
-                           TF_BK_BODY_FOLLOW_SCALE,
-                           TF_BK_BODY_FOLLOW_STEP, TF_BK_BODY_FOLLOW_MIN_STEP);
-        this->actor.world.rot.y = this->actor.shape.rot.y;
-    }
+    func_80034A14(&this->actor, &this->interactInfo, TF_BK_HEAD_FOLLOW_PRESET,
+                  TF_BK_HEAD_FOLLOW_MODE);
 }
 
 static s32 TfBetaKokiri_UpdateCommon(TfBetaKokiri* this, PlayState* play) {
