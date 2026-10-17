@@ -65,7 +65,7 @@ struct TestRoomSign {
 static constexpr std::array<TestRoomSign, 6> kTestRoomDoors = { {
     { "Kokiri Forest",         "Back to the main game,\nby Link's house." },
     { "Triforce Room",         "The Triforce% Triforce\nRoom (POC)." },
-    { "Modified Sacred Realm", "Not built yet. Lands you\nin the Chamber of Sages\nfor now." },
+    { "Modified Sacred Realm", "Chamber of the Sages, re-\ndressed with beta birds,\nvases, chicks and dancing\nflames. (Static pass, no\nanimation yet.)" },
     { "Unicorn Fountain",      "The Triforce% Unicorn\nFountain (POC)." },
     { "(reserved)",             "Open slot for the next\nroom we iterate on." },
     { "(reserved)",             "Open slot for the next\nroom we iterate on." },
