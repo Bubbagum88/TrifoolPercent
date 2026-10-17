@@ -1,0 +1,69 @@
+# Patch for vanilla scene 68 (kenjyanoma / Chamber of the Sages) room_0.zmap.
+#
+# Format: `<hex-offset-into-room_0.zmap> <replacement bytes>`
+# (same convention as scenes/spot00/room0_patch.txt).
+#
+# All offsets below are PLACEHOLDERS marked `?` — they need to be read
+# off the vanilla `build-romhack/scene/68/room_0.zmap.orig` before the
+# Makefile will produce a valid patched map. Fields are commented
+# inline so Isaac can slot the real numbers in without re-deriving the
+# layout.
+#
+# ---------------------------------------------------------------------------
+# OBJECT LIST (SCENE_CMD_OBJECT_LIST, cmd id 0x0B)
+# ---------------------------------------------------------------------------
+# Vanilla room header has an object list at offset ?OBJ_HDR? with 2
+# entries (OBJECT_KENJYANOMA for the pedestal + OBJECT_GAMEPLAY_KEEP as
+# the first mandatory slot). We extend it to 6 entries and append:
+#     OBJECT_BIRD  = 0x00F9
+#     OBJECT_VASE  = 0x009A
+#     OBJECT_NWC   = 0x009B
+#     OBJECT_FIRE  = 0x000F
+#
+# Patch 1 - header cmd word, bump count from 2 -> 6:
+#   ?OBJ_HDR?   .short 0x0B06
+# Patch 2 - append object IDs after the existing two shorts:
+#   ?OBJ_HDR+4+2*2? .short 0x00F9 0x009A 0x009B 0x000F
+#
+# The object list must stay 4-byte aligned; if the vanilla data array
+# does not have 8 free bytes after its last entry, bump the data-array
+# pointer in the cmd header to a new location further down the file
+# and move the whole array there first.
+#
+# ---------------------------------------------------------------------------
+# ACTOR LIST (SCENE_CMD_ACTOR_LIST, cmd id 0x01)
+# ---------------------------------------------------------------------------
+# Vanilla room has an actor list at offset ?ACT_HDR? with ?N? entries
+# (Rauru + the six Sage warp-pad actors, approximately). We extend it
+# by 7 entries for the drop-in beta content; the TfUnusedFlame
+# instances are spawned from SoH-side via ActorDB in TrifoolPercent's
+# init hook so they are NOT in this list.
+#
+# Each actor entry is 16 bytes:
+#   actorId:u16  posX:s16  posY:s16  posZ:s16  rotX:s16  rotY:s16  rotZ:s16  params:u16
+#
+# Patch 3 - bump actor list count by 7:
+#   ?ACT_HDR?   .short 0x01?NEWCOUNT?
+# Patch 4 - append entries at ?ACT_HDR_DATA_END?:
+#   # Bird SE
+#   .short 0x0072  0x0190  0x0258 0xFDA8  0x0000 0x4000 0x0000  0x0001
+#   # Bird SW
+#   .short 0x0072  0xFE70  0x0258 0xFDA8  0x0000 0xC000 0x0000  0x0001
+#   # Bird N
+#   .short 0x0072  0x0000  0x0320 0x0258  0x0000 0x8000 0x0000  0x0001
+#   # Vase east
+#   .short 0x0082  0x0104  0x0000 0xFFD8  0x0000 0x0000 0x0000  0x0000
+#   # Vase west
+#   .short 0x0082  0xFEFC  0x0000 0xFFD8  0x0000 0x0000 0x0000  0x0000
+#   # Nwc east
+#   .short 0x0135  0x0050  0x0000 0x0050  0x0000 0x4000 0x0000  0x0000
+#   # Nwc west
+#   .short 0x0135  0xFFB0  0x0000 0x0050  0x0000 0xC000 0x0000  0x0000
+#
+# Caveats:
+#   - If the existing room file has no room *after* the end of the
+#     actor-list data block, the data block has to be relocated the
+#     same way the object list is (point the cmd header at a fresh
+#     offset at EOF).
+#   - Keep the vanilla Sage/Rauru actor entries unmodified; the beta
+#     spawns are appended, not interleaved.
