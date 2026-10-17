@@ -34,6 +34,18 @@ import hm64_headless  # noqa: E402
 SCENE_ID = "SCENE_TEST01"
 CUSTOM_ACTORS = ["BetaGreatFairy", "PedestaloftheOcarina", "OkarinaTag"]
 
+# Visible placeholder body for the Beta Great Fairy. The Triforce% team never published the
+# zobj behind their BetaGreatFairy DL, so Tf_Beta_Great_Fairy (soh/.../actors/z_tf_beta_great_fairy.c)
+# runs as a mesh-less state machine driving golden sparkle particles. Spawning a vanilla Great
+# Fairy at the fountain centre gives the scene an actual body on screen while the ported fairy
+# keeps owning the Overture-of-Sages dialogue and the fade-back trigger — the two live side by
+# side, the vanilla NPC is scenery only. Confirm the exact ACTOR_*/OBJECT_* identifiers against
+# Shipwright's actor tables (soh/include/tables/) before trusting this export; the names below
+# follow the brief and may need swapping for the correct Great-Fairy actor/object pair.
+PLACEHOLDER_FAIRY_ACTOR_ID = "ACTOR_EN_GE1"
+PLACEHOLDER_FAIRY_PARAMS = "0x0000"
+PLACEHOLDER_FAIRY_OBJECT_KEY = "object_ge1"
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -64,6 +76,23 @@ def main() -> int:
         entrance.matrix_world = world
         entrance.ootEntranceProperty.tiedRoom = room
         entrance.ootEntranceProperty.spawnIndex = 0
+
+    # Visible Great-Fairy placeholder body at the fountain centre. The Tf_Beta_Great_Fairy custom
+    # actor (spawned from TrifoolPercent.cpp's SpawnUnicornFountain) stays — this is additive.
+    placeholder = bpy.data.objects.new("BetaGreatFairyPlaceholder", None)
+    bpy.context.scene.collection.objects.link(placeholder)
+    placeholder.empty_display_type = "ARROWS"
+    placeholder.ootEmptyType = "Actor"
+    placeholder.parent = room
+    placeholder.matrix_world = Matrix.Translation((0.0, 0.0, 0.0))
+    placeholder.ootActorProperty.actor_id = PLACEHOLDER_FAIRY_ACTOR_ID
+    placeholder.ootActorProperty.params = PLACEHOLDER_FAIRY_PARAMS
+
+    # Make sure the fairy's object is in the room's object list. The room already lists whatever
+    # the .blend's objectList had; append-only is fine when the key is new, idempotent otherwise.
+    object_list = room.ootRoomHeader.objectList
+    if not any(entry.objectKey == PLACEHOLDER_FAIRY_OBJECT_KEY for entry in object_list):
+        object_list.add().objectKey = PLACEHOLDER_FAIRY_OBJECT_KEY
 
     scene_obj = objects["Scene"]
     scene_obj.ootSceneHeader.musicSeq = "NA_BGM_NO_MUSIC"
