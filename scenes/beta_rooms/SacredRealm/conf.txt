@@ -1,0 +1,8 @@
+# conf.txt matches the sibling scenes' metadata layout; the toolchain
+# reads it when staging the patched scene into the romhack bundle. The
+# scene itself is just a patched copy of vanilla slot 68, so no custom
+# textures or title card need to be shipped here.
+name=Sacred Realm (Modified)
+slot=68
+title=Modified Sacred Realm
+patched=1

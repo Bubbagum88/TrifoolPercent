@@ -1,0 +1,29 @@
+# Patch for vanilla scene 68 (kenjyanoma / Chamber of the Sages) scene.zscene.
+#
+# Format matches scenes/spot00/scene_patch.txt: each non-blank line is
+#   <hex-offset-into-scene.zscene> <python-struct-style replacement bytes>
+#
+# All offsets below are PLACEHOLDERS marked `?` and need to be filled in
+# after reading the vanilla `build-romhack/scene/68/scene.zscene.orig`.
+# Leave this file as-is until those offsets are known; the Makefile here
+# does not build until `scenes/Makefile`'s MAKESUBDIRS entry is turned on.
+#
+# Field map (relative to scene header start):
+#   0x00  SCENE_CMD_SPAWN_LIST            - unchanged
+#   0x08  SCENE_CMD_ACTOR_LIST            - unchanged (scene-level transition actors)
+#   0x10  SCENE_CMD_COL_HEADER            - unchanged
+#   0x18  SCENE_CMD_ROOM_LIST             - unchanged
+#   0x20  SCENE_CMD_ENTRANCE_LIST         - unchanged
+#   0x28  SCENE_CMD_SPECIAL_FILES         - unchanged
+#   0x30  SCENE_CMD_PATHWAYS              - unchanged
+#   0x38  SCENE_CMD_TRANSITION_ACTOR_LIST - unchanged
+#   0x40  SCENE_CMD_LIGHT_SETTINGS_LIST   - unchanged
+#   0x48  SCENE_CMD_SKYBOX_SETTINGS       - unchanged
+#   0x50  SCENE_CMD_SKYBOX_DISABLES       - unchanged
+#   0x58  SCENE_CMD_END                   - unchanged
+#
+# This file is intentionally empty of patch records right now: all the
+# beta content lives in the room header, which is patched in
+# room0_patch.txt. The scene-header file sits here as a hook for later
+# work (custom light settings, path edits, etc.) and to match the
+# tokinoma/spot00 directory layout the toolchain already understands.
