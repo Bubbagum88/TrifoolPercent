@@ -32,16 +32,28 @@
 // 5. The Beta Kokiri's actor-side trade branch (z_tf_beta_kokiri.c) is already unlocked:
 //    offering EXCH_ITEM_BIG_POE walks text 0x0B13 and advances to the Odd Potion give.
 //
+// 6. The HUD icon on any C button holding ITEM_BIG_POE is re-blit each frame with the
+//    butterfly texture (ButterflyIcon.inc.h), mirroring upstream Triforce%
+//    scripts/statics/interface.c Patched_LoadItemIconMain's ITEM_BIG_POE branch. The
+//    icon segment layout is 0x1000 bytes per button, same as the N64 retail.
+//
 // Scope boundaries:
 //
-// - No new Butterfly 3D asset or inventory icon. Until the object_gi_butterfly build lands
-//   (follow-up), Link's bottle shows the vanilla Big Poe artwork; the text layer already
-//   calls it a Butterfly everywhere the player reads a message.
+// - The 3D model Link holds overhead is still the vanilla Big Poe bottle. The upstream
+//   object_gi_butterfly Fast64 patch under assets/model/object_gi_butterfly/ is a ROM-side
+//   Gfx override, not a Torch-ready .o2r object; wiring it in SoH needs the butterfly
+//   object compiled into TrifoolPercent.o2r and either a GetItemEntry draw hook or a
+//   per-draw material swap. Separate PR.
+// - "SI_BUTTERFLY" as a dedicated shelf index (upstream Statics_PatchShop's end state) still
+//   wants a SoH-fork edit to z_en_girla.{c,h} / z_en_ossan.c; this module cannot add an
+//   enum value from outside. TickShopPatch below detects the arming condition but defers
+//   the actual EnGirlA respawn to that follow-up.
 // - LOOKING_FOR_BUTTERFLY and SHOP_HAS_BUTTERFLY are module-static for now, same as
 //   BETAKOKIRI_SPAWNED. The SaveManager custom section lands when the Beat 1 flag set is
 //   worth plumbing together.
 
 #include <array>
+#include <cstring>
 
 #include <libultraship/bridge/consolevariablebridge.h>
 
@@ -52,6 +64,8 @@
 #include "soh/SohGui/SohGui.hpp"
 #include "soh/SohGui/UIWidgets.hpp"
 
+#include "ButterflyIcon.inc.h"
+
 extern "C" {
 #include "TrifoolPercent.h"
 #include "macros.h"
@@ -60,6 +74,41 @@ extern "C" {
 #include "z64save.h"
 extern PlayState* gPlayState;
 extern SaveContext gSaveContext;
+}
+
+// -----------------------------------------------------------------------------
+// C-button icon swap.
+// -----------------------------------------------------------------------------
+// Mirrors upstream Triforce% scripts/statics/interface.c Patched_LoadItemIconMain:
+// whenever a C button holds ITEM_BIG_POE, blit the butterfly texture over its slot in
+// interfaceCtx->iconItemSegment so the HUD reads as the Butterfly bottle. The icon
+// segment is laid out as 0x1000 bytes per button (32x32 RGBA32), same as the N64
+// retail: see z64.h InterfaceContext.iconItemSegment. Idempotent -- the engine reloads
+// the Big Poe icon when the equips change, and we re-stamp over it until the player
+// equips something else.
+
+// Number of equip-button slots SoH's SaveContext carries. z64save.h defines
+// buttonItems[8] (vanilla 4 + 4 for D-pad equips).
+static constexpr int kButtonSlotCount = 8;
+// Only the C buttons feed the on-screen icon segment. Slots 0..2 are B / C-left /
+// C-down (per the original Patched_LoadItemIconMain loop), slot 3 is C-right.
+static constexpr int kIconSegmentButtonCount = 4;
+
+static void SwapButterflyIconOnEquip() {
+    if (CVarGetInteger(CVAR_TRIFOOL_BUTTERFLY, 0) == 0 || gPlayState == nullptr) {
+        return;
+    }
+    InterfaceContext* interfaceCtx = &gPlayState->interfaceCtx;
+    if (interfaceCtx->iconItemSegment == nullptr) {
+        return;
+    }
+    for (int button = 0; button < kIconSegmentButtonCount; ++button) {
+        if (gSaveContext.equips.buttonItems[button] != ITEM_BIG_POE) {
+            continue;
+        }
+        std::memcpy(interfaceCtx->iconItemSegment + button * 0x1000, kButterflyBottleIcon,
+                    sizeof(kButterflyBottleIcon));
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -230,6 +279,13 @@ static void LoadBeat1_3Message(u16* textId, bool* loadFromMessageTable) {
             LoadOneMessage(kButterflyShopText, sizeof(kButterflyShopText) - 1,
                            TEXTBOX_TYPE_BLACK, TEXTBOX_POS_MIDDLE, loadFromMessageTable);
             break;
+        // 0x5070 is the vanilla "You got a Big Poe!" item-get text id (EnGirlA's SI_BIG_POE
+        // entry, textId pair 0x506F / 0x5070). Since the Butterfly rides the Big Poe slot
+        // through the Bazaar sale, the item-get card actually fires on 0x5070 at purchase
+        // time -- hook it here so the player sees the Butterfly flavor text. 0x0083 is kept
+        // as a secondary route for any direct Message_StartTextbox caller (chests, dev
+        // commands, future rando entries).
+        case 0x5070:
         case 0x0083:
             LoadOneMessage(kButterflyGetText, sizeof(kButterflyGetText) - 1,
                            TEXTBOX_TYPE_BLUE, TEXTBOX_POS_BOTTOM, loadFromMessageTable);
@@ -247,6 +303,7 @@ static void RegisterTrifoolBeat1_3() {
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnPlayerUpdate>(
         MoveOddPotionToChildIfNeeded);
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnPlayerUpdate>(TickShopPatch);
+    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnPlayerUpdate>(SwapButterflyIconOnEquip);
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnOpenText>(
         ArmButterflyHuntOnBetaGreeting);
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnOpenText>(LoadBeat1_3Message);
@@ -266,13 +323,13 @@ static void RegisterTrifoolBeat1_3Widgets() {
     SohGui::mSohMenu->AddWidget(path, "Beat 1.3 - Butterfly trade", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_BUTTERFLY)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
-            "Turns on the Butterfly trade. The Butterfly claims unused OoT slot 0x68 "
-            "(object_gi_butterfly) and unused exchange id 0x18, so no shipped item is "
-            "overridden. Flow: Beta Kokiri's first greeting arms the hunt; the Bazaar "
-            "shopkeeper's 'flying bug' text turns shelf 3 into the Butterfly; buying it "
-            "fills a bottle; offering that bottle to the Beta Kokiri walks dialogue "
-            "0x0B13 and hands Link the Odd Potion, which is auto-moved into the child "
-            "trade slot."));
+            "Turns on the Butterfly trade. Flow: Beta Kokiri's first greeting arms the "
+            "hunt; the Bazaar shopkeeper's 'flying bug' text re-skins the Big Poe bottle "
+            "sold on shelf 3 as the Butterfly (C-button icon + item-get card + shop and "
+            "trade dialogue), and the bottle Link carries chains into the Beta Kokiri "
+            "trade -- offering it walks dialogue 0x0B13 and hands Link the Odd Potion, "
+            "which is auto-moved into the child trade slot. The 3D model + dedicated "
+            "SI_BUTTERFLY slot are separate follow-ups."));
 }
 
 static RegisterMenuInitFunc beat1_3MenuInitFunc(RegisterTrifoolBeat1_3Widgets);
