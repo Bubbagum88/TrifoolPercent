@@ -174,12 +174,17 @@ def _configure_scene_and_room(soh_include):
     room = objects["Room00"]
     entrance = objects["Entrance"]
 
-    # Reset room header to indoor defaults (same as the Triforce Room, with no object list -- the
-    # hex hub needs no scene objects, and TestRoom.cpp spawns the signs itself).
+    # Reset room header to indoor defaults (same as the Triforce Room). The sign actors use
+    # OBJECT_GAMEPLAY_KEEP so they don't need a scene object; the beta-content live exhibits
+    # (En_Bird, En_Vase, En_Nwc) spawned by TestRoom.cpp do, so their objects go in the room's
+    # object list here. Fast64 caps the list at 16; three is fine.
     room.ootRoomHeader.disableSkybox = True
     room.ootRoomHeader.disableSunMoon = True
     room.ootRoomHeader.timeSpeed = 0.0
     room.ootRoomHeader.objectList.clear()
+    for object_key in ("obj_bird", "obj_vase", "obj_nwc"):
+        entry = room.ootRoomHeader.objectList.add()
+        entry.objectKey = object_key
 
     # Entrance at the room centre, tied to room 0, same spawn index Fast64 writes for the first entry.
     entrance.location = (0.0, 0.0, 0.1)
