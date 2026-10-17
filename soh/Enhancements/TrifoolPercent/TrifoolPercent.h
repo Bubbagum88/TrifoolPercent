@@ -25,6 +25,8 @@
 #define CVAR_TRIFOOL_ENDING CVAR_ENHANCEMENT("TrifoolPercent.Ending")
 #define CVAR_TRIFOOL_FOUNTAIN_ENTRY_CS CVAR_ENHANCEMENT("TrifoolPercent.FountainEntryCs")
 #define CVAR_TRIFOOL_MIMIC_CHEST CVAR_ENHANCEMENT("TrifoolPercent.MimicChest")
+#define CVAR_TRIFOOL_MEDALLION_WATER CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Water")
+#define CVAR_TRIFOOL_MEDALLION_LIGHT CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Light")
 #define CVAR_TRIFOOL_MEDALLION_FOREST CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Forest")
 #define CVAR_TRIFOOL_SONG_ENGINE CVAR_ENHANCEMENT("TrifoolPercent.SongEngine")
 #define CVAR_TRIFOOL_LONG_OF_TIME CVAR_ENHANCEMENT("TrifoolPercent.LongOfTime")
