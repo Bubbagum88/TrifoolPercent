@@ -27,6 +27,8 @@
 #define CVAR_TRIFOOL_MIMIC_CHEST CVAR_ENHANCEMENT("TrifoolPercent.MimicChest")
 #define CVAR_TRIFOOL_MEDALLION_WATER CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Water")
 #define CVAR_TRIFOOL_MEDALLION_LIGHT CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Light")
+#define CVAR_TRIFOOL_SONG_ENGINE CVAR_ENHANCEMENT("TrifoolPercent.SongEngine")
+#define CVAR_TRIFOOL_LONG_OF_TIME CVAR_ENHANCEMENT("TrifoolPercent.LongOfTime")
 
 // Butterfly rides a slot that vanilla OoT ships but never uses. The gameplay-item id
 // 0x68 (object_gi_butterfly, documented on TCRF) has no in-game pickup wired to it, so
@@ -36,6 +38,23 @@
 // repurposing an existing trade item.
 #define TRIFOOL_ITEM_BUTTERFLY 0x68
 #define TRIFOOL_EXCH_ITEM_BUTTERFLY 0x18
+
+// Sages' Charm (upstream calls it both "Sages' Charm" and "Oracle Amulet" across the
+// Triforce% source and showcase VOD; the in-world text is "Sages' Charm"). Upstream
+// repurposed the Stone of Agony GI slot (ITEM_STONE_OF_AGONY = 0x3C) because the Stone
+// of Agony is a quest-status item carried off a Rumble Pak check that the showcase ROM
+// did not need. We do not want to displace a shipping SoH item, so we claim the next
+// unused gameplay-item slot above Butterfly (0x69). TCRF lists 0x66-0x79 as a run of
+// quest-status / unused ids, 0x68 is Butterfly, so 0x69 is still a vanilla "no pickup"
+// slot and nothing shipped currently reads it. The exported model
+// (assets/model/SagesCharm/object_gi_sagescharm.c, display list gGiSagesCharmDL at
+// 0x6001128) is already in the repo; the OTR wiring lands when the o2r build adds the
+// SagesCharm object, same follow-up as the Butterfly's own 3D asset wiring.
+#define TRIFOOL_ITEM_SAGES_CHARM 0x69
+
+// Item-get text id for the Sages' Charm card. Butterfly uses 0x0083; 0x0084 is the next
+// free vanilla text id and is loaded through CustomMessage, same pattern as Butterfly.
+#define TRIFOOL_TEXT_SAGES_CHARM_GET 0x0084
 
 // Resources shipped in TrifoolPercent.o2r (built by actors/triforce_actor/make_torch_input.py).
 #define dgTrifoolTriforcePieceDL "__OTR__objects/object_trifool_triforce_piece/gTrifoolTriforcePieceDL"
@@ -204,6 +223,11 @@ void TfUnusedFlame_Init(Actor* thisx, PlayState* play);
 void TfUnusedFlame_Destroy(Actor* thisx, PlayState* play);
 void TfUnusedFlame_Update(Actor* thisx, PlayState* play);
 void TfUnusedFlame_Draw(Actor* thisx, PlayState* play);
+
+// Sages' Charm session flags. Written from Beat2_0SagesCharm.cpp.
+// Read by future slices (medallions-on-C, Fire-Medallion-as-Din's-Fire, magic bar).
+bool TrifoolBeat_HasSagesCharm(void);
+void TrifoolBeat_GrantSagesCharm(void);
 
 #ifdef __cplusplus
 }
