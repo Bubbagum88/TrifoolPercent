@@ -278,12 +278,23 @@ static void EnterFountainFromOverworld() {
     gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
 }
 
-// Door of Time adult-side fix. Vanilla OoT sets EVENTCHKINF_OPENED_DOOR_OF_TIME (0x4B)
-// as part of the child Master Sword cutscene, which gates both the Door_Toki collision
-// (z_door_toki.c) and the door's visual state. If a player warps into Temple of Time as
-// adult via Setup/dev warps -- the TrifoolPercent default path -- the flag may still be
-// clear, so the door blocks Link. This hook mirrors what the opening cutscene would have
-// done, idempotently: on adult entry to SCENE_TEMPLE_OF_TIME, set the flag.
+// Door of Time adult-side fix. Vanilla OoT animates the Door of Time open in the Temple
+// of Time intro cutscene via Demo_Kankyo (DEMOKANKYO_DOOR_OF_TIME): the Init path
+// branches on EVENTCHKINF_OPENED_DOOR_OF_TIME (0x4B), spawning Door_Toki (closed, with
+// collision) when the flag is clear and setting roomCtx.drawParams[1] = 0xFF (the "door
+// opened" room-draw variant) when the flag is set. The opening animation itself is only
+// scheduled when the cutscene fires actor cue 2 (CutsceneFlags_Get(play, 2) in
+// DemoKankyo_SetupType), which does not happen for adult Link on a fresh warp into
+// SCENE_TEMPLE_OF_TIME -- so adult sees whatever state is saved. For Setup / dev-warps
+// (and for any save where the vanilla opening cutscene never ran as child) that means a
+// closed door blocking adult Link.
+//
+// We patch three things on adult entry, idempotently: set the eventchkinf flag (future
+// Door_Toki updates and any other door-state queries then read "open"); overwrite
+// roomCtx.drawParams[1] = 0xFF so the Temple of Time scene draw-config picks the
+// opened-door room mesh for this frame on; and the already-spawned Door_Toki actor's own
+// Update will drop its collision as soon as it next ticks because its only gate is the
+// same eventchkinf we just set. No change needed in Door_Toki itself.
 static void FixDoorOfTimeOnAdultEntry() {
     if (gPlayState == nullptr || gPlayState->sceneNum != SCENE_TEMPLE_OF_TIME) {
         return;
@@ -294,6 +305,10 @@ static void FixDoorOfTimeOnAdultEntry() {
     if (!GET_EVENTCHKINF(EVENTCHKINF_OPENED_DOOR_OF_TIME)) {
         SET_EVENTCHKINF(EVENTCHKINF_OPENED_DOOR_OF_TIME);
     }
+    // Flip the room-draw variant to the open-door mesh. Demo_Kankyo would have done this
+    // itself if its Init had seen the flag set, so we are catching up for the opening-
+    // cutscene path adult Link never ran.
+    gPlayState->roomCtx.drawParams[1] = 0xFF;
 }
 
 // Text from Triforce% text/messages.c. The strings are raw OoT message bytes, so every control code below is a
@@ -436,9 +451,11 @@ static void RegisterTrifoolPercentWidgets() {
     SohGui::mSohMenu->AddWidget(path, "Door of Time opens for adult Link", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_DOT_ADULT)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
-            "Sets EVENTCHKINF_OPENED_DOOR_OF_TIME on adult entry to the Temple of Time, so the Door of "
-            "Time has no collision and reads as open. Fixes the case where a Setup / dev warp drops "
-            "adult Link into Temple of Time before the vanilla child Master Sword cutscene has run."));
+            "On adult entry to Temple of Time, sets EVENTCHKINF_OPENED_DOOR_OF_TIME and "
+            "roomCtx.drawParams[1] = 0xFF so the Door of Time reads open visually (open-door room "
+            "mesh) and functionally (Door_Toki drops its collision on the next update). Fixes the "
+            "vanilla oversight where Demo_Kankyo's cutscene gate only fires the opening animation "
+            "for the child path, so a Setup / dev-warp as adult leaves the door closed."));
     SohGui::mSohMenu->AddWidget(path, "Mimic Chest in Test Room", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_MIMIC_CHEST)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
