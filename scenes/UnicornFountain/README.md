@@ -47,7 +47,7 @@ this; the fix is to open `UnicornFountain.blend` in Blender with the HM Fast64
 addon enabled and run **Fast64 → Material → Convert to F3D** on every mesh
 before re-exporting.
 
-### Visible Great-Fairy placeholder (new)
+### Open: visible Great-Fairy body (zobj not ported)
 
 The custom `Tf_Beta_Great_Fairy` actor (`soh/.../actors/z_tf_beta_great_fairy.c`)
 is a port of Triforce%'s `BetaGreatFairy` state machine. The Triforce% team
@@ -55,21 +55,19 @@ never published the fairy's zobj, so right now the ported actor runs mesh-less
 — a column of golden sparkle particles rises, the Overture-of-Sages text plays,
 and the fade-back fires on cue, but there is no visible fairy body.
 
-The export script now also spawns a **vanilla Great Fairy actor** at the
-fountain centre `(0, 0, 0)` with params `0x0000`, and adds the fairy's object
-to the room's object list, so the scene has an actual on-screen body while the
-ported state machine keeps owning the dialogue and exit trigger. The two live
-side by side; the vanilla NPC is scenery only. To tweak the spawn, edit the
-`PLACEHOLDER_FAIRY_*` constants at the top of `export_fountain.py` and
-re-export.
+Follow-ups that would give the scene a body on screen:
 
-> **Verify the actor/object names before relying on the export.** The script
-> currently uses `ACTOR_EN_GE1` and `object_ge1`, following the brief that
-> framed this slice. Those identifiers may not match the Great-Fairy actor
-> you actually want — grep Shipwright's `soh/include/tables/actor_table.h`
-> and `object_table.h` for the right pair (e.g. the Great Fairy who gives
-> Giant's Knife / spells) and swap the two constants if needed. Fast64 will
-> reject an unknown identifier at export time with a clear error.
+- **Port the zobj.** The real fix. Convert the BetaGreatFairy DL from the
+  Triforce% assets (if the mesh data can be recovered) into an `object_*`
+  entry under `assets/objects/` and have the ported actor draw it.
+- **Spawn a vanilla Great Fairy as scenery.** A placeholder NPC in the pool
+  while the real zobj is pending. Earlier attempts tried `ACTOR_EN_GE1` /
+  `obj_ge1`, but those are the Gerudo pair — the real Great-Fairy actors
+  are `ACTOR_EN_OKARINA_EFFECT` / Great-Fairy specific objects. Needs the
+  correct `ACTOR_*` / `obj_*` identifiers verified against Shipwright's
+  `soh/include/tables/actor_table.h` and `object_table.h` (Fast64 rejects
+  unknown keys at export time with a clear enum-not-found error) before
+  landing a change to `export_fountain.py`.
 
 ## See also
 
