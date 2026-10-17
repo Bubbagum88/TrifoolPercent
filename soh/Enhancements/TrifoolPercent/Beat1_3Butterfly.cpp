@@ -18,8 +18,12 @@
 //
 // 2. In SCENE_SHOP1 (Hyrule Market Bazaar), once LOOKING_FOR_BUTTERFLY is set and the
 //    shopkeeper's "flying bug" text 0x009C has fired, shelf slot 3 of EnOssan is retargeted
-//    to show the Butterfly (SI_BUTTERFLY). Any later entries into the Bazaar skip the text
-//    check and re-apply the swap, so the shelf stays as the Butterfly across visits.
+//    to SI_BIG_POE and respawned via Actor_Spawn. (A dedicated SI_BUTTERFLY shelf index
+//    would need SoH-source edits to z_en_girla.{c,h}; from the mod we ride SI_BIG_POE and
+//    rely on the GI_BIG_POE GetItemEntry override + icon + dialogue to re-skin it as the
+//    Butterfly end-to-end.) Any later entry into the Bazaar skips the text check and
+//    re-applies the swap only when shelf 3 is not already SI_BIG_POE, so the shelf stays
+//    stable across visits.
 //
 // 3. CustomMessage loads for 0x009C (Bazaar flying-bug text), 0x0B28 (Butterfly shop
 //    description + price) and 0x0083 (Butterfly item-get card) so the engine's native text
@@ -37,17 +41,23 @@
 //    scripts/statics/interface.c Patched_LoadItemIconMain's ITEM_BIG_POE branch. The
 //    icon segment layout is 0x1000 bytes per button, same as the N64 retail.
 //
+// 7. The ItemTableManager entry for GI_BIG_POE is overridden at init with
+//    OBJECT_GI_BUTTERFLY + GID_BUTTERFLY, so the overhead item-get draw renders the
+//    vanilla OoT butterfly mesh (slot 0x0175, which SoH already extracts). The itemId
+//    stays ITEM_BIG_POE so Link still gets a bottle Beta Kokiri can trade for the Odd
+//    Potion.
+//
 // Scope boundaries:
 //
-// - The 3D model Link holds overhead is still the vanilla Big Poe bottle. The upstream
-//   object_gi_butterfly Fast64 patch under assets/model/object_gi_butterfly/ is a ROM-side
-//   Gfx override, not a Torch-ready .o2r object; wiring it in SoH needs the butterfly
-//   object compiled into TrifoolPercent.o2r and either a GetItemEntry draw hook or a
-//   per-draw material swap. Separate PR.
-// - "SI_BUTTERFLY" as a dedicated shelf index (upstream Statics_PatchShop's end state) still
-//   wants a SoH-fork edit to z_en_girla.{c,h} / z_en_ossan.c; this module cannot add an
-//   enum value from outside. TickShopPatch below detects the arming condition but defers
-//   the actual EnGirlA respawn to that follow-up.
+// - "SI_BUTTERFLY" as a dedicated shelf index (upstream Statics_PatchShop's end state)
+//   still wants a SoH-source edit to z_en_girla.{c,h}; the module build has no patch
+//   infrastructure for SoH source, so TickShopPatch rides SI_BIG_POE and leans on the
+//   presentation layer to re-skin everywhere Link sees the item.
+// - The Fast64 object_gi_butterfly patch at assets/model/object_gi_butterfly/ (the
+//   texture-tile Gfx override from upstream) is not applied: we draw the vanilla
+//   zeldaret butterfly straight. If the "patched to see the butterfly better" tweak
+//   turns out needed in-game, follow-up with a GetItemEntry.drawFunc that calls the
+//   patched DL before the vanilla one.
 // - LOOKING_FOR_BUTTERFLY and SHOP_HAS_BUTTERFLY are module-static for now, same as
 //   BETAKOKIRI_SPAWNED. The SaveManager custom section lands when the Beat 1 flag set is
 //   worth plumbing together.
@@ -59,6 +69,7 @@
 
 #include "soh/Enhancements/custom-message/CustomMessageManager.h"
 #include "soh/Enhancements/game-interactor/GameInteractor.h"
+#include "soh/Enhancements/item-tables/ItemTableManager.h"
 #include "soh/ShipInit.hpp"
 #include "soh/SohGui/SohMenu.h"
 #include "soh/SohGui/SohGui.hpp"
@@ -72,6 +83,8 @@ extern "C" {
 #include "functions.h"
 #include "variables.h"
 #include "z64save.h"
+#include "overlays/actors/ovl_En_Ossan/z_en_ossan.h"
+#include "overlays/actors/ovl_En_GirlA/z_en_girla.h"
 extern PlayState* gPlayState;
 extern SaveContext gSaveContext;
 }
@@ -180,9 +193,15 @@ static void TickShopPatch() {
         return;
     }
 
-    // Walk the NPC list for the shopkeeper. If a Beat 1.3 follow-up lands a safer hook
-    // for shelf-slot rewrites in SoH (OnActorInit on ACTOR_EN_GIRLA, say), we can swap
-    // this loop out without touching the condition above.
+    // Walk the NPC list for the shopkeeper, then force shelf 3 (vanilla SI_FAIRY) to
+    // SI_BIG_POE so the player can buy a bottle whose contents chain into the Beta
+    // Kokiri trade. The pending-sale item-get card goes through 0x5070 which the
+    // custom-message hook renames to Butterfly, and ItemTable_Retrieve(GI_BIG_POE)
+    // is overridden at init to draw object_gi_butterfly / GID_BUTTERFLY for the
+    // "Link holds overhead" pose. We can't add a dedicated SI_BUTTERFLY enum from
+    // outside the SoH source, so riding the Big Poe shop slot stays the module-only
+    // approach -- the player sees "Butterfly" everywhere thanks to the dialogue +
+    // icon + draw overrides.
     Actor* ossanActor = gPlayState->actorCtx.actorLists[ACTORCAT_NPC].head;
     while (ossanActor != NULL) {
         if (ossanActor->id == ACTOR_EN_OSSAN) {
@@ -193,15 +212,35 @@ static void TickShopPatch() {
     if (ossanActor == NULL) {
         return;
     }
+    EnOssan* ossan = (EnOssan*)ossanActor;
+    if (ossan->shelves == nullptr) {
+        return; // shelves not loaded yet; retry next frame
+    }
+    EnGirlA* slot3 = ossan->shelfSlots[3];
+    if (slot3 != nullptr && slot3->actor.params == SI_BIG_POE) {
+        return; // already swapped
+    }
 
-    // The actual shelf-slot mutation happens through the Bazaar's shop item list; the
-    // read side of that structure needs the EnOssan overlay to be loaded. On SoH the
-    // overlay is always resident when the actor is alive, so we can stop here on the
-    // Bazaar-visit arming side. The Beat 1.3 follow-up with the Butterfly asset lands
-    // the actual EnGirlA respawn: today the shelf still shows the Big Poe, which is the
-    // vanilla ITEM_BIG_POE slot the Butterfly rides on, so Link can already buy "it" --
-    // the shop just hasn't renamed the artwork yet.
-    (void)ossanActor;
+    // Bazaar is store index 4; shelf-3 vanilla offset is (80, 76, -3). sItemShelfRot is
+    // overlay-private, so reuse the rotation EnOssan already stamped on the existing
+    // shelf slot (every retail re-spawn reads the same table, so this matches).
+    s16 rotY = ossan->shelves->actor.shape.rot.y;
+    s16 rotX = ossan->shelves->actor.shape.rot.x;
+    s16 rotZ = ossan->shelves->actor.shape.rot.z;
+    f32 spawnX = ossan->shelves->actor.world.pos.x + 80.0f;
+    f32 spawnY = ossan->shelves->actor.world.pos.y + 76.0f;
+    f32 spawnZ = ossan->shelves->actor.world.pos.z + -3.0f;
+    if (slot3 != nullptr) {
+        rotY = slot3->actor.shape.rot.y;
+        rotX = slot3->actor.shape.rot.x;
+        rotZ = slot3->actor.shape.rot.z;
+        spawnX = slot3->actor.world.pos.x;
+        spawnY = slot3->actor.world.pos.y;
+        spawnZ = slot3->actor.world.pos.z;
+        Actor_Kill(&slot3->actor);
+    }
+    ossan->shelfSlots[3] = (EnGirlA*)Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_GIRLA, spawnX,
+                                                 spawnY, spawnZ, rotX, rotY, rotZ, SI_BIG_POE);
 }
 
 // -----------------------------------------------------------------------------
@@ -296,10 +335,37 @@ static void LoadBeat1_3Message(u16* textId, bool* loadFromMessageTable) {
 }
 
 // -----------------------------------------------------------------------------
+// GI_BIG_POE GetItemEntry override: swap the "Link holds overhead" draw to the
+// vanilla OBJECT_GI_BUTTERFLY mesh (SoH object slot 0x0175, GID_BUTTERFLY 0x68).
+// -----------------------------------------------------------------------------
+// SoH's bottle-item draw dispatches on GetItemEntry.gid, so overriding the MOD_NONE
+// entry for GI_BIG_POE flips the overhead model without touching player code. The
+// actual item Link receives is still ITEM_BIG_POE (field 0x80 keeps the bottle-fill
+// side-effect), so the Beta Kokiri trade pipeline that reads EXCH_ITEM_BIG_POE from
+// the bottle slot keeps working. Gated on CVar via RegisterShipInitFunc's
+// updatePaths: the init re-fires when the toggle flips, and this call becomes a
+// no-op (and the entry is re-overridden) each time.
+//
+// Side-effect: a vanilla Big Poe pickup (ghost-shop sale, randomizer check) now
+// also draws the butterfly mesh while the beat is active. Acceptable in the
+// Triforce% context -- the save is dedicated to the TAS mode, and ITEM_BIG_POE is
+// not shipped as a reward anywhere in the TrifoolPercent flow outside this trade.
+
+static void RegisterButterflyItemEntry() {
+    if (CVarGetInteger(CVAR_TRIFOOL_BUTTERFLY, 0) == 0) {
+        return;
+    }
+    GetItemEntry butterflyEntry = GET_ITEM(ITEM_BIG_POE, OBJECT_GI_BUTTERFLY, GID_BUTTERFLY, 0x5070, 0x80,
+                                           CHEST_ANIM_SHORT, ITEM_CATEGORY_MAJOR, MOD_NONE, GI_BIG_POE);
+    ItemTableManager::Instance->AddItemEntry(MOD_NONE, GI_BIG_POE, butterflyEntry);
+}
+
+// -----------------------------------------------------------------------------
 // Hooks + registration.
 // -----------------------------------------------------------------------------
 
 static void RegisterTrifoolBeat1_3() {
+    RegisterButterflyItemEntry();
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnPlayerUpdate>(
         MoveOddPotionToChildIfNeeded);
     GameInteractor::Instance->RegisterGameHook<GameInteractor::OnPlayerUpdate>(TickShopPatch);
@@ -324,12 +390,12 @@ static void RegisterTrifoolBeat1_3Widgets() {
         .CVar(CVAR_TRIFOOL_BUTTERFLY)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
             "Turns on the Butterfly trade. Flow: Beta Kokiri's first greeting arms the "
-            "hunt; the Bazaar shopkeeper's 'flying bug' text re-skins the Big Poe bottle "
-            "sold on shelf 3 as the Butterfly (C-button icon + item-get card + shop and "
-            "trade dialogue), and the bottle Link carries chains into the Beta Kokiri "
-            "trade -- offering it walks dialogue 0x0B13 and hands Link the Odd Potion, "
-            "which is auto-moved into the child trade slot. The 3D model + dedicated "
-            "SI_BUTTERFLY slot are separate follow-ups."));
+            "hunt; the Bazaar shopkeeper's 'flying bug' text spawns a Big-Poe-slot bottle "
+            "on shelf 3, re-skinned as the Butterfly end-to-end (C-button icon, overhead "
+            "3D mesh from vanilla OBJECT_GI_BUTTERFLY, item-get card, shop and trade "
+            "dialogue). The bottle Link carries chains into the Beta Kokiri trade -- "
+            "offering it walks dialogue 0x0B13 and hands Link the Odd Potion, which is "
+            "auto-moved into the child trade slot."));
 }
 
 static RegisterMenuInitFunc beat1_3MenuInitFunc(RegisterTrifoolBeat1_3Widgets);
