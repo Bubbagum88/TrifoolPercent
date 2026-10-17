@@ -25,6 +25,8 @@
 #define CVAR_TRIFOOL_ENDING CVAR_ENHANCEMENT("TrifoolPercent.Ending")
 #define CVAR_TRIFOOL_FOUNTAIN_ENTRY_CS CVAR_ENHANCEMENT("TrifoolPercent.FountainEntryCs")
 #define CVAR_TRIFOOL_MIMIC_CHEST CVAR_ENHANCEMENT("TrifoolPercent.MimicChest")
+#define CVAR_TRIFOOL_MEDALLION_WATER CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Water")
+#define CVAR_TRIFOOL_MEDALLION_LIGHT CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Light")
 
 // Butterfly rides a slot that vanilla OoT ships but never uses. The gameplay-item id
 // 0x68 (object_gi_butterfly, documented on TCRF) has no in-game pickup wired to it, so
