@@ -2,6 +2,8 @@
 
 This is the plan for getting from an empty repo to the full Triforce% story playing natively in Ship of Harkinian (SoH). It builds on the research in [code-breakdown.md](references/triforcepercent/code-breakdown.md) (section numbers below point into it) and the tools listed in the [README](../README.md#tools).
 
+For a current, patch-by-patch comparison between what Triforce% does and what TrifoolPercent has implemented today — including which upstream patches we match, which we hit a different way, and which we still need — see [`triforcepercent-parity.md`](references/triforcepercent-parity.md). It's the source of truth for the "status" annotations in the phases below.
+
 ## What "success" means
 
 A player with a legal OoT ROM can install TrifoolPercent, start a new file, and play the Triforce% quest from the Lost Woods to the staff roll in SoH. No ACE and no memory corruption. That means:
@@ -24,6 +26,29 @@ The research settled the shape of the project (§1, §6):
 
 **Reuse before porting.** SoH already has Bunny Hood speed/jump, Ocarina time travel without the Master Sword, custom music, and the save editor. The Arwing is vanilla `En_Clear_Tag` and only needs a spawn trigger.
 
+## Triforce% parity snapshot
+
+A high-level view of where our logic patches stand against the original run. Scenes, actors and cutscenes are intentionally rebuilt and are not scored for parity. Full detail — row-by-row — in [`triforcepercent-parity.md`](references/triforcepercent-parity.md).
+
+| Area | Count | Highlights |
+|---|---|---|
+| **Equivalent to upstream** | 7 | Starting save state, pause-L inventory, dev warps, Odd Potion slot move, Beta Kokiri quest arming, chromatic recognizer, ActorDB registrations |
+| **Different approach, same effect** | 4 | Entrance rewiring (new scene slots instead of `gEntranceTable` rewrites), Fire-Medallion thaw (flag flip vs. Din's-Fire-in-room), custom messages (ad-hoc `OnOpenText` vs. `CustomMessageManager` table), Zora's Domain → Fountain route (overworld flame instead of Domain exit) |
+| **Partially implemented** | 2 | Bazaar shop shelf swap (detection yes, EnGirlA params rewrite stub); Long of Time (recognized, no consumer) |
+| **TrifoolPercent-only** | 5 | Door of Time adult hook, dialogue-driven onboarding, Forest/Water/Light Medallion arrow + Farore grants |
+| **Missing, load-bearing** | 3 | Long of Time consumer (age flip + reload), always-treat-Link-as-child cluster, Medallion-on-C / Fire-Medallion-on-C |
+| **Missing, scene/content-blocked** | 6 | Chamber of Sages draw config, cutscene terminators for staff roll, custom audio pack, hair physics, cel shading, Running Man / Gerudo content |
+| **Covered by existing SoH** | 2 | Bunny Hood speed/jump (`BUNNY_HOOD_FAST_AND_JUMP`), Arwing (vanilla `En_Clear_Tag`) |
+
+**Priority order for closing the gap** (from [`triforcepercent-parity.md`](references/triforcepercent-parity.md) §4):
+
+1. Long of Time consumer (one small `.cpp`, unblocks Beat 1 climax)
+2. Always-treat-Link-as-child cluster (4 `VB_` hooks)
+3. Finish Bazaar shop shelf swap (EnGirlA params write)
+4. Medallion-on-C + Fire Medallion → Din's Fire-on-C (kaleido + player)
+5. Overture of Sages consumer (hijack warp path, spawn WSRCutscene)
+6. `CustomMessageManager` table refactor (quality, not functionality)
+
 ## Phases
 
 Each phase proves one new pipeline end to end, so later phases are mostly repetition of a solved problem. A phase is done when its exit check passes, not when its checklist is ticked.
@@ -43,7 +68,7 @@ Goal: prove that a custom scene, custom actors, a custom object and custom text 
 - [x] Re-export `scene/TriforceRoom` with Fast64 and pack it into the Besitu debug-scene slot in an `.o2r` (moved off the Goron Shop so it stays vanilla)
 - [x] Port `TriforcePiece`, `TriforceChest` and `TriforceLight` and register them with `ActorDB`
 - [x] Import the Triforce piece, chest and light objects
-- [x] Show "You got the Triforce!!!" (`0x0ACE`) through `CustomMessageManager`
+- [x] Show "You got the Triforce!!!" (`0x0ACE`) — currently via an ad-hoc `OnOpenText` interception; migrating to a `CustomMessageManager::CreateMessage` table is tracked under Phase 2 polish ([parity row 19](references/triforcepercent-parity.md))
 - [x] Add a test loading zone (blue flame by Link's house) and a Windows CI build so anyone can grab the artifact
 - [ ] Document the build steps in `docs/build.md` so anyone can reproduce them locally
 
@@ -60,6 +85,7 @@ Goal: make Phase 1 repeatable before scaling it up.
 - [ ] CI that at least builds the fork
 - [x] Check whether SoH can load compiled code from a mod package → **no**; see [`docs/references/soh-code-mod-feasibility.md`](references/soh-code-mod-feasibility.md)
 - [ ] Turn `run/triforcepercent_data.run` into a tracked porting checklist in `docs/references/import_status.md`
+- [ ] Migrate ad-hoc `OnOpenText` text interception to a single `CustomMessageManager::CreateMessage("TrifoolPercent", id, msg)` table before the Beat 2/3 message count doubles ([parity row 19 / §D](references/triforcepercent-parity.md))
 
 **Exit check:** a fresh clone can produce a playable Triforce Room build by following `docs/build.md`.
 
@@ -67,9 +93,10 @@ Goal: make Phase 1 repeatable before scaling it up.
 
 Goal: prove custom songs, warps and in-engine cutscenes.
 
-- [ ] Overture of Sages as a new ocarina song (`OnOcarinaSongAction`, note data from `ocarina.c`)
-- [ ] Playing it in the Temple of Time triggers the `WSRCutscene` warp; elsewhere it says "You can't warp here!"
-- [ ] Chamber of Sages scene with its water and light-ray draw config
+- [x] Chromatic song-recognition engine running alongside vanilla (`SongEngine.cpp`, 12-note sliding window on `OnOcarinaNote`) — upstream patches `sNoteValueIndexMap` directly; we run parallel instead ([parity row 5](references/triforcepercent-parity.md))
+- [ ] Overture of Sages added to the song table and armed (currently scaffolded, `isArmed=false`)
+- [ ] Overture consumer: in the Temple of Time, spawn `WSRCutscene` / abort warp; elsewhere show "You can't warp here!" ([parity row 7 / §A](references/triforcepercent-parity.md))
+- [ ] Chamber of Sages scene with its water and light-ray draw config ([parity row 21](references/triforcepercent-parity.md); blocked on CoS `.blend` re-export)
 - [ ] `CoSStaircases` and `CoSSages`, including the sage dialogue (`0x0A10`–`0x0A77`)
 - [ ] Chamber exit leads into the Triforce Room with its entrance cutscene
 - [ ] First custom music: `ChamberOfSages.aseq`, `triforce.aseq`, `PowerOfTheGoddesses.aseq`
@@ -79,10 +106,11 @@ Goal: prove custom songs, warps and in-engine cutscenes.
 
 ### Phase 4: Key of Wisdom (Zora's Domain and the Unicorn Fountain)
 
-- [ ] Zora's Domain ice melting (`z_bg_spot07_taki`)
-- [ ] Reroute the Domain → Lake Hylia exit to the Unicorn Fountain (Test01 slot)
+- [x] Fire Medallion thaws Zora's Domain — currently as a global `UNFROZE_KING_ZORA` flag flip on possession (`MedallionFire.cpp`); upstream requires actually casting Din's Fire in the room. Gameplay-equivalent; refining to a Din's-Fire-in-scene trigger is a stretch ([parity row 14 / §F](references/triforcepercent-parity.md))
+- [ ] Full `z_bg_spot07_taki` rewrite if we want the geometric ice-melt effect from the run
+- [ ] Reroute the Domain → Lake Hylia exit to the Unicorn Fountain (Test01 slot) — currently reached via a Lost Woods overworld flame trigger instead ([parity row 28](references/triforcepercent-parity.md))
 - [x] Unicorn Fountain scene exported into the Test01 slot
-- [x] Beta Great Fairy actor ported (state machine, particles, audio; mesh unavailable until the zobj is sourced)
+- [x] Beta Great Fairy actor ported (state machine, particles, audio; mesh unavailable until the zobj is sourced). Follow-up: swap hand-rolled hover for vanilla Great Fairy actor behavior (see `prefer-engine-native-behaviors` team memory)
 - [ ] Fountain cutscene converted to SoH macros so the fairy's state machine is driven by the scene, not a timer
 - [ ] Pedestal of the Ocarina actor
 - [ ] She teaches the Overture of Sages (replacing the Phase 3 debug unlock)
@@ -92,18 +120,28 @@ Goal: prove custom songs, warps and in-engine cutscenes.
 ### Phase 5: Keys of Courage and Power (the side quests)
 
 Key of Courage:
-- [ ] New-file game state and Navi silence (`Statics_SetGameState`)
-- [ ] Lost Woods secret path spawns the Beta Kokiri
-- [ ] Butterfly in the Bazaar (start with the Big Poe slot, as Triforce% did), traded for Magic Powder
-- [ ] Rewritten Skull Kid upgrades the Bunny Hood (SoH's existing feature, gated on a flag) and Gerudo Mask
+- [x] New-file game state and Navi silence — mirrors `Statics_SetGameState` ([parity row 1](references/triforcepercent-parity.md); `Setup.cpp:36` `OnLoadGame`)
+- [x] Beta Kokiri "flying bug" quest arming (`Beat1_3Butterfly.cpp:162`) — equivalent to upstream Beta Kokiri dialogue ([parity row 12](references/triforcepercent-parity.md))
+- [ ] Lost Woods secret path spawns the Beta Kokiri (actor exists; path detection not wired)
+- [~] Butterfly in the Bazaar — detection + arming done, but the shelf swap is a `(void)ossanActor` stub; the butterfly is not yet reachable through the shop ([parity row 11 / §C](references/triforcepercent-parity.md))
+- [x] Odd Potion → child trade slot (`Beat1_3Butterfly.cpp:92`) ([parity row 10](references/triforcepercent-parity.md))
+- [ ] Rewritten Skull Kid upgrades the Bunny Hood (SoH's `BUNNY_HOOD_FAST_AND_JUMP` covers the speed/jump — just needs to be gated on our flag; [parity row 9](references/triforcepercent-parity.md)) and Gerudo Mask
 - [ ] Gerudo guards and the Thieves' Hideout path
 - [ ] Nabooru with her shehnai, cutscenes, and the "full Song of Time"
-- [ ] Time travel anywhere (SoH's `OcarinaTimeTravel`) and the "always a child" patches
+- [~] Chromatic recognizer matches **Long of Time** notes (`SongEngine.cpp`), but **no consumer** calls `TrifoolSongEngine_ConsumeMatch` to flip age / reload entrance — one small `.cpp` unblocks the Beat 1 climax ([parity row 6 / §A](references/triforcepercent-parity.md))
+- [ ] "Always treat Link as child" cluster — upstream's four MIPS patches (`z_bg_toki_swd`, `z_en_xc` Sheik, `z_demo_effect` stones, player pull-sword). Needed the moment Long of Time lets adult Link visit ToT ([parity row 8 / §B](references/triforcepercent-parity.md))
 
 Key of Power:
-- [ ] Running Man race rewrite (`z_en_mm3`)
+- [ ] Running Man race rewrite (`z_en_mm3`) ([parity row 26](references/triforcepercent-parity.md))
 - [ ] Running Man boss. **Needs a new model**: the original isn't in the Triforce% repo
-- [ ] Sages' Charm: Medallions on C, Fire Medallion as Din's Fire, the Zora's River warp
+- [x] Sages' Charm obtainable + `TrifoolBeat_HasSagesCharm()` predicate (`Beat2_0SagesCharm.cpp`)
+- [ ] Sages' Charm powers — Medallions on C, Fire Medallion as Din's Fire, Zora's River warp. Signature TAS ability; `Beat2_0SagesCharm.cpp` explicitly defers it ([parity row 13 / §E](references/triforcepercent-parity.md))
+
+Medallion powers already granted on possession (TrifoolPercent additions beyond upstream):
+- [x] Forest Medallion → Farore's Wind (`MedallionForest.cpp`)
+- [x] Water Medallion → Ice Arrows (`MedallionWater.cpp`)
+- [x] Light Medallion → Light Arrows (`MedallionLight.cpp`)
+- [x] Fire Medallion → thaws Zora's Domain (`MedallionFire.cpp`, see Phase 4)
 
 **Exit check:** all three keys can be earned in order on one save file.
 
