@@ -266,6 +266,35 @@ static void SpawnTestRoomExhibits() {
     }
 }
 
+// Live beta-actor exhibits: spawn the three vanilla beta actors whose object slots we added to
+// the room's object list in export_test_room.py (obj_bird, obj_vase, obj_nwc). They stand on a
+// small triangle around the room centre so Link can walk up to each and see the actual actor.
+// Keeping this to object-safe actors is deliberate - other beta actors (En_Horse_Zelda, Item_Inbox,
+// etc.) need object slots that would push the room's object list closer to the cap or depend on
+// gameplay state we don't set up here; those stay as plaque-only entries for now.
+static void SpawnTestRoomLiveExhibits() {
+    if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0) {
+        return;
+    }
+    constexpr float kRadius = 90.0f;
+    struct LiveExhibit {
+        s16 actorId;
+        s16 params;
+    };
+    static const LiveExhibit kExhibits[3] = {
+        { ACTOR_EN_BIRD, 0x0000 },  // obj_bird: swallow that normally circles overhead
+        { ACTOR_EN_VASE, 0x0000 },  // obj_vase: beta Hyrule Castle orange pot
+        { ACTOR_EN_NWC,  0x0000 },  // obj_nwc:  cucco chick, unused Lon Lon pet
+    };
+    for (s32 i = 0; i < 3; ++i) {
+        float angle = 2.0943951023931953f * (float)i; // 0, 120, 240 deg
+        float x = cosf(angle) * kRadius;
+        float z = -sinf(angle) * kRadius;
+        Actor_Spawn(&gPlayState->actorCtx, gPlayState, kExhibits[i].actorId,
+                    x, 0.0f, z, 0, 0, 0, kExhibits[i].params);
+    }
+}
+
 // -----------------------------------------------------------------------------
 // Custom messages for the six signs.
 // -----------------------------------------------------------------------------
@@ -367,6 +396,7 @@ static void PlayTestRoomPrototypeCs() {
 static void RegisterTrifoolTestRoom() {
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomSigns);
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomExhibits);
+    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomLiveExhibits);
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, PlayTestRoomPrototypeCs);
     COND_HOOK(OnOpenText, CVAR_TEST_ROOM_VALUE, LoadTestRoomSignMessage);
 }
@@ -387,7 +417,8 @@ static void RegisterTrifoolTestRoomWidgets() {
             "Unicorn Fountain, and two reserved slots. Each doorway's loading zone is baked into "
             "the scene; the six signs are invisible talk-triggers for now. An inner ring of 14 "
             "exhibit plaques describes beta/unused OoT actors and the TrifoolPercent assets we've "
-            "landed (TCRF-sourced). Needs TrifoolPercent.o2r "
+            "landed (TCRF-sourced), and three live beta actors (En_Bird, En_Vase, En_Nwc) stand "
+            "near the room centre. Needs TrifoolPercent.o2r "
             "in the mods folder for the room itself. Reach it via the Dev inputs' warp cycle "
             "(the \"Test Room (hex hub)\" slot) or the OoT debug map select (\"118:Syotes\")."));
     SohGui::mSohMenu->AddWidget(path, "Test Room prototype cutscene", WIDGET_CVAR_CHECKBOX)
