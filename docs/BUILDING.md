@@ -86,7 +86,14 @@ The output is `third_party/Shipwright/build/soh/soh.elf` (or `soh.exe` on Window
 
 ## CI / automated builds
 
-[`.github/workflows/build-o2r.yml`](../.github/workflows/build-o2r.yml) runs the mod-archive build on every push that touches `scenes/`, `actors/`, `tools/` or the workflow itself, and on manual **Run workflow** dispatch. It is the canonical reference for a clean build: if `tools/build_o2r.sh` ever stops working locally, compare against the latest green run. The resulting `.o2r` is uploaded as a workflow artifact with 30-day retention. The game build (`tools/build_soh.sh`) is not run in CI yet.
+Two workflows in `.github/workflows/`:
+
+- **[`build-o2r.yml`](../.github/workflows/build-o2r.yml)** — builds `TrifoolPercent.o2r` on every push touching `scenes/`, `actors/`, `tools/` or the workflow itself, plus manual dispatch. Uploads the `.o2r` as a workflow artifact (30-day retention). Fast; this is what the Quick Start step 1 downloads.
+- **[`build-soh.yml`](../.github/workflows/build-soh.yml)** — builds the full Shipwright engine with the TrifoolPercent module linked in, plus the `.o2r`, on every push to `main` touching `soh/`, `scenes/`, `actors/`, `tools/` or the workflow. Uploads a `TrifoolPercent-soh-linux` artifact with `soh.elf` + the mod `.o2r` + a drop README.
+
+**Engine build cache.** `build-soh.yml` caches `third_party/Shipwright/build/` with `actions/cache@v4`, keyed on a hash of `tools/setup.sh`, `tools/build_soh.sh`, `patches/shipwright/**`, and `soh/Enhancements/TrifoolPercent/**`. A push that only touches scenes, actors, docs or the `.o2r` pipeline hits the cache and skips the ~35-minute cmake + ninja engine rebuild; the restored `build/` tree is served alongside the fresh Shipwright clone, and the staging step grabs `soh/soh.elf` out of it. The `.o2r` pack step always runs. Bump `SHIPWRIGHT_COMMIT` in `tools/setup.sh`, change a patch under `patches/shipwright/`, or edit the module source and the cache invalidates on its own.
+
+Either workflow is the canonical reference for a clean build: if a step passes in CI but fails locally, the delta is almost always your environment.
 
 See also: [BUILD_TOOLS.md](BUILD_TOOLS.md) for a tool-by-tool walkthrough of what each piece of the pipeline does.
 

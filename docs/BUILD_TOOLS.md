@@ -33,7 +33,12 @@ A small Python script that walks each input directory or `.o2r`, collects every 
 [`tools/build_soh.sh`](../tools/build_soh.sh) copies the module source into the Shipwright checkout and runs its normal Release build (`cmake -G Ninja … && cmake --build`). The module itself is plain C using Shipwright's hook/event system — custom actors register in [`soh/Enhancements/TrifoolPercent`](../soh/Enhancements/TrifoolPercent) and are wired into scenes by the `.o2r`.
 
 ## GitHub Actions — reproducible builds
-The `build-o2r` workflow runs the whole pipeline on `ubuntu-24.04`: checkout, Python 3.13, Pillow, `tools/setup.sh`, Shipwright's apt deps, `GenerateSohOtr` (needed to seed Torch's include tables), `tools/build_o2r.sh`, then `actions/upload-artifact` for the `.o2r`. `concurrency` cancels in-flight runs on the same ref so pushes don't pile up. If you ever need to debug a build, click into a run → the first red step name says exactly where it broke.
+Two workflows run on `ubuntu-24.04`:
+
+- **`build-o2r`** — the asset-archive pipeline: checkout, Python 3.13, Pillow, `tools/setup.sh`, Shipwright's apt deps, `GenerateSohOtr` (seeds Torch's include tables), `tools/build_o2r.sh`, `actions/upload-artifact` for the `.o2r`.
+- **`build-soh`** — the full-engine pipeline, triggered when `soh/`, scenes, actors, tools or the workflow change on `main`. Same early steps, then it caches `third_party/Shipwright/build/` (keyed on `tools/setup.sh`, `tools/build_soh.sh`, `patches/shipwright/**`, `soh/Enhancements/TrifoolPercent/**`) and runs `tools/build_soh.sh` only on a cache miss. The `.o2r` pack still runs every time. A scene-only or docs-only push to `main` restores the engine build and ships a drop in a minute or two instead of ~35.
+
+`concurrency` cancels in-flight runs on the same ref so pushes don't pile up. If a build fails, click into the run and the first red step name says exactly where it broke.
 
 ## How we built and modify the mod
 - **Scenes** live as `.blend` files upstream in `third_party/triforce-percent/scene/`; iterate on them in Blender, re-run `tools/build_o2r.sh`, drop the new `.o2r` in SoH's `mods/` folder.
