@@ -1,0 +1,38 @@
+Route Player_ItemToItemAction through a weak TrifoolBeat_MapMedallionItemAction
+hook so Beat 2.1 can swap the item action of a medallion equipped to a C-button
+(Fire Medallion -> PLAYER_IA_DINS_FIRE). The weak default is pass-through, so a
+Shipwright build without the TrifoolPercent module links and behaves exactly
+like vanilla.
+
+Upstream parallel: scripts/patches/player_patches.c Patched_Player_ItemToItemAction
+(c) 2019-2022 The Triforce% Team, under upstream/TRIFORCE-PERCENT-LICENSE.txt.
+
+--- a/soh/src/overlays/actors/ovl_player_actor/z_player.c
++++ b/soh/src/overlays/actors/ovl_player_actor/z_player.c
+@@ -2226,6 +2226,16 @@
+     }
+ }
+
++// TrifoolPercent Beat 2.1 (Sages' Charm). Weak symbol so a Shipwright build
++// without the TrifoolPercent module still links. When the module is in, this
++// is where a medallion-on-C maps to its beta ability (Fire -> Din's Fire).
++// fallback is the vanilla PLAYER_IA_* this function would otherwise return,
++// so the hook can decide to pass through.
++__attribute__((weak)) s8 TrifoolBeat_MapMedallionItemAction(s32 item, s8 fallback) {
++    (void)item;
++    return fallback;
++}
++
+ s8 Player_ItemToItemAction(s32 item) {
+     if (GameInteractor_Should(VB_ITEM_ACTION_BE_NONE, item >= ITEM_NONE_FE, item)) {
+         return PLAYER_IA_NONE;
+@@ -2234,7 +2244,8 @@
+     } else if (item == ITEM_FISHING_POLE) {
+         return PLAYER_IA_FISHING_POLE;
+     } else {
+-        return sItemActions[item];
++        s8 fallback = sItemActions[item];
++        return TrifoolBeat_MapMedallionItemAction(item, fallback);
+     }
+ }
+

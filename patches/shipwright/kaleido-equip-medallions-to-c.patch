@@ -1,0 +1,29 @@
+Inject a TrifoolPercent hook call at the top of KaleidoScope_DrawQuestStatus so
+Beat 2.1 can equip a medallion to a C-button when Sages' Charm is held. The
+hook body is in soh/Enhancements/TrifoolPercent/Beat2_1MedallionOnC.cpp; when
+the feature CVar is off (or the Charm is not held) it is a no-op early return,
+so an engine binary carrying this patch with the mod disabled behaves exactly
+like vanilla.
+
+Upstream parallel: scripts/statics/interface.c:128 Statics_HandleEquipMedallionsToC
+(c) 2019-2022 The Triforce% Team, under upstream/TRIFORCE-PERCENT-LICENSE.txt.
+
+--- a/soh/src/overlays/misc/ovl_kaleido_scope/z_kaleido_collect.c
++++ b/soh/src/overlays/misc/ovl_kaleido_scope/z_kaleido_collect.c
+@@ -6,9 +6,16 @@
+ #include "soh/Enhancements/game-interactor/GameInteractor_Hooks.h"
+ #include <libultraship/bridge/consolevariablebridge.h>
+ 
++// TrifoolPercent Beat 2.1 (Sages' Charm medallions-on-C). Weak symbol so a
++// Shipwright build without the TrifoolPercent module still links; the module
++// provides the real implementation when it is compiled in.
++__attribute__((weak)) void TrifoolBeat_UpdateQuestEquipHook(PlayState* play) { (void)play; }
++
+ extern const char* digitTextures[];
+ 
+ void KaleidoScope_DrawQuestStatus(PlayState* play, GraphicsContext* gfxCtx) {
++    // TrifoolPercent Beat 2.1: equip medallion to C-button on C-press.
++    TrifoolBeat_UpdateQuestEquipHook(play);
+ 
+     static s16 D_8082A070[][4] = {
+         { 255, 0, 0, 255 },

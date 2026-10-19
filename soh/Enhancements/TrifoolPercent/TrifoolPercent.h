@@ -30,6 +30,8 @@
 #define CVAR_TRIFOOL_MEDALLION_FOREST CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Forest")
 #define CVAR_TRIFOOL_SONG_ENGINE CVAR_ENHANCEMENT("TrifoolPercent.SongEngine")
 #define CVAR_TRIFOOL_LONG_OF_TIME CVAR_ENHANCEMENT("TrifoolPercent.LongOfTime")
+#define CVAR_TRIFOOL_SAGES_CHARM CVAR_ENHANCEMENT("TrifoolPercent.SagesCharm")
+#define CVAR_TRIFOOL_MEDALLION_ON_C CVAR_ENHANCEMENT("TrifoolPercent.MedallionOnC")
 #define CVAR_TRIFOOL_LONG_OF_TIME_AGE_FLIP CVAR_ENHANCEMENT("TrifoolPercent.LongOfTimeAgeFlip")
 #define CVAR_TRIFOOL_SACRED_REALM_CHAIN CVAR_ENHANCEMENT("TrifoolPercent.SacredRealmChain")
 #define CVAR_TRIFOOL_STAFF_ROLL_CHAIN CVAR_ENHANCEMENT("TrifoolPercent.StaffRollChain")
