@@ -12,9 +12,7 @@
 // here now unblocks the Sacred Realm and Staff Roll chain scaffolds without waiting on
 // the save-slot decisions.
 
-extern "C" {
 #include "TrifoolPercent.h"
-}
 
 static bool sHasMetNabooru = false;
 static bool sHasLearnedLongOfTime = false;
