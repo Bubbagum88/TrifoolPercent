@@ -75,6 +75,15 @@ static void ApplyTrifoolSetupPreset() {
 
     // Keep Navi quiet.
     gSaveContext.naviTimer = 1;
+
+    // Hand over the Sages' Charm when the Beat 2.0 slice is on, so testers can exercise
+    // the medallion-on-C / Din's-Fire-on-C flow (and any medallion-ability-gating that
+    // keys on it) without first beating the Running Man boss. Session-scoped, same as
+    // sHasSagesCharm itself; the Beat 1 SaveManager custom-section pass will later make
+    // it durable.
+    if (CVarGetInteger(CVAR_TRIFOOL_SAGES_CHARM, 0) != 0) {
+        TrifoolBeat_GrantSagesCharm();
+    }
 }
 
 // Reads the Player 1 controller's current frame. Safe to call from a per-frame hook.
