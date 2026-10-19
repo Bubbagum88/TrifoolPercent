@@ -62,9 +62,25 @@ jobs:
       - name: Build TrifoolPercent.o2r (the Triforce Room, Unicorn Fountain and Test Room scenes)
         run: tools/build_o2r.sh
 
+      - name: Cache the Shipwright engine build (reused when the Shipwright pin, engine patches, and TrifoolPercent module source are all unchanged)
+        # The engine build is the slow part of this workflow (tens of minutes); the mod .o2r pack
+        # above is fast and runs every time. The cache stores the finished build tree, including
+        # soh.elf, so a cache hit lets us skip cmake + ninja entirely. Inputs to the key:
+        #   tools/setup.sh         - pins SHIPWRIGHT_COMMIT (bump invalidates cache)
+        #   tools/build_soh.sh     - the build recipe itself
+        #   patches/shipwright/**  - engine patches applied before cmake
+        #   soh/Enhancements/TrifoolPercent/** - module source compiled into the engine
+        id: cache-soh-build
+        uses: actions/cache@v4
+        with:
+          path: third_party/Shipwright/build
+          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', 'tools/build_soh.sh', 'patches/shipwright/**', 'soh/Enhancements/TrifoolPercent/**') }}
+
       - name: Build the full Ship of Harkinian engine with the TrifoolPercent module
         # tools/build_soh.sh copies soh/Enhancements/TrifoolPercent/ into Shipwright's tree and runs
         # a Release cmake build. Shipwright globs soh/soh/** so no build-file edits are needed.
+        # Skipped on a cache hit above - the cached build/ already contains soh.elf.
+        if: steps.cache-soh-build.outputs.cache-hit != 'true'
         run: tools/build_soh.sh
 
       - name: Stage the drop (soh.elf + TrifoolPercent.o2r + a README)
