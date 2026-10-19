@@ -30,6 +30,8 @@
 #define CVAR_TRIFOOL_MEDALLION_FOREST CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Forest")
 #define CVAR_TRIFOOL_SONG_ENGINE CVAR_ENHANCEMENT("TrifoolPercent.SongEngine")
 #define CVAR_TRIFOOL_LONG_OF_TIME CVAR_ENHANCEMENT("TrifoolPercent.LongOfTime")
+#define CVAR_TRIFOOL_SACRED_REALM_CHAIN CVAR_ENHANCEMENT("TrifoolPercent.SacredRealmChain")
+#define CVAR_TRIFOOL_STAFF_ROLL_CHAIN CVAR_ENHANCEMENT("TrifoolPercent.StaffRollChain")
 
 // Butterfly rides a slot that vanilla OoT ships but never uses. The gameplay-item id
 // 0x68 (object_gi_butterfly, documented on TCRF) has no in-game pickup wired to it, so
@@ -229,6 +231,19 @@ void TfUnusedFlame_Draw(Actor* thisx, PlayState* play);
 // Read by future slices (medallions-on-C, Fire-Medallion-as-Din's-Fire, magic bar).
 bool TrifoolBeat_HasSagesCharm(void);
 void TrifoolBeat_GrantSagesCharm(void);
+
+// Progression beat flags for cutscene gating. Written from scene glue (Nabooru, Running Man,
+// Chamber of Sages) once each beat is landed; read by the Sacred Realm and Staff Roll chain
+// reroutes to decide whether to fire follow-on cutscenes. Session-scoped — reset on new save.
+// See docs/cutscene-plan.md §2 for the beats these gate.
+bool TrifoolBeat_HasMetNabooru(void);
+void TrifoolBeat_GrantMetNabooru(void);
+bool TrifoolBeat_HasLearnedLongOfTime(void);
+void TrifoolBeat_GrantLearnedLongOfTime(void);
+bool TrifoolBeat_HasBeatenRunningMan(void);
+void TrifoolBeat_GrantBeatenRunningMan(void);
+bool TrifoolBeat_HasVisitedChamberOfSages(void);
+void TrifoolBeat_GrantVisitedChamberOfSages(void);
 
 #ifdef __cplusplus
 }
