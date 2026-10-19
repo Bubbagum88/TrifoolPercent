@@ -48,7 +48,24 @@ SoH because the Rumble Pak indicator still ships; we add a new id instead.
   Man boss.
 - Reset on `OnLoadGame`.
 
-## Scope of follow-up slices (not in this PR)
+## Status of follow-up slices
+
+The Setup preset (`CVAR_TRIFOOL_SETUP_PRESET`) now auto-grants the Sages' Charm when
+`CVAR_TRIFOOL_SAGES_CHARM` is also on, so dev warps land in a state where the Charm
+flag reads true without having to tap the debug grant each run.
+
+The six medallion beta-ability slices (follow-up 8 below) now ship:
+
+- **Fire** = Din's Fire (native) + melts Zora's Domain — PR #52.
+- **Forest** = Farore's Wind — PR #53.
+- **Water / Ice** = Ice Arrows, **Light** = Light Arrows — PR #54.
+- **Spirit** (Navi free-fly) and **Shadow** (darkness stealth) still owed.
+
+Each of those PRs grants the vanilla elemental item when the medallion is held, so the
+ability is reachable from the vanilla equip slots and does not block on the C-button
+work below. See `docs/references/beta-medallions.md`.
+
+Follow-ups still open (unchanged from the foundation slice, kept here for tracking):
 
 1. **Medallion-on-C enabler.** Allow the quest-status subscreen to pick a
    medallion and equip it to a C-button. Upstream patches `z_kaleido_scope`
