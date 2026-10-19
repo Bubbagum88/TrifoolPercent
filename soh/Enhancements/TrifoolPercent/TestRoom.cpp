@@ -143,7 +143,7 @@ extern "C" void TfTestRoomSign_Init(Actor* thisx, PlayState* play) {
         return;
     }
     thisx->textId = textId;
-    thisx->flags |= ACTOR_FLAG_TARGETABLE | ACTOR_FLAG_FRIENDLY;
+    thisx->flags |= ACTOR_FLAG_ATTENTION_ENABLED | ACTOR_FLAG_FRIENDLY;
     thisx->targetMode = 6; // same "friendly NPC" range tier as Kokiri children / shop NPCs
     Collider_InitCylinder(play, &this_->collider);
     Collider_SetCylinderType1(play, &this_->collider, thisx, &sSignColliderInit);
@@ -184,7 +184,7 @@ static s16 AddSignActor() {
     entry.name = "Tf_Test_Room_Sign";
     entry.desc = "TrifoolPercent Test Room sign (invisible, talk-only)";
     entry.category = ACTORCAT_NPC;
-    entry.flags = ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_TARGETABLE;
+    entry.flags = ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_ATTENTION_ENABLED;
     entry.objectId = OBJECT_GAMEPLAY_KEEP;
     entry.instanceSize = sizeof(TfTestRoomSign);
     entry.init = TfTestRoomSign_Init;

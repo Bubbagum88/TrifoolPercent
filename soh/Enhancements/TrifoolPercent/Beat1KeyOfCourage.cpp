@@ -21,6 +21,7 @@
 #include <libultraship/bridge/consolevariablebridge.h>
 
 #include "soh/ActorDB.h"
+#include "soh/Enhancements/custom-message/CustomMessageManager.h"
 #include "soh/Enhancements/game-interactor/GameInteractor.h"
 #include "soh/ShipInit.hpp"
 #include "soh/SohGui/SohMenu.h"
@@ -151,7 +152,7 @@ static s16 AddActor(const char* name, const char* desc, size_t instanceSize, Act
     entry.name = name;
     entry.desc = desc;
     entry.category = ACTORCAT_NPC;
-    entry.flags = ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_TARGETABLE;
+    entry.flags = ACTOR_FLAG_UPDATE_CULLING_DISABLED | ACTOR_FLAG_ATTENTION_ENABLED;
     entry.objectId = OBJECT_GAMEPLAY_KEEP;
     entry.instanceSize = instanceSize;
     entry.init = init;
