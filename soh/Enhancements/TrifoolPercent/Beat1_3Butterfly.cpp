@@ -300,7 +300,7 @@ static const char kButterflyGetText[] =
 static void LoadOneMessage(const char* body, size_t bodyLen, u8 type, u8 pos,
                            bool* loadFromMessageTable) {
     std::string s(body, bodyLen);
-    CustomMessage msg(s, s, s, type, pos);
+    CustomMessage msg(s, s, s, static_cast<TextBoxType>(type), static_cast<TextBoxPosition>(pos));
     msg.LoadIntoFont();
     *loadFromMessageTable = false;
 }
