@@ -1,0 +1,38 @@
+Shift the magic bar Y by TrifoolBeat_MagicBarYOffset() in Interface_DrawMagicBar
+so Beat 2.1 can reserve 3px of vertical room for the medallion-count display
+once the Sages' Charm is held. Weak-symbol default returns 0, so a Shipwright
+build without the TrifoolPercent module is pixel-identical to vanilla.
+
+Upstream parallel: scripts/statics/interface.c:241 Patched_MagicBarSetup
+(c) 2019-2022 The Triforce% Team, under upstream/TRIFORCE-PERCENT-LICENSE.txt.
+
+--- a/soh/src/code/z_parameter.c
++++ b/soh/src/code/z_parameter.c
+@@ -3447,6 +3447,12 @@
+     CLOSE_DISPS(play->state.gfxCtx);
+ }
+
++// TrifoolPercent Beat 2.1 (Sages' Charm). Weak symbol: zero offset in a build
++// without the TrifoolPercent module, 3 (px) once the Charm is held.
++__attribute__((weak)) s16 TrifoolBeat_MagicBarYOffset(void) {
++    return 0;
++}
++
+ void Interface_DrawMagicBar(PlayState* play) {
+     InterfaceContext* interfaceCtx = &play->interfaceCtx;
+     s16 magicDrop = R_MAGIC_BAR_LARGE_Y - R_MAGIC_BAR_SMALL_Y + 2;
+@@ -3478,8 +3484,12 @@
+             X_Margins = 0;
+             Y_Margins = 0;
+         }
+-        const s16 magicBarY_original_l = R_MAGIC_BAR_LARGE_Y + Y_Margins;
+-        const s16 magicBarY_original_s = R_MAGIC_BAR_SMALL_Y + Y_Margins;
++        // TrifoolPercent Beat 2.1: Sages' Charm shifts the magic bar down 3px to
++        // reserve room for the eventual medallion-count display. Weak-symbol
++        // hook returns 0 in a build without the TrifoolPercent module.
++        const s16 trifoolMagicBarOffset = TrifoolBeat_MagicBarYOffset();
++        const s16 magicBarY_original_l = R_MAGIC_BAR_LARGE_Y + Y_Margins + trifoolMagicBarOffset;
++        const s16 magicBarY_original_s = R_MAGIC_BAR_SMALL_Y + Y_Margins + trifoolMagicBarOffset;
+         const s16 PosX_Start_original = OTRGetRectDimensionFromLeftEdge(R_MAGIC_BAR_X + X_Margins);
+         const s16 PosX_MidEnd_original = OTRGetRectDimensionFromLeftEdge(R_MAGIC_BAR_X + X_Margins + 8);
+         const s16 rMagicBarX_original = OTRGetRectDimensionFromLeftEdge(R_MAGIC_BAR_X + X_Margins);
