@@ -35,7 +35,7 @@ static bool PauseDebugInvEnabled() { return CVarGetInteger(CVAR_TRIFOOL_PAUSE_DE
 // Master Sword. This is only applied once per save, and only when the preset CVar is on.
 static void ApplyTrifoolSetupPreset() {
     static u32 sApplied = 0;
-    if (sApplied == gSaveContext.fileNum + 1) {
+    if ((s32)sApplied == gSaveContext.fileNum + 1) {
         return;
     }
     if (!PresetEnabled()) {
@@ -62,16 +62,16 @@ static void ApplyTrifoolSetupPreset() {
     gSaveContext.adultEquips.buttonItems[3] = ITEM_OCARINA_TIME;
     gSaveContext.adultEquips.cButtonSlots[0] = SLOT_NONE;
     gSaveContext.adultEquips.cButtonSlots[1] = SLOT_BOMB;
-    gSaveContext.adultEquips.cButtonSlots[2] = SLOT_OCARINA_TIME;
+    gSaveContext.adultEquips.cButtonSlots[2] = SLOT_OCARINA;
     gSaveContext.adultEquips.equipment = 0x1103;
     gSaveContext.bgsFlag = 1;
     gSaveContext.swordHealth = 8;
 
     // Magic + double magic.
-    gSaveContext.magicAcquired = 1;
+    gSaveContext.isMagicAcquired = 1;
     gSaveContext.magicLevel = 2;
     gSaveContext.magic = 0x60;
-    gSaveContext.doubleMagic = 1;
+    gSaveContext.isDoubleMagicAcquired = 1;
 
     // Keep Navi quiet.
     gSaveContext.naviTimer = 1;
@@ -131,10 +131,10 @@ struct DevWarp {
 };
 
 static const DevWarp kDevWarps[] = {
-    { "Lost Woods (child)",      ENTR_LOST_WOODS_0,           1,  0      },
+    { "Lost Woods (child)",      ENTR_LOST_WOODS_SOUTH_EXIT,  1,  0      },
     { "Hyrule Market Bazaar",    ENTR_BAZAAR_0,               1,  0      },
     { "Thieves' Hideout (Nabooru)", 0x04A6,                   1,  0      },
-    { "Zora's Domain (adult)",   ENTR_ZORAS_DOMAIN_0,         0,  0      },
+    { "Zora's Domain (adult)",   ENTR_ZORAS_DOMAIN_ENTRANCE,  0,  0      },
     { "Unicorn Fountain",        0x0560,                      0,  0      },
     { "Chamber of Sages",        0x006B,                      0,  (s16)0xFFF0 },
     { "Staff Roll",              0x00CD,                      1,  (s16)0xFFF8 },
