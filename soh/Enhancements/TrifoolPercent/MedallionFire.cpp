@@ -55,8 +55,11 @@ static void MaybeThawZorasDomain() {
     if (!PlayerHasFireMedallion()) {
         return;
     }
-    if (!GET_EVENTCHKINF(EVENTCHKINF_UNFROZE_KING_ZORA)) {
-        SET_EVENTCHKINF(EVENTCHKINF_UNFROZE_KING_ZORA);
+    // EVENTCHKINF_KING_ZORA_MOVED (0x33) is the vanilla "King Zora has moved aside after
+    // thawing" flag. Setting it makes Zora's Domain pick its normal scene setup instead
+    // of the frozen one on the next scene load.
+    if (!GET_EVENTCHKINF(EVENTCHKINF_KING_ZORA_MOVED)) {
+        SET_EVENTCHKINF(EVENTCHKINF_KING_ZORA_MOVED);
     }
 }
 
@@ -64,7 +67,8 @@ static void RegisterTrifoolMedallionFire() {
     COND_HOOK(OnPlayerUpdate, CVAR_MEDALLION_FIRE_VALUE, MaybeThawZorasDomain);
 }
 
-static RegisterShipInitFunc medallionFireInitFunc(RegisterTrifoolMedallionFire, { CVAR_TRIFOOL_MEDALLION_FIRE });
+static RegisterShipInitFunc medallionFireInitFunc(RegisterTrifoolMedallionFire,
+                                                  std::set<std::string>{ CVAR_TRIFOOL_MEDALLION_FIRE });
 
 namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
