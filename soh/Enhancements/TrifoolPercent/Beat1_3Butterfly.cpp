@@ -16,7 +16,7 @@
 //    armed. This mirrors upstream's flag set in actor/BetaKokiri/betakokiri.c and gates the
 //    Bazaar shop patch.
 //
-// 2. In SCENE_SHOP1 (Hyrule Market Bazaar), once LOOKING_FOR_BUTTERFLY is set and the
+// 2. In SCENE_BAZAAR (Hyrule Market Bazaar), once LOOKING_FOR_BUTTERFLY is set and the
 //    shopkeeper's "flying bug" text 0x009C has fired, shelf slot 3 of EnOssan is retargeted
 //    to SI_BIG_POE and respawned via Actor_Spawn. (A dedicated SI_BUTTERFLY shelf index
 //    would need SoH-source edits to z_en_girla.{c,h}; from the mod we ride SI_BIG_POE and
@@ -164,7 +164,7 @@ static void MoveOddPotionToChildIfNeeded() {
 // -----------------------------------------------------------------------------
 // Statics_PatchShop.
 // -----------------------------------------------------------------------------
-// Walk the SCENE_SHOP1 (Hyrule Market Bazaar) NPC list each frame, find the shopkeeper
+// Walk the SCENE_BAZAAR (Hyrule Market Bazaar) NPC list each frame, find the shopkeeper
 // (ACTOR_EN_OSSAN), and once the "flying bug" text 0x009C has fired after Link talked to
 // the Beta Kokiri, retarget shelf slot 3 to the Butterfly. Upstream did this through the
 // overlay's sShopkeeperStores table at a hard-coded offset; SoH's EnOssan carries the
@@ -177,7 +177,7 @@ static void TickShopPatch() {
     if (CVarGetInteger(CVAR_TRIFOOL_BUTTERFLY, 0) == 0 || gPlayState == nullptr) {
         return;
     }
-    if (gPlayState->sceneNum != SCENE_SHOP1) {
+    if (gPlayState->sceneNum != SCENE_BAZAAR) {
         return;
     }
     if (!sLookingForButterfly) {
