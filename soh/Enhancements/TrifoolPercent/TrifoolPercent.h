@@ -108,6 +108,27 @@ extern const u8 gTrifoolTestRoomPrototypeCsTextCount;
 extern CutsceneData gTrifoolUnicornFountainEntryCs[];
 #define TRIFOOL_UNICORN_FOUNTAIN_ENTRY_CS_FRAMES 240
 
+// Ported Triforce% cutscenes (PortedCutscenes.c). Dormant data - the arrays are compiled into
+// the module so a future hook can trigger any of them via `csCtx.segment` + `cutsceneTrigger`
+// without having to re-run Fast64 or copy the vendored source each time. Triggers, text ids
+// and custom BGM slots land per-phase in docs/cutscene-plan.md (Phases B-G).
+extern CutsceneData gTrifoolNabooruPanAwayCS[];                  // Phase D - gerudoway
+extern CutsceneData gTrifoolNabooruSecondHalfCS[];               // Phase D - gerudoway (Long of Time teach)
+extern CutsceneData gTrifoolNbColossusCS[];                      // Phase D - spot11 pan to Nabooru
+extern CutsceneData gTrifoolspot04cspatch[];                     // Phase D - spot04 CS append (no CS_BEGIN - splice shape)
+extern CutsceneData gTrifoolBossRunningManIntroCS[];             // Phase E - Running Man intro
+extern CutsceneData gTrifoolBossRunningManOutroCS[];             // Phase E - Running Man outro (Sages' Charm)
+extern CutsceneData gTrifoolWarpToSacredRealmCS[];               // Phase B - tokinoma -> Sacred Realm warp
+extern CutsceneData gTrifoolHyruleFieldFlyover[];                // Phase G - staff roll flyover 1
+extern CutsceneData gTrifoolDeathMountainTrailStaffRollCS[];     // Phase G - staff roll flyover 2
+extern CutsceneData gTrifoolGerudoValleyFlyover[];               // Phase G - staff roll flyover 3
+extern CutsceneData gTrifoolDekuTreeFlyover[];                   // Phase G - staff roll flyover 4
+extern CutsceneData gTrifoolZoraFountainFlyover[];               // Phase G - staff roll flyover 5
+extern CutsceneData gTrifoolZoraRiverFlyover[];                  // Phase G - staff roll flyover 6
+extern CutsceneData gTrifoolLonLonFlyover[];                     // Phase G - staff roll flyover 7
+extern CutsceneData gTrifoolHauntedWastelandFlyover[];           // Phase G - staff roll flyover 8
+extern CutsceneData gTrifoolCastleFlyover[];                     // Phase G - staff roll flyover 9
+
 // TriforcePiece params: which piece, plus "the end" mode in bits 2+ (used by the Ending scene, not the room).
 typedef enum {
     TRIFOOL_TRIFORCE_POWER = 0,
