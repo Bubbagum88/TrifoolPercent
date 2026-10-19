@@ -35,34 +35,33 @@ default view when the tab opens.
 
 ## 1. General
 
-| Label                                       | Widget   | CVar                                 | Default | Notes |
-|---------------------------------------------|----------|--------------------------------------|---------|-------|
-| Experience master switch                    | Checkbox | `CVAR_TRIFOOL_EXPERIENCE_ENABLED` *(new)* | on | Kill-switch for the whole mod. When off, every other toggle is no-op. |
-| Triforce Room                               | Checkbox | `CVAR_TRIFOOL_TRIFORCE_ROOM`         | on      | existing |
-| Test Flame by Link's House (hex hub entry)  | Checkbox | `CVAR_TRIFOOL_TEST_ENTRANCE`         | on      | existing |
-| Unicorn Fountain                            | Checkbox | `CVAR_TRIFOOL_UNICORN_FOUNTAIN`      | on      | existing |
-| Unicorn Fountain entry cutscene             | Checkbox | `CVAR_TRIFOOL_FOUNTAIN_ENTRY_CS`     | on      | existing |
-| Overworld entrance to Unicorn Fountain      | Checkbox | `CVAR_TRIFOOL_FOUNTAIN_OVERWORLD`    | off     | existing |
-| Door of Time opens for adult Link           | Checkbox | `CVAR_TRIFOOL_DOT_ADULT`             | off     | existing — may move to Scenes & Rooms once that sidebar lands |
-| Mimic Chest in Test Room                    | Checkbox | `CVAR_TRIFOOL_MIMIC_CHEST`           | off     | existing — may move to Dev / Debug once that sidebar lands |
+The 4 pure experience toggles. World patches, dev actors, and dev-warps live
+in their canonical sidebars from day one (SoH convention: each widget has one
+home).
 
-> On ship-day the General sidebar is exactly the 7 existing checkboxes plus the
-> new master switch. Reorganization into Scenes/Rooms vs Dev/Debug comes with
-> the follow-up PR that introduces those sidebars.
+| Label                                       | Widget   | CVar                                 | Default |
+|---------------------------------------------|----------|--------------------------------------|---------|
+| Triforce Room                               | Checkbox | `CVAR_TRIFOOL_TRIFORCE_ROOM`         | on      |
+| Test Flame by Link's House (hex hub entry)  | Checkbox | `CVAR_TRIFOOL_TEST_ENTRANCE`         | on      |
+| Unicorn Fountain                            | Checkbox | `CVAR_TRIFOOL_UNICORN_FOUNTAIN`      | on      |
+| Unicorn Fountain entry cutscene             | Checkbox | `CVAR_TRIFOOL_FOUNTAIN_ENTRY_CS`     | on      |
+| Overworld entrance to Unicorn Fountain      | Checkbox | `CVAR_TRIFOOL_FOUNTAIN_OVERWORLD`    | off     |
+
+> No master kill-switch — SoH itself has none at the tab level, each feature's
+> own CVar is its gate.
 
 ## 2. Scenes & Rooms
 
-Everything that enables a custom scene, room, or warp point.
+Underlying scene enables + world patches. The experience toggles in General
+(Triforce Room, Unicorn Fountain, Test Flame) *are* their scene toggles — one
+home per CVar — so this sidebar carries the scenes General doesn't surface and
+the world patches that aren't quest beats.
 
-| Label                              | Widget   | CVar                              | Default | Notes |
-|------------------------------------|----------|-----------------------------------|---------|-------|
-| Triforce Room                      | Checkbox | `CVAR_TRIFOOL_TRIFORCE_ROOM`      | on      | mirrors General (eventually General demotes to the master switch only) |
-| Unicorn Fountain                   | Checkbox | `CVAR_TRIFOOL_UNICORN_FOUNTAIN`   | on      | |
-| Hex hub Test Room                  | Checkbox | `CVAR_TRIFOOL_TEST_ROOM`          | on      | existing |
-| Lost Woods path addition           | Checkbox | `CVAR_TRIFOOL_LOST_WOODS_PATH`    | on      | existing |
-| Test Flame by Link's House         | Checkbox | `CVAR_TRIFOOL_TEST_ENTRANCE`      | on      | |
-| Overworld entrance to Unicorn Fountain | Checkbox | `CVAR_TRIFOOL_FOUNTAIN_OVERWORLD` | off | |
-| Door of Time opens for adult Link  | Checkbox | `CVAR_TRIFOOL_DOT_ADULT`          | off     | world patch, not strictly a scene — lives here for lack of a better home |
+| Label                              | Widget   | CVar                              | Default |
+|------------------------------------|----------|-----------------------------------|---------|
+| Hex hub Test Room scene            | Checkbox | `CVAR_TRIFOOL_TEST_ROOM`          | on      |
+| Lost Woods path addition           | Checkbox | `CVAR_TRIFOOL_LOST_WOODS_PATH`    | on      |
+| Door of Time opens for adult Link  | Checkbox | `CVAR_TRIFOOL_DOT_ADULT`          | off     |
 
 ## 3. Beats & Progression
 
@@ -96,10 +95,9 @@ during gameplay for troubleshooting.
 | Sacred Realm cutscene chain        | Checkbox | `CVAR_TRIFOOL_SACRED_REALM_CHAIN`         | on      | existing |
 | Ending (Triforce get)              | Checkbox | `CVAR_TRIFOOL_ENDING`                     | on      | existing |
 | Staff roll chain                   | Checkbox | `CVAR_TRIFOOL_STAFF_ROLL_CHAIN`           | on      | existing |
-| ── Replay buttons ──               |          |                                           |         | |
-| Replay Long of Time                | Button   | fires in-game cutscene                    | —       | dev convenience; disabled when no save loaded |
-| Replay Unicorn Fountain arrival    | Button   | fires in-game cutscene                    | —       | |
-| Replay Triforce get                | Button   | fires in-game cutscene                    | —       | |
+| ── Replay ──                       |          |                                           |         | |
+| Cutscene picker                    | Combo    | `CVAR_TRIFOOL_CS_REPLAY_PICK` *(new)*     | 0       | combo + fire button pattern, same shape as Setup Preset |
+| Play selected cutscene             | Button   | fires picked cutscene                     | —       | disabled when no save loaded |
 
 ## 5. Music & Audio
 
@@ -127,8 +125,8 @@ Mod-specific QoL. Not meant to overlap with SoH's own Enhancements → QoL.
 
 ## 7. Cheats
 
-Gates behind SoH's existing "cheats enabled" check so they can't be
-accidentally triggered.
+Always visible, matching SoH's own `Enhancements → Cheats` sidebar
+(no hidden/opt-in reveal gate).
 
 | Label                                   | Widget   | CVar                                      | Default |
 |-----------------------------------------|----------|-------------------------------------------|---------|
@@ -141,19 +139,25 @@ accidentally triggered.
 
 ## 8. Inventory & Flags
 
-Troubleshooting view: what state does the game think TrifoolPercent is in?
-Each row shows the current value and a toggle/edit control.
+Follows SoH's **Save Editor** pattern: this sidebar is one row — a
+`WIDGET_WINDOW_BUTTON` that opens a dedicated popout window. The window holds
+the full flag table; keeps the sidebar list uncluttered and gives us room to
+grow without a column cap.
 
-| Label                                   | Widget   | Source                                    |
-|-----------------------------------------|----------|-------------------------------------------|
-| Current beat                            | Readonly | computed from eventChkInf + custom flags  |
-| Sages' Charm obtained                   | Toggle   | custom flag                                |
-| Overture of Sages learned               | Toggle   | custom flag                                |
-| Medallion-on-C: Fire / Forest / Light / Water | Toggles | custom flags                        |
-| Long of Time played (child / adult)     | Toggles  | custom flags                               |
-| Triforce obtained                       | Toggle   | custom flag                                |
-| Reset all TrifoolPercent flags          | Button   | — (confirmation dialog)                    |
-| Export flag dump to clipboard           | Button   | — (for bug reports)                        |
+| Label                                   | Widget            | CVar / Window              |
+|-----------------------------------------|-------------------|----------------------------|
+| Popout TrifoolPercent State             | `WIDGET_WINDOW_BUTTON` | `CVAR_WINDOW("TrifoolState")` *(new window)* |
+
+**Inside the popout window** (not sidebar rows — rendered by the window's own draw fn):
+
+- Current beat (readonly, computed from eventChkInf + custom flags)
+- Sages' Charm obtained — toggle
+- Overture of Sages learned — toggle
+- Medallion-on-C: Fire / Forest / Light / Water — four toggles
+- Long of Time played (child / adult) — two toggles
+- Triforce obtained — toggle
+- Reset all TrifoolPercent flags — bare button (SoH house style; no custom dialog)
+- Export flag dump to clipboard — button (for bug reports)
 
 ## 9. Dev / Debug
 
@@ -197,11 +201,11 @@ nav wiring is visually obvious even before content lands.
 
 ## CVars introduced by this PR
 
-Only one, and only if we agree it's wanted:
+Zero new CVars. Pure structural move — every existing CVar keeps its name,
+only its menu location changes.
 
-- `CVAR_TRIFOOL_EXPERIENCE_ENABLED` — master kill-switch.
-
-Everything else is a rename-free move of existing CVars under the new tab.
+New CVars show up later alongside the content that needs them
+(cutscene replay combo, music engine, QoL toggles, inventory window).
 
 ## Smoke test
 
@@ -211,12 +215,19 @@ After this PR, with no save-file changes:
 2. Nine sidebars listed in order: General, Scenes & Rooms, Beats & Progression,
    Cutscenes, Music & Audio, Quality of Life, Cheats, Inventory & Flags,
    Dev / Debug.
-3. Clicking any stub sidebar shows the "Coming soon" placeholder.
-4. The **General** sidebar shows exactly the 7 existing checkboxes (plus the
-   master switch, if we add it) with matching tooltips and defaults.
-5. The old `Enhancements → TrifoolPercent` sidebar is gone.
-6. Toggling any General widget still gates its scene/feature as before.
-7. Save/reload: toggle states persist (CVar names unchanged).
+3. **General** shows the 5 experience checkboxes (Triforce Room, Test Flame,
+   Unicorn Fountain, Fountain entry CS, Fountain overworld entrance).
+4. **Scenes & Rooms** shows 3 checkboxes (Hex hub Test Room scene, Lost Woods
+   path, DoT adult).
+5. **Beats & Progression** shows the 10 beat/song/medallion checkboxes.
+6. **Cutscenes** shows the 7 cutscene checkboxes.
+7. **Dev / Debug** shows 4 real widgets (Dev inputs, Pause-menu debug inv,
+   Setup preset, Mimic Chest). No "Coming soon" here.
+8. **Music & Audio**, **Quality of Life**, **Cheats**, **Inventory & Flags**
+   each show the "Coming soon" placeholder.
+9. The old `Enhancements → TrifoolPercent` sidebar is gone.
+10. Toggling any widget still gates its scene/feature as before.
+11. Save/reload: toggle states persist (CVar names unchanged).
 
 If any step fails, blame points at a single `Register...` call in the file
 corresponding to the failing sidebar.
