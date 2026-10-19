@@ -31,6 +31,16 @@
 #define CVAR_TRIFOOL_MEDALLION_FIRE CVAR_ENHANCEMENT("TrifoolPercent.Medallion.Fire")
 #define CVAR_TRIFOOL_SONG_ENGINE CVAR_ENHANCEMENT("TrifoolPercent.SongEngine")
 #define CVAR_TRIFOOL_LONG_OF_TIME CVAR_ENHANCEMENT("TrifoolPercent.LongOfTime")
+#define CVAR_TRIFOOL_RUNNING_MAN  CVAR_ENHANCEMENT("TrifoolPercent.RunningMan")
+
+// Running Man boss dialogue (post-fight NPC form). Vanilla OoT does not use the
+// 0x0C30..0x0C34 range -- Triforce% claimed it for the Running Man / Sages' Charm
+// handoff. Text copied verbatim from Triforce% assets/text/messages.c.
+#define TRIFOOL_TEXT_RUNNING_MAN_C30 0x0C30
+#define TRIFOOL_TEXT_RUNNING_MAN_C31 0x0C31
+#define TRIFOOL_TEXT_RUNNING_MAN_C32 0x0C32
+#define TRIFOOL_TEXT_RUNNING_MAN_C33 0x0C33
+#define TRIFOOL_TEXT_RUNNING_MAN_C34 0x0C34
 #define CVAR_TRIFOOL_SAGES_CHARM CVAR_ENHANCEMENT("TrifoolPercent.SagesCharm")
 #define CVAR_TRIFOOL_MEDALLION_ON_C CVAR_ENHANCEMENT("TrifoolPercent.MedallionOnC")
 #define CVAR_TRIFOOL_LONG_OF_TIME_AGE_FLIP CVAR_ENHANCEMENT("TrifoolPercent.LongOfTimeAgeFlip")
