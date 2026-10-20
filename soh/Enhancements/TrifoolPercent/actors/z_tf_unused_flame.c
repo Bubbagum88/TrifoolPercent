@@ -110,7 +110,7 @@ void TfUnusedFlame_Draw(Actor* thisx, PlayState* play) {
     Matrix_Scale(1.0f, 1.0f, 1.0f, MTXMODE_APPLY);
 
     Gfx_SetupDL_25Xlu(play->state.gfxCtx);
-    gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "z_tf_unused_flame.c", __LINE__),
+    gSPMatrix(POLY_XLU_DISP++, MATRIX_NEWMTX(play->state.gfxCtx),
               G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
 
     gDPSetPrimColor(POLY_XLU_DISP++, 0x80, 0x80, 180, 220, 255, 255);
