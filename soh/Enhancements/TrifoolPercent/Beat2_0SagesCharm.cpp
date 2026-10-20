@@ -138,8 +138,6 @@ static void LoadBeat2_0Message(u16* textId, bool* loadFromMessageTable) {
 // Debug grant hook.
 // -----------------------------------------------------------------------------
 
-#define CVAR_TRIFOOL_SAGES_CHARM_GRANT_PULSE CVAR_ENHANCEMENT("TrifoolPercent.SagesCharmGrantPulse")
-
 static void TickDebugGrant() {
     // Prefer the menu-driven pulse CVar: a tick becomes a one-shot grant + textbox.
     if (CVarGetInteger(CVAR_TRIFOOL_SAGES_CHARM, 0) == 0) {
