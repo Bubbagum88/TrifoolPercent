@@ -40,12 +40,15 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             clang libsdl2-dev nlohmann-json3-dev libspdlog-dev
 
-      - name: Fetch Dear ImGui headers (any recent version is fine for parse)
-        # imgui is not packaged on Ubuntu; grab the headers only. Any version provides
-        # the ImGui types the module references at parse level.
+      - name: Fetch Dear ImGui and BS::thread_pool headers
+        # Neither is packaged on Ubuntu; Shipwright fetches both at CMake-configure
+        # time. For a parse-only check any recent version provides the surface.
         run: |
           git clone --depth 1 --branch v1.91.0 \
             https://github.com/ocornut/imgui third_party/imgui
+          mkdir -p third_party/bs-thread-pool
+          curl -fsSL -o third_party/bs-thread-pool/BS_thread_pool.hpp \
+            https://raw.githubusercontent.com/bshoshany/thread-pool/v4.1.0/include/BS_thread_pool.hpp
 
       - name: Shallow-clone Shipwright at the pinned SHA (headers only, no build)
         run: |
@@ -92,9 +95,9 @@ jobs:
             -I"$SOH/extern"
           )
 
-          # Dear ImGui headers come from the clone above; nlohmann/json is installed
-          # system-wide by the apt step (/usr/include/nlohmann/json.hpp).
-          INCLUDES+=(-I"third_party/imgui")
+          # Dear ImGui and BS::thread_pool come from the clones above; nlohmann/json
+          # and spdlog are installed system-wide by the apt step.
+          INCLUDES+=(-I"third_party/imgui" -I"third_party/bs-thread-pool")
 
           # Defines Shipwright's soh target uses; without F3DEX_GBI_2 the gbi.h
           # macros stay undefined and vanilla-OoT actor .c files won't parse.
