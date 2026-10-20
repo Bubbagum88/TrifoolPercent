@@ -302,13 +302,13 @@ static void FixDoorOfTimeOnAdultEntry() {
     if (!LINK_IS_ADULT) {
         return;
     }
-    if (!GET_EVENTCHKINF(EVENTCHKINF_OPENED_DOOR_OF_TIME)) {
-        SET_EVENTCHKINF(EVENTCHKINF_OPENED_DOOR_OF_TIME);
+    if (!GET_EVENTCHKINF(EVENTCHKINF_OPENED_THE_DOOR_OF_TIME)) {
+        SET_EVENTCHKINF(EVENTCHKINF_OPENED_THE_DOOR_OF_TIME);
     }
     // Flip the room-draw variant to the open-door mesh. Demo_Kankyo would have done this
     // itself if its Init had seen the flag set, so we are catching up for the opening-
-    // cutscene path adult Link never ran.
-    gPlayState->roomCtx.drawParams[1] = 0xFF;
+    // cutscene path adult Link never ran. Shipwright keeps the N64 field name roomCtx.unk_74.
+    gPlayState->roomCtx.unk_74[1] = 0xFF;
 }
 
 // Text from Triforce% text/messages.c. The strings are raw OoT message bytes, so every control code below is a

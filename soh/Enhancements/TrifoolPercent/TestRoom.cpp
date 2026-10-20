@@ -165,12 +165,12 @@ extern "C" void TfTestRoomSign_Update(Actor* thisx, PlayState* play) {
     Collider_UpdateCylinder(thisx, &this_->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this_->collider.base);
 
-    if (Actor_IsTalking(thisx, play)) {
+    if (Actor_ProcessTalkRequest(thisx, play)) {
         Player* player = GET_PLAYER(play);
         player->actor.textId = thisx->textId;
         return;
     }
-    Actor_RequestToTalk(thisx, play);
+    Actor_OfferTalkNearColChkInfoCylinder(thisx, play);
 }
 
 extern "C" void TfTestRoomSign_Draw(Actor* thisx, PlayState* play) {
