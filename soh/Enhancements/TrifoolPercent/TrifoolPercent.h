@@ -209,6 +209,11 @@ void TfBetaGreatFairy_Draw(Actor* thisx, PlayState* play);
 bool TrifoolUnicornFountain_IsFairyDone(void);
 void TrifoolUnicornFountain_ClearFairyDone(void);
 
+// Spawn a TfUnusedFlame at the given world position. Registers the actor in ActorDB on first call;
+// no-op if gPlayState is null. Used by hex-Test-Room and ZD-basin markers so each caller does not
+// have to duplicate the ActorDB registration.
+void TrifoolSpawnUnusedFlame(float x, float y, float z);
+
 // Beta Kokiri (Beat 1.1). Uses the same body+head combo upstream Triforce% wires
 // (object_oE4 skeleton, object_oE9 head DL, object_oE_anime standing anim); the variant
 // table is scaffolded in Beat1KeyOfCourage.cpp for later expansion.

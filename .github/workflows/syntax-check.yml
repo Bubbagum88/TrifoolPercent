@@ -1,0 +1,158 @@
+# Fast syntax-check for the TrifoolPercent module. Runs in parallel with build-soh.yml
+# and comes back in a couple of minutes with a parse-level pass/fail per file, so
+# obvious syntax breakage shows up without waiting for the full Shipwright build.
+#
+# How it works: shallow-clone Shipwright at the SHA tools/setup.sh pins, drop the
+# TrifoolPercent sources into the same place tools/build_soh.sh does, apply the
+# engine patches, then run `clang -fsyntax-only` on every .c and .cpp in the
+# module. No codegen, no link, no CMake.
+#
+# Third-party headers: Shipwright pulls several deps at CMake-configure time
+# (vcpkg / FetchContent) rather than as git submodules. For a parse-only check
+# we substitute equivalents: apt packages (nlohmann-json3-dev, libspdlog-dev,
+# libsdl2-dev) and shallow clones of header-only libs (Dear ImGui, BS::thread_pool).
+# When Shipwright adds a new deep header dependency, this workflow surfaces it as
+# a `fatal error: '…' file not found` and the fix is to add it to the deps step.
+
+name: syntax-check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  syntax-check:
+    name: clang -fsyntax-only on TrifoolPercent sources
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      # Keep in sync with SHIPWRIGHT_COMMIT in tools/setup.sh.
+      SHIPWRIGHT_COMMIT: 6b4edce43f949fea554bc029daed42dd9b04569a
+    steps:
+      - name: Check out TrifoolPercent
+        uses: actions/checkout@v4
+
+      - name: Install clang, SDL2 and nlohmann/json headers
+        # Shipwright pulls these at CMake-configure time (vcpkg / FetchContent), not as
+        # git submodules, so a bare `git submodule update` doesn't produce them.
+        # The system packages give us the same headers for parse-time checks.
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            clang libsdl2-dev nlohmann-json3-dev libspdlog-dev
+
+      - name: Fetch Dear ImGui and BS::thread_pool headers
+        # Neither is packaged on Ubuntu; Shipwright fetches both at CMake-configure
+        # time. For a parse-only check any recent version provides the surface.
+        run: |
+          git clone --depth 1 --branch v1.91.0 \
+            https://github.com/ocornut/imgui third_party/imgui
+          mkdir -p third_party/bs-thread-pool
+          curl -fsSL -o third_party/bs-thread-pool/BS_thread_pool.hpp \
+            https://raw.githubusercontent.com/bshoshany/thread-pool/v4.1.0/include/BS_thread_pool.hpp
+
+      - name: Shallow-clone Shipwright at the pinned SHA (headers only, no build)
+        run: |
+          mkdir -p third_party/Shipwright
+          cd third_party/Shipwright
+          git init -q
+          git remote add origin https://github.com/HarbourMasters/Shipwright
+          git fetch --depth 1 origin "$SHIPWRIGHT_COMMIT"
+          git checkout -q FETCH_HEAD
+          git submodule update --init --depth 1 --recursive --jobs 4
+
+      - name: Stage the TrifoolPercent module in the Shipwright tree
+        # Mirror tools/build_soh.sh so #include paths resolve the same way they do
+        # in the real build (soh/Enhancements/... from inside Shipwright/soh/).
+        run: |
+          rm -rf third_party/Shipwright/soh/soh/Enhancements/TrifoolPercent
+          cp -r soh/Enhancements/TrifoolPercent \
+                third_party/Shipwright/soh/soh/Enhancements/TrifoolPercent
+
+      - name: Apply engine patches (if any)
+        run: |
+          shopt -s nullglob
+          for p in patches/shipwright/*.patch; do
+            echo "Applying $(basename "$p")..."
+            patch -d third_party/Shipwright -p1 < "$p"
+          done
+
+      - name: Run clang -fsyntax-only on every .c and .cpp
+        run: |
+          set -u
+          SOH=third_party/Shipwright
+          MOD="$SOH/soh/soh/Enhancements/TrifoolPercent"
+
+          INCLUDES=(
+            -I"$SOH/soh"
+            -I"$SOH/soh/soh"
+            -I"$SOH/soh/src"
+            -I"$SOH/soh/include"
+            -I"$SOH/soh/assets"
+            -I"$SOH/libultraship/src"
+            -I"$SOH/libultraship/src/public_api"
+            -I"$SOH/libultraship/include"
+            -I"$SOH/libultraship/extern"
+            -I"$SOH/soh/extern"
+            -I"$SOH/extern"
+          )
+
+          # Dear ImGui and BS::thread_pool come from the clones above; nlohmann/json
+          # and spdlog are installed system-wide by the apt step.
+          INCLUDES+=(-I"third_party/imgui" -I"third_party/bs-thread-pool")
+
+          # Defines Shipwright's soh target uses; without F3DEX_GBI_2 the gbi.h
+          # macros stay undefined and vanilla-OoT actor .c files won't parse.
+          DEFS=(-DF3DEX_GBI_2 -D_LANGUAGE_C)
+
+          # Shipwright's cvar_prefixes.h expects CVAR_PREFIX_* macros from CMake
+          # (target_compile_definitions). For syntax-check their string values
+          # don't matter — stub each one that cvar_prefixes.h names.
+          CVAR_PREFIX_HEADER="$SOH/soh/soh/cvar_prefixes.h"
+          if [ -f "$CVAR_PREFIX_HEADER" ]; then
+            while IFS= read -r name; do
+              DEFS+=(-D"${name}=\"stub\"")
+            done < <(grep -oE 'CVAR_PREFIX_[A-Z_]+' "$CVAR_PREFIX_HEADER" | sort -u)
+          fi
+
+          # Clang 15+ promoted several default-on warnings to errors. The vanilla
+          # OoT actor code in actors/ relies on the older-C conventions those cover
+          # (implicit pointer<->integer casts in gbi macro arguments, forward-use
+          # of static tables), so dial them back to warnings. Real syntax errors
+          # still fail the parse.
+          WARN=(
+            -Wno-error=int-conversion
+            -Wno-error=incompatible-pointer-types
+            -Wno-error=implicit-function-declaration
+            -Wno-error=implicit-int
+          )
+
+          failed=0
+
+          while IFS= read -r f; do
+            echo "::group::$f"
+            if ! clang -fsyntax-only -x c -std=gnu11 \
+                 "${DEFS[@]}" "${WARN[@]}" "${INCLUDES[@]}" "$f"; then
+              failed=1
+              echo "::error file=$f::syntax-check failed"
+            fi
+            echo "::endgroup::"
+          done < <(find "$MOD" -type f -name '*.c')
+
+          while IFS= read -r f; do
+            echo "::group::$f"
+            if ! clang -fsyntax-only -x c++ -std=gnu++20 \
+                 "${DEFS[@]}" "${WARN[@]}" "${INCLUDES[@]}" "$f"; then
+              failed=1
+              echo "::error file=$f::syntax-check failed"
+            fi
+            echo "::endgroup::"
+          done < <(find "$MOD" -type f -name '*.cpp')
+
+          exit $failed
