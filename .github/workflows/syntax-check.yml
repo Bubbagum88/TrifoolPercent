@@ -31,10 +31,11 @@ jobs:
       - name: Check out TrifoolPercent
         uses: actions/checkout@v4
 
-      - name: Install clang
+      - name: Install clang and SDL2 headers
+        # libsdl2-dev provides <SDL2/SDL.h> which Shipwright's audio bridge pulls in.
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang
+          sudo apt-get install -y --no-install-recommends clang libsdl2-dev
 
       - name: Shallow-clone Shipwright at the pinned SHA (headers only, no build)
         run: |
@@ -81,12 +82,41 @@ jobs:
             -I"$SOH/extern"
           )
 
+          # Shipwright vendors nlohmann/json and Dear ImGui as submodules; locate them
+          # instead of hard-coding paths (they drift as Shipwright pulls submodules).
+          JSON_HPP="$(find "$SOH" -type f -name json.hpp -path '*/nlohmann/*' -print -quit 2>/dev/null || true)"
+          if [ -n "$JSON_HPP" ]; then
+            INCLUDES+=(-I"$(dirname "$(dirname "$JSON_HPP")")")
+            echo "nlohmann/json include: $(dirname "$(dirname "$JSON_HPP")")"
+          fi
+          IMGUI_H="$(find "$SOH" -type f -name imgui.h ! -path '*/examples/*' ! -path '*/backends/*' -print -quit 2>/dev/null || true)"
+          if [ -n "$IMGUI_H" ]; then
+            INCLUDES+=(-I"$(dirname "$IMGUI_H")")
+            echo "imgui include: $(dirname "$IMGUI_H")"
+          fi
+
+          # Defines Shipwright's soh target uses; without F3DEX_GBI_2 the gbi.h
+          # macros stay undefined and vanilla-OoT actor .c files won't parse.
+          DEFS=(-DF3DEX_GBI_2 -D_LANGUAGE_C)
+
+          # Clang 15+ promoted several default-on warnings to errors. The vanilla
+          # OoT actor code in actors/ relies on the older-C conventions those cover
+          # (implicit pointer<->integer casts in gbi macro arguments, forward-use
+          # of static tables), so dial them back to warnings. Real syntax errors
+          # still fail the parse.
+          WARN=(
+            -Wno-error=int-conversion
+            -Wno-error=incompatible-pointer-types
+            -Wno-error=implicit-function-declaration
+            -Wno-error=implicit-int
+          )
+
           failed=0
 
           while IFS= read -r f; do
             echo "::group::$f"
             if ! clang -fsyntax-only -x c -std=gnu11 \
-                 "${INCLUDES[@]}" "$f"; then
+                 "${DEFS[@]}" "${WARN[@]}" "${INCLUDES[@]}" "$f"; then
               failed=1
               echo "::error file=$f::syntax-check failed"
             fi
@@ -96,7 +126,7 @@ jobs:
           while IFS= read -r f; do
             echo "::group::$f"
             if ! clang -fsyntax-only -x c++ -std=gnu++20 \
-                 "${INCLUDES[@]}" "$f"; then
+                 "${DEFS[@]}" "${WARN[@]}" "${INCLUDES[@]}" "$f"; then
               failed=1
               echo "::error file=$f::syntax-check failed"
             fi
