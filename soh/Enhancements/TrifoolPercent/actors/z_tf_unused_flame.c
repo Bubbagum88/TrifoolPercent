@@ -24,23 +24,31 @@
 
 #define TF_UNUSED_FLAME_OBJECT 0x0F // OBJECT_FIRE in vanilla OoT's object table
 
-// Torch publishes textures from an object as <object>_Tex_<hex offset>. Offsets come
-// from zeldaret/oot/assets/xml/objects/object_fire.xml (file segment 6, 8 ia8 32x64
-// frames spaced 0x800 bytes apart starting at 0xA0).
-extern u8 object_fire_Tex_0000A0[];
-extern u8 object_fire_Tex_0008A0[];
-extern u8 object_fire_Tex_0010A0[];
-extern u8 object_fire_Tex_0018A0[];
-extern u8 object_fire_Tex_0020A0[];
-extern u8 object_fire_Tex_0028A0[];
-extern u8 object_fire_Tex_0030A0[];
-extern u8 object_fire_Tex_0038A0[];
+// SoH extracts object_fire's eight IA8 32x64 flame frames as __OTR__ resource paths
+// (gFire0Tex..gFire7Tex). We pass the resource-name strings straight to the gfx macros
+// below; the renderer resolves them via ResourceMgr, same as any other SoH texture.
+#define dgFire0Tex "__OTR__objects/object_fire/gFire0Tex"
+#define dgFire1Tex "__OTR__objects/object_fire/gFire1Tex"
+#define dgFire2Tex "__OTR__objects/object_fire/gFire2Tex"
+#define dgFire3Tex "__OTR__objects/object_fire/gFire3Tex"
+#define dgFire4Tex "__OTR__objects/object_fire/gFire4Tex"
+#define dgFire5Tex "__OTR__objects/object_fire/gFire5Tex"
+#define dgFire6Tex "__OTR__objects/object_fire/gFire6Tex"
+#define dgFire7Tex "__OTR__objects/object_fire/gFire7Tex"
+static const ALIGN_ASSET(2) char gFire0Tex[] = dgFire0Tex;
+static const ALIGN_ASSET(2) char gFire1Tex[] = dgFire1Tex;
+static const ALIGN_ASSET(2) char gFire2Tex[] = dgFire2Tex;
+static const ALIGN_ASSET(2) char gFire3Tex[] = dgFire3Tex;
+static const ALIGN_ASSET(2) char gFire4Tex[] = dgFire4Tex;
+static const ALIGN_ASSET(2) char gFire5Tex[] = dgFire5Tex;
+static const ALIGN_ASSET(2) char gFire6Tex[] = dgFire6Tex;
+static const ALIGN_ASSET(2) char gFire7Tex[] = dgFire7Tex;
 
-static void* sFireFrames[8] = {
-    (void*)object_fire_Tex_0000A0, (void*)object_fire_Tex_0008A0,
-    (void*)object_fire_Tex_0010A0, (void*)object_fire_Tex_0018A0,
-    (void*)object_fire_Tex_0020A0, (void*)object_fire_Tex_0028A0,
-    (void*)object_fire_Tex_0030A0, (void*)object_fire_Tex_0038A0,
+static const void* sFireFrames[8] = {
+    (const void*)gFire0Tex, (const void*)gFire1Tex,
+    (const void*)gFire2Tex, (const void*)gFire3Tex,
+    (const void*)gFire4Tex, (const void*)gFire5Tex,
+    (const void*)gFire6Tex, (const void*)gFire7Tex,
 };
 
 // A billboard quad sized to roughly match an En_Light "large blue flame" (params 0x0003).

@@ -25,14 +25,28 @@
 
 #include "../TrifoolPercent.h"
 
-// Vanilla OoT object symbols published by Torch when it extracts the beta object slots from
-// the user's ROM. Offsets and names come straight from zeldaret/oot's XML descriptors.
-extern SkeletonHeader object_oE4_Skel_000260;
-extern Gfx object_oE9_DL_000800[];
-extern u8 object_oE9_Tex_000E90[]; // eyes open   (ci8 32x32, TLUT 0xC90)
-extern u8 object_oE9_Tex_001290[]; // eyes half   (ci8 32x32)
-extern u8 object_oE9_Tex_001690[]; // eyes closed (ci8 32x32)
-extern AnimationHeader object_oE_anime_Anim_00001034; // kokiriStanding (upstream's choice)
+// SoH extracts the vanilla beta Kokiri object slots as __OTR__ resource paths; the
+// SkelAnime / Animation / gfx runtime detects the string marker and loads via
+// ResourceMgr, same way all other SoH actors reach their object data.
+//
+// Note on eye textures: zeldaret/oot's object_oE9.xml descriptor marks three CI8 32x32
+// frames (0x0E90 open, 0x1290 half, 0x1690 closed) spanning offsets 0x0E90..0x1A90. SoH's
+// own YML descriptor splits that range differently -- Tex_000E90 is published as a proper
+// CI8 texture, but 0x1290..0x1A90 is published as a single Blob_001290 (0x800 bytes), and
+// the 0x1690 frame does not get a standalone symbol. Rather than reach into the blob at a
+// runtime offset (which the ResourceMgr-managed pointer we hold does not support without
+// loading the raw buffer ourselves), Beat 1.1 falls back to the open-eye texture for all
+// three blink states. She stops blinking; the actor still spawns, animates and talks.
+// Follow-up: ship a mod OTR override that re-extracts object_oE9 with Tex_001290 and
+// Tex_001690 as separate CI8 textures, then restore the three-frame cycle below.
+#define dobject_oE4_Skel_000260 "__OTR__objects/object_oE4/object_oE4_Skel_000260"
+#define dobject_oE9_DL_000800 "__OTR__objects/object_oE9/object_oE9_DL_000800"
+#define dobject_oE9_Tex_000E90 "__OTR__objects/object_oE9/object_oE9_Tex_000E90"
+#define dobject_oE_anime_Anim_00001034 "__OTR__objects/object_oE_anime/object_oE_anime_Anim_00001034"
+static const ALIGN_ASSET(2) char object_oE4_Skel_000260[] = dobject_oE4_Skel_000260;
+static const ALIGN_ASSET(2) char object_oE9_DL_000800[] = dobject_oE9_DL_000800;
+static const ALIGN_ASSET(2) char object_oE9_Tex_000E90[] = dobject_oE9_Tex_000E90;
+static const ALIGN_ASSET(2) char object_oE_anime_Anim_00001034[] = dobject_oE_anime_Anim_00001034;
 
 // Object slots. These are vanilla OoT slot IDs; SoH's object loader indexes them the same way.
 #define TF_BK_OBJ_ANIM 0x34 // object_oE_anime
@@ -60,10 +74,13 @@ static ColliderCylinderInitType1 sCylinderInit = {
     { 20, 80, 0, { 0, 0, 0 } },
 };
 
-static void* sEyeTextures[3] = {
-    (void*)object_oE9_Tex_000E90,
-    (void*)object_oE9_Tex_001290,
-    (void*)object_oE9_Tex_001690,
+// All three blink slots point at the open-eye texture until the OTR extraction splits
+// object_oE9_Blob_001290 back into Tex_001290 (half) and Tex_001690 (closed). See the
+// note above the resource-name declarations.
+static const void* sEyeTextures[3] = {
+    (const void*)object_oE9_Tex_000E90,
+    (const void*)object_oE9_Tex_000E90,
+    (const void*)object_oE9_Tex_000E90,
 };
 
 static void TfBetaKokiri_SetBank(TfBetaKokiri* this, PlayState* play, s32 bank, s32 alsoRCP) {
@@ -161,11 +178,11 @@ static s32 TfBetaKokiri_UpdateCommon(TfBetaKokiri* this, PlayState* play) {
     if (this->initState == 1) {
         this->initState = 2;
         TfBetaKokiri_SetBank(this, play, this->bodyBankIdx, 0);
-        SkelAnime_Init(play, &this->skelAnime, &object_oE4_Skel_000260, NULL,
+        SkelAnime_Init(play, &this->skelAnime, (SkeletonHeader*)object_oE4_Skel_000260, NULL,
                        this->jointTable, this->morphTable, TF_BK_NUM_LIMBS);
         TfBetaKokiri_SetBank(this, play, this->animBankIdx, 0);
-        Animation_Change(&this->skelAnime, &object_oE_anime_Anim_00001034, 1.0f, 0.0f,
-                         Animation_GetLastFrame(&object_oE_anime_Anim_00001034),
+        Animation_Change(&this->skelAnime, (AnimationHeader*)object_oE_anime_Anim_00001034, 1.0f, 0.0f,
+                         Animation_GetLastFrame((AnimationHeader*)object_oE_anime_Anim_00001034),
                          ANIMMODE_LOOP, 0.0f);
     }
 
@@ -245,7 +262,7 @@ static s32 TfBetaKokiri_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** d
         gSPSegment(POLY_OPA_DISP++, 0x08,
                    SEGMENTED_TO_VIRTUAL(sEyeTextures[this->eyeTextureIndex]));
         CLOSE_DISPS(play->state.gfxCtx);
-        *dList = object_oE9_DL_000800;
+        *dList = (Gfx*)object_oE9_DL_000800;
         // Apply the Npc_TrackPoint head rot on top of the skeleton pose so she visibly
         // looks at Link. Upstream swapped Y onto X and X onto Z here; the beta skeleton's
         // head bone is set up the same way the vanilla Kokiri head is.
