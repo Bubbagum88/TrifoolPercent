@@ -35,8 +35,9 @@ static ColliderCylinderInit sCylinderInit = {
 static void TfMimicChest_UpdateCommon(TfMimicChest* this, PlayState* play) {
     Collider_UpdateCylinder(&this->actor, &this->collider);
     CollisionCheck_SetOC(play, &play->colChkCtx, &this->collider.base);
-    Actor_UpdateBgCheckInfo(play, &this->actor, 75.0f, 30.0f, 30.0f, UPDBGCHECKINFO_FLAG_0 |
-                                                                     UPDBGCHECKINFO_FLAG_2);
+    // 0x05 = bits 0 | 2 (what upstream used to spell UPDBGCHECKINFO_FLAG_0 | _2 before
+    // those flag names were dropped). Matches the raw-flag convention Shipwright callers use.
+    Actor_UpdateBgCheckInfo(play, &this->actor, 75.0f, 30.0f, 30.0f, 5);
     SkelAnime_Update(&this->skelAnime);
 }
 
@@ -47,7 +48,7 @@ static void TfMimicChest_UpdateWait(Actor* thisx, PlayState* play) {
     TfMimicChest_UpdateCommon(this, play);
     if (this->actor.xzDistToPlayer < TF_MC_WAKE_DIST) {
         Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_ENEMY);
-        this->actor.flags |= ACTOR_FLAG_TARGETABLE;
+        this->actor.flags |= ACTOR_FLAG_ATTENTION_ENABLED;
         Animation_Change(&this->skelAnime, &MimicChestObjAttackAnim, 1.0f, 0.0f,
                          Animation_GetLastFrame(&MimicChestObjAttackAnim), ANIMMODE_LOOP, 6.0f);
         this->actor.update = TfMimicChest_UpdateAttack;
@@ -75,7 +76,7 @@ static void TfMimicChest_UpdateAttack(Actor* thisx, PlayState* play) {
 
     if (this->actor.xzDistToPlayer > TF_MC_SLEEP_DIST) {
         Actor_ChangeCategory(play, &play->actorCtx, &this->actor, ACTORCAT_PROP);
-        this->actor.flags &= ~ACTOR_FLAG_TARGETABLE;
+        this->actor.flags &= ~ACTOR_FLAG_ATTENTION_ENABLED;
         Animation_Change(&this->skelAnime, &MimicChestObjIdleAnim, 1.0f, 0.0f,
                          Animation_GetLastFrame(&MimicChestObjIdleAnim), ANIMMODE_LOOP, 12.0f);
         this->actor.update = TfMimicChest_UpdateWait;
