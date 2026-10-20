@@ -187,7 +187,7 @@ static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play) {
 
     bool onboarding = (this->actor.params == 1);
 
-    if (Actor_IsTalking(&this->actor, play)) {
+    if (Actor_ProcessTalkRequest(&this->actor, play)) {
         if (onboarding) {
             // The onboarding Kokiri always speaks text 0x0100. The 3-choice box lives in
             // the CustomMessage loader; the picked branch is applied in Beat1_0Onboarding
@@ -212,7 +212,7 @@ static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play) {
             // an empty one and the Odd Potion give lands next tick.
             this->actor.textId = 0x0B13;
             Sfx_PlaySfxCentered(NA_SE_SY_TRE_BOX_APPEAR);
-            Player_UpdateBottleHeld(play, player, ITEM_BOTTLE, PLAYER_AP_BOTTLE);
+            Player_UpdateBottleHeld(play, player, ITEM_BOTTLE, PLAYER_IA_BOTTLE);
             TrifoolBeat1_SetBetaKokiriDone();
         } else if (exch != EXCH_ITEM_NONE) {
             // Any other trade item on offer: Zelda's Letter, egg, chicken, etc. She rejects.
@@ -225,7 +225,7 @@ static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play) {
         return;
     }
 
-    Actor_RequestToTalk(&this->actor, play);
+    Actor_OfferTalkNearColChkInfoCylinder(&this->actor, play);
     // Prime the vanilla "accept trade item" slot so Link can offer trade items at her.
     // EXCH_ITEM_BLUE_FIRE is upstream's choice; it is a harmless placeholder (nothing in
     // Lost Woods / Sacred Forest Meadow actually consumes blue fire from Link) and tells
