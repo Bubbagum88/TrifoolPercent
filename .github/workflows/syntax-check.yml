@@ -31,11 +31,21 @@ jobs:
       - name: Check out TrifoolPercent
         uses: actions/checkout@v4
 
-      - name: Install clang and SDL2 headers
-        # libsdl2-dev provides <SDL2/SDL.h> which Shipwright's audio bridge pulls in.
+      - name: Install clang, SDL2 and nlohmann/json headers
+        # Shipwright pulls these at CMake-configure time (vcpkg / FetchContent), not as
+        # git submodules, so a bare `git submodule update` doesn't produce them.
+        # The system packages give us the same headers for parse-time checks.
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends clang libsdl2-dev
+          sudo apt-get install -y --no-install-recommends \
+            clang libsdl2-dev nlohmann-json3-dev
+
+      - name: Fetch Dear ImGui headers (any recent version is fine for parse)
+        # imgui is not packaged on Ubuntu; grab the headers only. Any version provides
+        # the ImGui types the module references at parse level.
+        run: |
+          git clone --depth 1 --branch v1.91.0 \
+            https://github.com/ocornut/imgui third_party/imgui
 
       - name: Shallow-clone Shipwright at the pinned SHA (headers only, no build)
         run: |
@@ -82,18 +92,9 @@ jobs:
             -I"$SOH/extern"
           )
 
-          # Shipwright vendors nlohmann/json and Dear ImGui as submodules; locate them
-          # instead of hard-coding paths (they drift as Shipwright pulls submodules).
-          JSON_HPP="$(find "$SOH" -type f -name json.hpp -path '*/nlohmann/*' -print -quit 2>/dev/null || true)"
-          if [ -n "$JSON_HPP" ]; then
-            INCLUDES+=(-I"$(dirname "$(dirname "$JSON_HPP")")")
-            echo "nlohmann/json include: $(dirname "$(dirname "$JSON_HPP")")"
-          fi
-          IMGUI_H="$(find "$SOH" -type f -name imgui.h ! -path '*/examples/*' ! -path '*/backends/*' -print -quit 2>/dev/null || true)"
-          if [ -n "$IMGUI_H" ]; then
-            INCLUDES+=(-I"$(dirname "$IMGUI_H")")
-            echo "imgui include: $(dirname "$IMGUI_H")"
-          fi
+          # Dear ImGui headers come from the clone above; nlohmann/json is installed
+          # system-wide by the apt step (/usr/include/nlohmann/json.hpp).
+          INCLUDES+=(-I"third_party/imgui")
 
           # Defines Shipwright's soh target uses; without F3DEX_GBI_2 the gbi.h
           # macros stay undefined and vanilla-OoT actor .c files won't parse.
