@@ -92,6 +92,7 @@ jobs:
           INCLUDES=(
             -I"$SOH/soh"
             -I"$SOH/soh/soh"
+            -I"$SOH/soh/src"
             -I"$SOH/soh/include"
             -I"$SOH/soh/assets"
             -I"$SOH/libultraship/src"
