@@ -182,6 +182,19 @@ static void AddUnusedFlameActorToDB() {
                               TfUnusedFlame_Init, TfUnusedFlame_Destroy, TfUnusedFlame_Update, TfUnusedFlame_Draw);
 }
 
+// Exposed for other TrifoolPercent translation units (e.g. TestRoom.cpp) that want to drop a
+// dev-convenience flame without duplicating the ActorDB registration.
+extern "C" void TrifoolSpawnUnusedFlame(float x, float y, float z) {
+    if (gPlayState == nullptr) {
+        return;
+    }
+    AddUnusedFlameActorToDB();
+    if (sUnusedFlameId < 0) {
+        return;
+    }
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, sUnusedFlameId, x, y, z, 0, 0, 0, 0);
+}
+
 static void AddMimicChestActorToDB() {
     if (sMimicChestId >= 0) {
         return;
@@ -243,19 +256,22 @@ static void EnterTestRoomFromFlame() {
     gPlayState->transitionType = TRANS_TYPE_FADE_BLACK_FAST;
 }
 
-// Overworld entrance to the Unicorn Fountain, in Lost Woods. Triforce% repurposed the
-// vanilla Zora's Fountain entrance (0x0560) by patching the entrance table; we take the
-// native path instead -- a cvar-gated TfUnusedFlame on the Lost Woods floor that warps
-// Link into the TrifoolPercent fountain scene. Coordinates are provisional (west side of
-// SCENE_LOST_WOODS, away from the N/W/S path-matching zones), tune by eye.
-static Vec3f sFountainOverworldPos = { -600.0f, 0.0f, 400.0f };
+// Overworld entrance to the Unicorn Fountain, at the bottom of Zora's Domain. Triforce%
+// repurposed the vanilla Zora's Fountain entrance (0x0560) by patching the entrance table so
+// that walking out of Zora's Domain after the Fire Medallion thawed the ice landed Link in
+// the Unicorn Fountain; the fan-rumored "secret entrance" behind a basin wall at the bottom
+// of SCENE_ZORAS_DOMAIN is where that reroute pointed. We take the native path instead -- a
+// cvar-gated TfUnusedFlame on that same basin wall spot that warps Link into the fountain
+// scene, leaving the vanilla entrance table untouched. Coordinates are provisional (back of
+// the Domain, near the basin floor); tune in-game.
+static Vec3f sFountainOverworldPos = { -40.0f, -920.0f, -1950.0f };
 
-static bool IsLostWoods() {
-    return gPlayState != nullptr && gPlayState->sceneNum == SCENE_LOST_WOODS;
+static bool IsZorasDomain() {
+    return gPlayState != nullptr && gPlayState->sceneNum == SCENE_ZORAS_DOMAIN;
 }
 
 static void SpawnFountainOverworldMarker() {
-    if (!IsLostWoods()) {
+    if (!IsZorasDomain()) {
         return;
     }
     AddUnusedFlameActorToDB();
@@ -267,7 +283,7 @@ static void SpawnFountainOverworldMarker() {
 }
 
 static void EnterFountainFromOverworld() {
-    if (!IsLostWoods() || gPlayState->transitionTrigger != TRANS_TRIGGER_OFF) {
+    if (!IsZorasDomain() || gPlayState->transitionTrigger != TRANS_TRIGGER_OFF) {
         return;
     }
     if (!PlayerAt(&sFountainOverworldPos)) {

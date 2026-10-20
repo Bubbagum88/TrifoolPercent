@@ -266,6 +266,22 @@ static void SpawnTestRoomExhibits() {
     }
 }
 
+// Dev-convenience flame at the Unicorn Fountain doorway (sign slot 3). The hex scene's own exit
+// list already routes Link to the fountain when he walks through the doorway, so this flame is a
+// visual marker only, not a secondary warp. It replaces the old Lost Woods flame that the
+// FountainOverworld toggle used to spawn; the canonical overworld entrance is now at the bottom
+// of Zora's Domain. Slot 3 angle: 30 + 60*3 = 210 degrees (see SpawnTestRoomSigns).
+static void SpawnTestRoomFountainFlame() {
+    if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0) {
+        return;
+    }
+    constexpr float kFountainSlotAngle = 3.6651914291880923f; // 30 + 60*3 deg in radians
+    constexpr float kFlameDistFromCenter = 240.0f; // inboard of SIGN_INSET so the flame leads to the door
+    float x = cosf(kFountainSlotAngle) * kFlameDistFromCenter;
+    float z = -sinf(kFountainSlotAngle) * kFlameDistFromCenter;
+    TrifoolSpawnUnusedFlame(x, 0.0f, z);
+}
+
 // Live beta-actor exhibits: spawn the three vanilla beta actors whose object slots we added to
 // the room's object list in export_test_room.py (obj_bird, obj_vase, obj_nwc). They stand on a
 // small triangle around the room centre so Link can walk up to each and see the actual actor.
@@ -397,6 +413,7 @@ static void RegisterTrifoolTestRoom() {
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomSigns);
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomExhibits);
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomLiveExhibits);
+    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomFountainFlame);
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, PlayTestRoomPrototypeCs);
     COND_HOOK(OnOpenText, CVAR_TEST_ROOM_VALUE, LoadTestRoomSignMessage);
 }
