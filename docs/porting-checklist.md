@@ -49,7 +49,7 @@ Vanilla scene / room patches (reapply as resource replacements or `OnSceneSpawnA
 - [ ] Staff-roll flyovers: Lon Lon Ranch
 - [ ] Staff-roll flyovers: Wasteland
 - [ ] Staff-roll flyovers: Hyrule Castle
-- [x] Entrance-table rewiring (`Statics_SetUpRouting`): Zora's Domain → Unicorn Fountain (`0x0560`), Chamber → Triforce Room, Triforce Room → Ending, plus the staff-roll chain
+- [x] Entrance-table rewiring equivalents (new scene slots, not vanilla `gEntranceTable` patches): Zora's Domain → Unicorn Fountain is a cvar-gated `TfUnusedFlame` at the ZD basin wall (fan-rumored secret-entrance spot) warping to `ENTR_TEST01_0` instead of patching `0x0560`; Chamber → Triforce Room and Triforce Room → Ending go through `SacredRealmChain.cpp`; staff-roll chain through `StaffRollChain.cpp`
 - [ ] Entrance cutscene table entry 30 (Triforce Room entry)
 - [ ] Cutscene terminator chain in `statics/scene.c` (sequence staff-roll flyovers)
 

@@ -135,7 +135,7 @@ static const DevWarp kDevWarps[] = {
     { "Hyrule Market Bazaar",    ENTR_BAZAAR_0,               1,  0      },
     { "Thieves' Hideout (Nabooru)", 0x04A6,                   1,  0      },
     { "Zora's Domain (adult)",   ENTR_ZORAS_DOMAIN_ENTRANCE,  0,  0      },
-    { "Unicorn Fountain",        0x0560,                      0,  0      },
+    { "Unicorn Fountain",        ENTR_TEST01_0,               0,  0      },
     { "Chamber of Sages",        0x006B,                      0,  (s16)0xFFF0 },
     { "Staff Roll",              0x00CD,                      1,  (s16)0xFFF8 },
     { "Test Room (hex hub)",     ENTR_SYOTES_0,               1,  0      },

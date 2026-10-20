@@ -48,8 +48,10 @@ void TrifoolMenu::RegisterGeneral() {
     SohGui::mSohMenu->AddWidget(path, "Overworld entrance to Unicorn Fountain", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_FOUNTAIN_OVERWORLD)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
-            "Spawns a TfUnusedFlame in Lost Woods that warps Link into the Unicorn Fountain scene. "
-            "The vanilla Triforce% route patched the Zora's Fountain entrance (0x0560); the native "
-            "path uses our own loading zone instead, so Zora's Domain stays untouched. Coordinates "
-            "are provisional -- tune in-game if the flame lands behind a wall."));
+            "Spawns a TfUnusedFlame at the bottom of Zora's Domain -- the fan-rumored secret-entrance "
+            "spot on the basin wall -- that warps Link into the Unicorn Fountain scene. Mirrors the "
+            "upstream Triforce% route (which patched the Zora's Fountain entrance 0x0560 so leaving "
+            "Zora's Domain after the Fire Medallion thaw landed Link in the fountain) while leaving "
+            "the vanilla entrance table untouched. Coordinates are provisional -- tune in-game if the "
+            "flame lands behind a wall. A dev-convenience flame also lives in the hex Test Room."));
 }
