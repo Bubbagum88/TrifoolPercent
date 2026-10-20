@@ -38,7 +38,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            clang libsdl2-dev nlohmann-json3-dev
+            clang libsdl2-dev nlohmann-json3-dev libspdlog-dev
 
       - name: Fetch Dear ImGui headers (any recent version is fine for parse)
         # imgui is not packaged on Ubuntu; grab the headers only. Any version provides
@@ -99,6 +99,16 @@ jobs:
           # Defines Shipwright's soh target uses; without F3DEX_GBI_2 the gbi.h
           # macros stay undefined and vanilla-OoT actor .c files won't parse.
           DEFS=(-DF3DEX_GBI_2 -D_LANGUAGE_C)
+
+          # Shipwright's cvar_prefixes.h expects CVAR_PREFIX_* macros from CMake
+          # (target_compile_definitions). For syntax-check their string values
+          # don't matter — stub each one that cvar_prefixes.h names.
+          CVAR_PREFIX_HEADER="$SOH/soh/soh/cvar_prefixes.h"
+          if [ -f "$CVAR_PREFIX_HEADER" ]; then
+            while IFS= read -r name; do
+              DEFS+=(-D"${name}=\"stub\"")
+            done < <(grep -oE 'CVAR_PREFIX_[A-Z_]+' "$CVAR_PREFIX_HEADER" | sort -u)
+          fi
 
           # Clang 15+ promoted several default-on warnings to errors. The vanilla
           # OoT actor code in actors/ relies on the older-C conventions those cover
