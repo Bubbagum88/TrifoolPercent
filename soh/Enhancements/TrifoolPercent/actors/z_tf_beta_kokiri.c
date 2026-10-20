@@ -150,8 +150,8 @@ static void TfBetaKokiri_UpdateTracking(TfBetaKokiri* this, PlayState* play) {
     // eyeline and let it tune the feel; no custom deadband here.
     this->interactInfo.trackPos = player->actor.world.pos;
     this->interactInfo.yOffset = TF_BK_PLAYER_EYE_HEIGHT;
-    func_80034A14(&this->actor, &this->interactInfo, TF_BK_HEAD_FOLLOW_PRESET,
-                  TF_BK_HEAD_FOLLOW_MODE);
+    Npc_TrackPoint(&this->actor, &this->interactInfo, TF_BK_HEAD_FOLLOW_PRESET,
+                   TF_BK_HEAD_FOLLOW_MODE);
 }
 
 static s32 TfBetaKokiri_UpdateCommon(TfBetaKokiri* this, PlayState* play) {
@@ -204,14 +204,14 @@ static void TfBetaKokiri_UpdateWaitTalk(Actor* thisx, PlayState* play) {
         } else if (exch == EXCH_ITEM_BUG) {
             // Vanilla "Bug in a Bottle" (child trade slot). She rejects it as a crawly.
             this->actor.textId = 0x0B12;
-            func_80078884(NA_SE_SY_ERROR);
+            Sfx_PlaySfxCentered(NA_SE_SY_ERROR);
         } else if (exch == TRIFOOL_EXCH_ITEM_BUTTERFLY) {
             // Beat 1.3: the Butterfly rides unused slot 0x68 and its own unused exchange
             // id 0x18, so SoH never confuses it with a vanilla trade item. When Link
             // offers the Butterfly bottle, Beta Kokiri accepts it: swap the bottle for
             // an empty one and the Odd Potion give lands next tick.
             this->actor.textId = 0x0B13;
-            func_80078884(NA_SE_SY_TRE_BOX_APPEAR);
+            Sfx_PlaySfxCentered(NA_SE_SY_TRE_BOX_APPEAR);
             Player_UpdateBottleHeld(play, player, ITEM_BOTTLE, PLAYER_AP_BOTTLE);
             TrifoolBeat1_SetBetaKokiriDone();
         } else if (exch != EXCH_ITEM_NONE) {
