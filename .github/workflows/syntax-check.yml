@@ -6,6 +6,13 @@
 # TrifoolPercent sources into the same place tools/build_soh.sh does, apply the
 # engine patches, then run `clang -fsyntax-only` on every .c and .cpp in the
 # module. No codegen, no link, no CMake.
+#
+# Third-party headers: Shipwright pulls several deps at CMake-configure time
+# (vcpkg / FetchContent) rather than as git submodules. For a parse-only check
+# we substitute equivalents: apt packages (nlohmann-json3-dev, libspdlog-dev,
+# libsdl2-dev) and shallow clones of header-only libs (Dear ImGui, BS::thread_pool).
+# When Shipwright adds a new deep header dependency, this workflow surfaces it as
+# a `fatal error: '…' file not found` and the fix is to add it to the deps step.
 
 name: syntax-check
 
@@ -85,6 +92,7 @@ jobs:
           INCLUDES=(
             -I"$SOH/soh"
             -I"$SOH/soh/soh"
+            -I"$SOH/soh/src"
             -I"$SOH/soh/include"
             -I"$SOH/soh/assets"
             -I"$SOH/libultraship/src"
