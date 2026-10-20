@@ -46,6 +46,8 @@
 #define CVAR_TRIFOOL_LONG_OF_TIME_AGE_FLIP CVAR_ENHANCEMENT("TrifoolPercent.LongOfTimeAgeFlip")
 #define CVAR_TRIFOOL_SACRED_REALM_CHAIN CVAR_ENHANCEMENT("TrifoolPercent.SacredRealmChain")
 #define CVAR_TRIFOOL_STAFF_ROLL_CHAIN CVAR_ENHANCEMENT("TrifoolPercent.StaffRollChain")
+#define CVAR_TRIFOOL_RUNNING_MAN_DEBUG_PULSE CVAR_ENHANCEMENT("TrifoolPercent.RunningManDialoguePulse")
+#define CVAR_TRIFOOL_SAGES_CHARM_GRANT_PULSE CVAR_ENHANCEMENT("TrifoolPercent.SagesCharmGrantPulse")
 
 // Butterfly rides a slot that vanilla OoT ships but never uses. The gameplay-item id
 // 0x68 (object_gi_butterfly, documented on TCRF) has no in-game pickup wired to it, so
@@ -224,6 +226,8 @@ typedef struct {
     s32 bodyBankIdx;
     s32 headBankIdx;
 } TfBetaKokiri;
+
+s16 TrifoolBeat1_RegisterBetaKokiri(void);
 
 void TfBetaKokiri_Init(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Destroy(Actor* thisx, PlayState* play);

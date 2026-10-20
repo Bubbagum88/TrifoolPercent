@@ -206,9 +206,6 @@ static void TickRunningManHandoff() {
 // Debug pulse: fire the first dialogue box (0x0C30) on tick without any actor.
 // -----------------------------------------------------------------------------
 
-#define CVAR_TRIFOOL_RUNNING_MAN_DEBUG_PULSE                                 \
-    CVAR_ENHANCEMENT("TrifoolPercent.RunningManDialoguePulse")
-
 static bool sPendingDialoguePulse = false;
 
 static void TickDebugPulse() {

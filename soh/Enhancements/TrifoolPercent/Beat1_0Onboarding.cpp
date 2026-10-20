@@ -36,7 +36,6 @@ extern "C" {
 #include "functions.h"
 #include "variables.h"
 extern PlayState* gPlayState;
-s16 TrifoolBeat1_RegisterBetaKokiri(void);
 }
 
 namespace {
