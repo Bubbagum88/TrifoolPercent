@@ -12,7 +12,12 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 TP="$ROOT/third_party"
 STAGE="$ROOT/build/stage"
-PY="$ROOT/.venv-blender/bin/python"
+# venv layout: POSIX bin/, Windows (Git Bash) Scripts/.
+if [ -x "$ROOT/.venv-blender/Scripts/python.exe" ]; then
+    PY="$ROOT/.venv-blender/Scripts/python.exe"
+else
+    PY="$ROOT/.venv-blender/bin/python"
+fi
 TORCH="${TORCH:-$ROOT/build/torch/torch}"
 
 rm -rf "$STAGE"

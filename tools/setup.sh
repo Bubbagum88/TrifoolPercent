@@ -33,9 +33,15 @@ clone_at https://github.com/HarbourMasters/fast64 "$TP/addons/fast64" "$HM_FAST6
 clone_at https://github.com/HarbourMasters/Shipwright "$TP/Shipwright" "$SHIPWRIGHT_COMMIT"
 git -C "$TP/Shipwright" submodule update --init --depth 1
 
-if [ ! -x "$ROOT/.venv-blender/bin/python" ]; then
+# venv layout differs: POSIX uses bin/, Windows (Git Bash on the GH runner) uses Scripts/.
+if [ ! -x "$ROOT/.venv-blender/bin/python" ] && [ ! -x "$ROOT/.venv-blender/Scripts/python.exe" ]; then
     python3 -m venv "$ROOT/.venv-blender"
 fi
-"$ROOT/.venv-blender/bin/pip" install --quiet "bpy==$BPY_VERSION"
+if [ -x "$ROOT/.venv-blender/Scripts/pip.exe" ]; then
+    VENV_PIP="$ROOT/.venv-blender/Scripts/pip.exe"
+else
+    VENV_PIP="$ROOT/.venv-blender/bin/pip"
+fi
+"$VENV_PIP" install --quiet "bpy==$BPY_VERSION"
 
 echo "Setup done. Next: tools/build_o2r.sh"
