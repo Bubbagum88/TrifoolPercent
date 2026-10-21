@@ -150,13 +150,32 @@ jobs:
           path: third_party/Shipwright/build
           # Separate key from the Linux cache: a Windows build tree isn't interchangeable.
           # The build-cmake tools tree lives beside it and is cheap enough to rebuild.
-          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', 'tools/build_soh_windows.ps1', 'patches/shipwright/**', 'soh/Enhancements/TrifoolPercent/**') }}
+          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', '.github/workflows/build-soh.yml', 'patches/shipwright/**', 'soh/Enhancements/TrifoolPercent/**') }}
 
-      - name: Build the full Ship of Harkinian engine with the TrifoolPercent module
-        # Mirrors tools/build_soh.sh but calls the MSVC generator. Skipped on cache hit.
+      - name: Prep Shipwright (copy module, apply engine patches)
+        # Mirrors the prep in tools/build_soh.sh. Uses Git Bash's `patch` (lenient enough
+        # for the existing hand-maintained patches); `git apply` on Windows rejects them.
+        if: steps.cache-soh-build-windows.outputs.cache-hit != 'true'
+        run: |
+          SOH=third_party/Shipwright
+          git -C "$SOH" reset --hard HEAD >/dev/null
+          rm -rf "$SOH/soh/soh/Enhancements/TrifoolPercent"
+          cp -r soh/Enhancements/TrifoolPercent "$SOH/soh/soh/Enhancements/TrifoolPercent"
+          if compgen -G "patches/shipwright/*.patch" > /dev/null; then
+            for p in patches/shipwright/*.patch; do
+              echo "Applying $(basename "$p") to Shipwright..."
+              patch -d "$SOH" -p1 < "$p"
+            done
+          fi
+
+      - name: Configure and build soh.exe (MSVC Visual Studio 17 2022, x64 Release)
         if: steps.cache-soh-build-windows.outputs.cache-hit != 'true'
         shell: pwsh
-        run: ./tools/build_soh_windows.ps1
+        run: |
+          cmake -S third_party/Shipwright -B third_party/Shipwright/build -G "Visual Studio 17 2022" -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build third_party/Shipwright/build --config Release -j
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Stage the drop (soh.exe + TrifoolPercent.o2r + a README)
         run: |
