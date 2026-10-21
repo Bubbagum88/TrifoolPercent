@@ -118,9 +118,10 @@ jobs:
     runs-on: windows-2022
     # Windows counterpart to the Linux build above. Produces soh.exe so a run can be
     # dropped into C:\Harbour Masters 64\TrifoolPercent test\ without a local build.
-    # Shipwright is built with MSVC (Visual Studio 17 2022) + its bundled vcpkg manifest.
-    # Prep steps (setup.sh, module copy, patches, .o2r build) use Git Bash, which ships
-    # on windows-2022 runners, so the existing bash scripts run unchanged.
+    # Shipwright is built with MSVC (Visual Studio 17 2022). The .o2r asset pipeline
+    # (bpy/Fast64, Torch) is Linux-only in this repo, so this job depends on the Linux
+    # `build` job above and reuses its TrifoolPercent.o2r instead of rebuilding it.
+    needs: build
     defaults:
       run:
         shell: bash
@@ -128,26 +129,19 @@ jobs:
       - name: Check out TrifoolPercent
         uses: actions/checkout@v4
 
-      - name: Install Python 3.13 (for Blender's bpy and the asset scripts)
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-
-      - name: Install Pillow (needed by the title-card renderer)
-        run: pip install pillow
-
-      - name: Fetch upstream sources (Triforce%, HM Fast64, Shipwright + submodules)
-        run: tools/setup.sh
-
-      - name: Build Shipwright's asset tools (needed to produce the mod .o2r)
-        working-directory: third_party/Shipwright
+      - name: Fetch Shipwright and its submodules (no Fast64/bpy needed on Windows)
         run: |
-          cmake --no-warn-unused-cli -H. -Bbuild-cmake -G "Visual Studio 17 2022" -A x64 \
-                -DCMAKE_BUILD_TYPE:STRING=Release -DSOH_TOOLS_ONLY=ON
-          cmake --build build-cmake --config Release --target GenerateSohOtr -j
+          mkdir -p third_party
+          SHIPWRIGHT_COMMIT=$(grep -E '^SHIPWRIGHT_COMMIT=' tools/setup.sh | head -1 | cut -d= -f2 | awk '{print $1}')
+          git clone --filter=blob:none https://github.com/HarbourMasters/Shipwright third_party/Shipwright
+          git -C third_party/Shipwright checkout --quiet "$SHIPWRIGHT_COMMIT"
+          git -C third_party/Shipwright submodule update --init --depth 1
 
-      - name: Build TrifoolPercent.o2r (the Triforce Room, Unicorn Fountain and Test Room scenes)
-        run: tools/build_o2r.sh
+      - name: Download TrifoolPercent.o2r built by the Linux job
+        uses: actions/download-artifact@v4
+        with:
+          name: TrifoolPercent-soh-linux
+          path: build/linux-drop
 
       - name: Cache the Shipwright engine build (reused when the Shipwright pin, engine patches, and TrifoolPercent module source are all unchanged)
         id: cache-soh-build-windows
@@ -172,7 +166,8 @@ jobs:
           # Shipwright drops a handful of DLLs (SDL2, etc.) next to soh.exe at build time;
           # copy any that landed in the Release folder so the drop is self-contained.
           find third_party/Shipwright/build/soh/Release -maxdepth 1 -name '*.dll' -exec cp {} "$STAGE/" \;
-          cp build/TrifoolPercent.o2r "$STAGE/mods/TrifoolPercent.o2r"
+          # Reuse the .o2r built by the Linux job (asset pipeline is Linux-only).
+          cp build/linux-drop/mods/TrifoolPercent.o2r "$STAGE/mods/TrifoolPercent.o2r"
           cat > "$STAGE/README.txt" <<'EOF'
           TrifoolPercent build for Ship of Harkinian (Windows).
 
