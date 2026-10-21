@@ -30,6 +30,8 @@ jobs:
   build:
     name: Build soh.elf + TrifoolPercent.o2r
     runs-on: ubuntu-24.04
+    # Linux build. The build-soh-windows job below produces the equivalent soh.exe drop
+    # for dropping into C:\Harbour Masters 64\TrifoolPercent test\.
     steps:
       - name: Check out TrifoolPercent
         uses: actions/checkout@v4
@@ -109,4 +111,87 @@ jobs:
         with:
           name: TrifoolPercent-soh-linux
           path: build/soh-drop
+          retention-days: 30
+
+  build-soh-windows:
+    name: Build soh.exe + TrifoolPercent.o2r (Windows)
+    runs-on: windows-2022
+    # Windows counterpart to the Linux build above. Produces soh.exe so a run can be
+    # dropped into C:\Harbour Masters 64\TrifoolPercent test\ without a local build.
+    # Shipwright is built with MSVC (Visual Studio 17 2022) + its bundled vcpkg manifest.
+    # Prep steps (setup.sh, module copy, patches, .o2r build) use Git Bash, which ships
+    # on windows-2022 runners, so the existing bash scripts run unchanged.
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out TrifoolPercent
+        uses: actions/checkout@v4
+
+      - name: Install Python 3.13 (for Blender's bpy and the asset scripts)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Pillow (needed by the title-card renderer)
+        run: pip install pillow
+
+      - name: Fetch upstream sources (Triforce%, HM Fast64, Shipwright + submodules)
+        run: tools/setup.sh
+
+      - name: Build Shipwright's asset tools (needed to produce the mod .o2r)
+        working-directory: third_party/Shipwright
+        run: |
+          cmake --no-warn-unused-cli -H. -Bbuild-cmake -G "Visual Studio 17 2022" -A x64 \
+                -DCMAKE_BUILD_TYPE:STRING=Release -DSOH_TOOLS_ONLY=ON
+          cmake --build build-cmake --config Release --target GenerateSohOtr -j
+
+      - name: Build TrifoolPercent.o2r (the Triforce Room, Unicorn Fountain and Test Room scenes)
+        run: tools/build_o2r.sh
+
+      - name: Cache the Shipwright engine build (reused when the Shipwright pin, engine patches, and TrifoolPercent module source are all unchanged)
+        id: cache-soh-build-windows
+        uses: actions/cache@v4
+        with:
+          path: third_party/Shipwright/build
+          # Separate key from the Linux cache: a Windows build tree isn't interchangeable.
+          # The build-cmake tools tree lives beside it and is cheap enough to rebuild.
+          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', 'tools/build_soh_windows.ps1', 'patches/shipwright/**', 'soh/Enhancements/TrifoolPercent/**') }}
+
+      - name: Build the full Ship of Harkinian engine with the TrifoolPercent module
+        # Mirrors tools/build_soh.sh but calls the MSVC generator. Skipped on cache hit.
+        if: steps.cache-soh-build-windows.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: ./tools/build_soh_windows.ps1
+
+      - name: Stage the drop (soh.exe + TrifoolPercent.o2r + a README)
+        run: |
+          STAGE="build/soh-drop-windows"
+          mkdir -p "$STAGE/mods"
+          cp third_party/Shipwright/build/soh/Release/soh.exe "$STAGE/soh.exe"
+          # Shipwright drops a handful of DLLs (SDL2, etc.) next to soh.exe at build time;
+          # copy any that landed in the Release folder so the drop is self-contained.
+          find third_party/Shipwright/build/soh/Release -maxdepth 1 -name '*.dll' -exec cp {} "$STAGE/" \;
+          cp build/TrifoolPercent.o2r "$STAGE/mods/TrifoolPercent.o2r"
+          cat > "$STAGE/README.txt" <<'EOF'
+          TrifoolPercent build for Ship of Harkinian (Windows).
+
+          Files in this archive:
+            soh.exe                   The engine with the TrifoolPercent module compiled in.
+            *.dll                     SDL2 and friends; keep them next to soh.exe.
+            mods/TrifoolPercent.o2r   The scenes (Triforce Room, Unicorn Fountain, hex Test Room)
+                                      and actor models. soh.exe picks it up automatically from mods/.
+
+          Running it:
+            1. Drop this folder's contents into C:\Harbour Masters 64\TrifoolPercent test\
+               (or any folder with your Ocarina of Time 1.0 ROM for first-launch oot.o2r extraction).
+            2. Run soh.exe.
+            3. Enable the TrifoolPercent menu entries under Enhancements -> TrifoolPercent.
+          EOF
+
+      - name: Upload the TrifoolPercent + soh.exe drop
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrifoolPercent-soh-windows
+          path: build/soh-drop-windows
           retention-days: 30
