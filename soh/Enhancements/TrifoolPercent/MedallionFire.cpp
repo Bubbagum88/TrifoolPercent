@@ -13,8 +13,9 @@
 // achievable from an enhancement hook:
 //
 //   When the player holds the Fire Medallion and the CVar is on, Zora's Domain is
-//   considered thawed -- i.e. the vanilla "UNFROZE_KING_ZORA" event flag is set, so the
-//   engine picks the normal setup instead of the frozen setup on the next scene load.
+//   considered thawed -- i.e. the vanilla EVENTCHKINF_KING_ZORA_MOVED event flag is
+//   set, so the engine picks the normal setup instead of the frozen setup on the next
+//   scene load.
 //
 // This lines up with Isaac's framing ("the only difference will be that it will be able
 // to melt Zora's domain") without pretending the C-button side is finished. A follow-up
@@ -80,7 +81,7 @@ static void RegisterTrifoolMedallionFireWidget() {
         .CVar(CVAR_TRIFOOL_MEDALLION_FIRE)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
             "First slice of medallion-as-usable-item restoration. While the player holds the Fire "
-            "Medallion, Zora's Domain is treated as thawed (sets EVENTCHKINF_UNFROZE_KING_ZORA), so "
+            "Medallion, Zora's Domain is treated as thawed (sets EVENTCHKINF_KING_ZORA_MOVED), so "
             "the engine picks the normal scene setup instead of the frozen one on the next entry. "
             "The C-button-equip side and the 'cast Din's Fire to melt' trigger live in SoH engine "
             "code and land in a separate PR."));
