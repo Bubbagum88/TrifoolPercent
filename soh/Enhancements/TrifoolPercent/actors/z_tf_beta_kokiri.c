@@ -63,10 +63,6 @@ static const ALIGN_ASSET(2) char object_oE_anime_Anim_00001034[] = dobject_oE_an
 #define TF_BK_HEAD_FOLLOW_MODE 1      // vanilla NPC_TRACKING_PLAYER_AUTO_TURN
 #define TF_BK_PLAYER_EYE_HEIGHT 9.0f
 
-bool TrifoolBeat1_IsBetaKokiriSpawned(void); // defined in Beat1KeyOfCourage.cpp
-bool TrifoolBeat1_IsBetaKokiriDone(void);
-void TrifoolBeat1_SetBetaKokiriDone(void);
-
 static ColliderCylinderInitType1 sCylinderInit = {
     { COLTYPE_HIT0, AT_NONE, AC_NONE, OC1_ON | OC1_TYPE_PLAYER, COLSHAPE_CYLINDER, },
     { ELEMTYPE_UNK0, { 0x00000000, 0x00, 0x00 }, { 0x00000000, 0x00, 0x00 },

@@ -232,7 +232,10 @@ typedef struct {
     s32 headBankIdx;
 } TfBetaKokiri;
 
-s16 TrifoolBeat1_RegisterBetaKokiri(void);
+s16  TrifoolBeat1_RegisterBetaKokiri(void);
+bool TrifoolBeat1_IsBetaKokiriSpawned(void);
+bool TrifoolBeat1_IsBetaKokiriDone(void);
+void TrifoolBeat1_SetBetaKokiriDone(void);
 
 void TfBetaKokiri_Init(Actor* thisx, PlayState* play);
 void TfBetaKokiri_Destroy(Actor* thisx, PlayState* play);

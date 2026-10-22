@@ -18,8 +18,8 @@ void TrifoolMenu::RegisterScenes() {
     SohGui::mSohMenu->AddWidget(path, "Door of Time opens for adult Link", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_DOT_ADULT)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
-            "On adult entry to Temple of Time, sets EVENTCHKINF_OPENED_DOOR_OF_TIME and "
-            "roomCtx.drawParams[1] = 0xFF so the Door of Time reads open visually (open-door room "
+            "On adult entry to Temple of Time, sets EVENTCHKINF_OPENED_THE_DOOR_OF_TIME and "
+            "roomCtx.unk_74[1] = 0xFF so the Door of Time reads open visually (open-door room "
             "mesh) and functionally (Door_Toki drops its collision on the next update). Fixes the "
             "vanilla oversight where Demo_Kankyo's cutscene gate only fires the opening animation "
             "for the child path, so a Setup / dev-warp as adult leaves the door closed."));
