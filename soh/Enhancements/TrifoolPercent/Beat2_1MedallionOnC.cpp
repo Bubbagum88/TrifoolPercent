@@ -102,8 +102,8 @@ extern "C" void TrifoolBeat_UpdateQuestEquipHook(PlayState* play) {
         return;
     }
     // Cursor pixel position. Mirror upstream: anim starts at the cursor.
-    s16 animX = pauseCtx->cursorVtx[0].v.ob[0] * 10;
-    s16 animY = pauseCtx->cursorVtx[0].v.ob[1] * 10;
+    s16 animX = static_cast<s16>(pauseCtx->cursorVtx[0].v.ob[0] * 10);
+    s16 animY = static_cast<s16>(pauseCtx->cursorVtx[0].v.ob[1] * 10);
     // Slot is a logical index SoH stores in cButtonSlots[cBtn]. Medallions are
     // not in inventory.items[], so use SLOT_NONE: player ammo lookups short-
     // circuit on it, and buttonItems[cBtn] still carries the medallion id for
