@@ -297,7 +297,7 @@ static void EnterFountainFromOverworld() {
 // Door of Time adult-side fix. Vanilla OoT animates the Door of Time open in the Temple
 // of Time intro cutscene via Demo_Kankyo (DEMOKANKYO_DOOR_OF_TIME): the Init path
 // branches on EVENTCHKINF_OPENED_DOOR_OF_TIME (0x4B), spawning Door_Toki (closed, with
-// collision) when the flag is clear and setting roomCtx.drawParams[1] = 0xFF (the "door
+// collision) when the flag is clear and setting roomCtx.unk_74[1] = 0xFF (the "door
 // opened" room-draw variant) when the flag is set. The opening animation itself is only
 // scheduled when the cutscene fires actor cue 2 (CutsceneFlags_Get(play, 2) in
 // DemoKankyo_SetupType), which does not happen for adult Link on a fresh warp into
@@ -307,7 +307,7 @@ static void EnterFountainFromOverworld() {
 //
 // We patch three things on adult entry, idempotently: set the eventchkinf flag (future
 // Door_Toki updates and any other door-state queries then read "open"); overwrite
-// roomCtx.drawParams[1] = 0xFF so the Temple of Time scene draw-config picks the
+// roomCtx.unk_74[1] = 0xFF so the Temple of Time scene draw-config picks the
 // opened-door room mesh for this frame on; and the already-spawned Door_Toki actor's own
 // Update will drop its collision as soon as it next ticks because its only gate is the
 // same eventchkinf we just set. No change needed in Door_Toki itself.
