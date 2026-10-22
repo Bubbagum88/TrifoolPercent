@@ -46,7 +46,7 @@ constexpr s32 kSceneKokiriForest = SCENE_KOKIRI_FOREST;
 // of the scene; this plants the onboarding Kokiri on the path just outside the door so
 // Link cannot miss her the first time he leaves. Tune by eye in follow-up if needed.
 constexpr Vec3f kSpawnPos = { -230.0f, 0.0f, -1230.0f };
-constexpr s16   kSpawnRotY = 0x8000; // facing south, toward Link's path out of the house
+constexpr s16   kSpawnRotY = static_cast<s16>(0x8000); // facing south, toward Link's path out of the house
 
 // Text ids: 0x0100 greeting with 3-choice, 0x0101 brief "already started" follow-up.
 constexpr u16 kTextIdGreeting = 0x0100;
