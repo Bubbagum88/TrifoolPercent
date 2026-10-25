@@ -181,10 +181,24 @@ jobs:
         run: |
           STAGE="build/soh-drop-windows"
           mkdir -p "$STAGE/mods"
-          cp third_party/Shipwright/build/soh/Release/soh.exe "$STAGE/soh.exe"
+          # Shipwright's Windows build uses the property sheets in soh/CMake/* which set
+          # RUNTIME_OUTPUT_DIRECTORY to ${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/${CONFIG}.
+          # With -A x64 that's third_party/Shipwright/x64/Release/, NOT the build tree's
+          # soh/Release/ default. Locate soh.exe by searching so a future Shipwright pin or
+          # generator change does not silently break this step again.
+          SOH_EXE=$(find third_party/Shipwright -type f -name soh.exe -path '*/Release/*' | head -1)
+          if [ -z "$SOH_EXE" ]; then
+            echo "soh.exe not found under third_party/Shipwright. Build tree contents:"
+            find third_party/Shipwright -type f \( -name 'soh.exe' -o -name 'soh*.pdb' \) 2>/dev/null || true
+            find third_party/Shipwright -maxdepth 4 -type d -name Release 2>/dev/null || true
+            exit 1
+          fi
+          echo "Found soh.exe at: $SOH_EXE"
+          SOH_DIR=$(dirname "$SOH_EXE")
+          cp "$SOH_EXE" "$STAGE/soh.exe"
           # Shipwright drops a handful of DLLs (SDL2, etc.) next to soh.exe at build time;
-          # copy any that landed in the Release folder so the drop is self-contained.
-          find third_party/Shipwright/build/soh/Release -maxdepth 1 -name '*.dll' -exec cp {} "$STAGE/" \;
+          # copy any that landed in that same folder so the drop is self-contained.
+          find "$SOH_DIR" -maxdepth 1 -name '*.dll' -exec cp {} "$STAGE/" \;
           # Reuse the .o2r built by the Linux job (asset pipeline is Linux-only).
           cp build/linux-drop/mods/TrifoolPercent.o2r "$STAGE/mods/TrifoolPercent.o2r"
           cat > "$STAGE/README.txt" <<'EOF'
