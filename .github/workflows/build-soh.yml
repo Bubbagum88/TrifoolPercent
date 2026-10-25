@@ -64,25 +64,27 @@ jobs:
       - name: Build TrifoolPercent.o2r (the Triforce Room, Unicorn Fountain and Test Room scenes)
         run: tools/build_o2r.sh
 
-      - name: Cache the Shipwright engine build (reused when the Shipwright pin, engine patches, and TrifoolPercent module source are all unchanged)
+      - name: Cache the Shipwright engine build (reused when the Shipwright pin, build recipe, and engine patches are all unchanged)
         # The engine build is the slow part of this workflow (tens of minutes); the mod .o2r pack
         # above is fast and runs every time. The cache stores the finished build tree, including
-        # soh.elf, so a cache hit lets us skip cmake + ninja entirely. Inputs to the key:
+        # engine object files, so a cache hit lets ninja skip rebuilding the engine and only
+        # recompile the TrifoolPercent module (incremental build after we re-copy it in below).
+        # Inputs to the key - deliberately NOT including TrifoolPercent source, so edits to our
+        # module get a cache hit on the engine objects and only re-link:
         #   tools/setup.sh         - pins SHIPWRIGHT_COMMIT (bump invalidates cache)
         #   tools/build_soh.sh     - the build recipe itself
         #   patches/shipwright/**  - engine patches applied before cmake
-        #   soh/Enhancements/TrifoolPercent/** - module source compiled into the engine
         id: cache-soh-build
         uses: actions/cache@v4
         with:
           path: third_party/Shipwright/build
-          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', 'tools/build_soh.sh', 'patches/shipwright/**', 'soh/Enhancements/TrifoolPercent/**') }}
+          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', 'tools/build_soh.sh', 'patches/shipwright/**') }}
 
       - name: Build the full Ship of Harkinian engine with the TrifoolPercent module
         # tools/build_soh.sh copies soh/Enhancements/TrifoolPercent/ into Shipwright's tree and runs
         # a Release cmake build. Shipwright globs soh/soh/** so no build-file edits are needed.
-        # Skipped on a cache hit above - the cached build/ already contains soh.elf.
-        if: steps.cache-soh-build.outputs.cache-hit != 'true'
+        # Always runs: the cache above restores the engine build tree so ninja can skip unchanged
+        # engine objects and only recompile the TrifoolPercent module (incremental build).
         run: tools/build_soh.sh
 
       - name: Stage the drop (soh.elf + TrifoolPercent.o2r + a README)
@@ -143,19 +145,22 @@ jobs:
           name: TrifoolPercent-soh-linux
           path: build/linux-drop
 
-      - name: Cache the Shipwright engine build (reused when the Shipwright pin, engine patches, and TrifoolPercent module source are all unchanged)
+      - name: Cache the Shipwright engine build (reused when the Shipwright pin, workflow recipe, and engine patches are all unchanged)
         id: cache-soh-build-windows
         uses: actions/cache@v4
         with:
           path: third_party/Shipwright/build
           # Separate key from the Linux cache: a Windows build tree isn't interchangeable.
           # The build-cmake tools tree lives beside it and is cheap enough to rebuild.
-          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', '.github/workflows/build-soh.yml', 'patches/shipwright/**', 'soh/Enhancements/TrifoolPercent/**') }}
+          # Deliberately NOT keyed on TrifoolPercent source - edits to our module get a cache
+          # hit on the engine objects and only trigger an incremental rebuild of our files.
+          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', '.github/workflows/build-soh.yml', 'patches/shipwright/**') }}
 
       - name: Prep Shipwright (copy module, apply engine patches)
         # Mirrors the prep in tools/build_soh.sh. Uses Git Bash's `patch` (lenient enough
         # for the existing hand-maintained patches); `git apply` on Windows rejects them.
-        if: steps.cache-soh-build-windows.outputs.cache-hit != 'true'
+        # Always runs so TrifoolPercent edits land in the Shipwright tree; the MSVC step below
+        # relies on the restored build/ cache for incremental compilation of unchanged engine code.
         run: |
           SOH=third_party/Shipwright
           git -C "$SOH" reset --hard HEAD >/dev/null
@@ -169,7 +174,8 @@ jobs:
           fi
 
       - name: Configure and build soh.exe (MSVC Visual Studio 17 2022, x64 Release)
-        if: steps.cache-soh-build-windows.outputs.cache-hit != 'true'
+        # Always runs; MSVC's incremental build reuses engine objects from the restored cache
+        # and only recompiles the TrifoolPercent module (and relinks).
         shell: pwsh
         run: |
           cmake -S third_party/Shipwright -B third_party/Shipwright/build -G "Visual Studio 17 2022" -A x64
