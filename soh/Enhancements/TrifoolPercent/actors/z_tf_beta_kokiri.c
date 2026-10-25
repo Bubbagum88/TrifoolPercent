@@ -84,14 +84,14 @@ static void TfBetaKokiri_SetBank(TfBetaKokiri* this, PlayState* play, s32 bank, 
     gSegments[6] = VIRTUAL_TO_PHYSICAL(segment);
     if (alsoRCP) {
         OPEN_DISPS(play->state.gfxCtx);
-        gSPSegment(POLY_OPA_DISP++, 0x06, segment);
+        gSPSegment(POLY_OPA_DISP++, 0x06, (uintptr_t)segment);
         CLOSE_DISPS(play->state.gfxCtx);
     }
 }
 
 static void TfBetaKokiri_UpdateEyes(TfBetaKokiri* this) {
     if (this->blinkTimer == 0) {
-        this->blinkTimer = Rand_S16Offset(60, 60);
+        this->blinkTimer = (uint8_t)Rand_S16Offset(60, 60);
     } else {
         --this->blinkTimer;
     }
@@ -256,7 +256,7 @@ static s32 TfBetaKokiri_OverrideLimbDraw(PlayState* play, s32 limbIndex, Gfx** d
         TfBetaKokiri_SetBank(this, play, this->headBankIdx, 1);
         OPEN_DISPS(play->state.gfxCtx);
         gSPSegment(POLY_OPA_DISP++, 0x08,
-                   SEGMENTED_TO_VIRTUAL(sEyeTextures[this->eyeTextureIndex]));
+                   (uintptr_t)SEGMENTED_TO_VIRTUAL(sEyeTextures[this->eyeTextureIndex]));
         CLOSE_DISPS(play->state.gfxCtx);
         *dList = (Gfx*)object_oE9_DL_000800;
         // Apply the Npc_TrackPoint head rot on top of the skeleton pose so she visibly

@@ -110,7 +110,7 @@ void TfUnusedFlame_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx);
 
-    gSPSegment(POLY_XLU_DISP++, 0x06, segment);
+    gSPSegment(POLY_XLU_DISP++, 0x06, (uintptr_t)segment);
 
     // Billboard toward camera, same math En_Light uses.
     Matrix_Translate(this->actor.world.pos.x, this->actor.world.pos.y, this->actor.world.pos.z, MTXMODE_NEW);
@@ -129,7 +129,7 @@ void TfUnusedFlame_Draw(Actor* thisx, PlayState* play) {
     gDPLoadTextureBlock(POLY_XLU_DISP++, sFireFrames[texIdx], G_IM_FMT_IA, G_IM_SIZ_8b, 32, 64, 0,
                         G_TX_WRAP | G_TX_NOMIRROR, G_TX_CLAMP | G_TX_NOMIRROR, 5, 6, G_TX_NOLOD, G_TX_NOLOD);
 
-    gSPVertex(POLY_XLU_DISP++, sFlameVtx, 4, 0);
+    gSPVertex(POLY_XLU_DISP++, (uintptr_t)sFlameVtx, 4, 0);
     gSP2Triangles(POLY_XLU_DISP++, 0, 1, 2, 0, 0, 2, 3, 0);
 
     CLOSE_DISPS(play->state.gfxCtx);

@@ -248,7 +248,7 @@ void TfBetaGreatFairy_Draw(Actor* thisx, PlayState* play) {
             pos.y += this->wingtip.y;
             pos.z += this->wingtip.z;
             EffectSsKiraKira_SpawnFocused(play, &pos, &vel, &accel, &sKiraPrimColor, &sKiraEnvColor,
-                                          (1.0f - this->ratio) * 3000.0f, KIRA1_FRAMES);
+                                          (s16)((1.0f - this->ratio) * 3000.0f), KIRA1_FRAMES);
             pos.x = mainpos.x - this->wingtip.x;
             pos.z = mainpos.z - this->wingtip.z;
             vel.x = -vel.x;
@@ -256,7 +256,7 @@ void TfBetaGreatFairy_Draw(Actor* thisx, PlayState* play) {
             accel.x = -accel.x;
             accel.z = -accel.z;
             EffectSsKiraKira_SpawnFocused(play, &pos, &vel, &accel, &sKiraPrimColor, &sKiraEnvColor,
-                                          (1.0f - this->ratio) * 3000.0f, KIRA1_FRAMES);
+                                          (s16)((1.0f - this->ratio) * 3000.0f), KIRA1_FRAMES);
             vel.x = -vel.x;
             vel.z = -vel.z;
             accel.x = -accel.x;
