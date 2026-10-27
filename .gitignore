@@ -7,3 +7,6 @@
 !/build/.gitkeep
 
 __pycache__/
+
+# Research/reference materials (third-party content, kept locally only)
+/reference material/
