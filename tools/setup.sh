@@ -15,7 +15,7 @@ TP="$ROOT/third_party"
 
 TRIFORCE_PERCENT_COMMIT=12a4bb30f13d97bf616521dbbf2263e9e322f3ab   # 2023-08-06, last upstream commit
 HM_FAST64_COMMIT=a1808d8121713b2ab1496baceec3fcf2816625fe           # 2026-10-11
-SHIPWRIGHT_COMMIT=6b4edce43f949fea554bc029daed42dd9b04569a         # 2026-10-14, develop
+SHIPWRIGHT_COMMIT=f0599f96f8d442f26d0fa1c5cedafddacd56633f         # 2026-10-19, tag 9.3.1
 BPY_VERSION=5.2.2
 
 clone_at() {
