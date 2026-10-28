@@ -188,26 +188,29 @@ jobs:
             done
           fi
 
-      - name: Configure and build soh.exe (MSVC Visual Studio 17 2022, x64 Release)
+      - name: Configure and build soh.exe (MSVC Visual Studio 17 2022, x64 RelWithDebInfo)
+        # RelWithDebInfo (optimised + PDBs) so crash dumps can name real functions instead of the
+        # nearest-exported-symbol artifact we got in Release ("CVarSetString+0x745A",
+        # "ControllerUnblockGameInput+0x..."). Perf is close enough to Release for in-game use.
         # Always runs; MSVC's incremental build reuses engine objects from the restored cache
         # and only recompiles the TrifoolPercent module (and relinks).
         shell: pwsh
         run: |
           cmake -S third_party/Shipwright -B third_party/Shipwright/build -G "Visual Studio 17 2022" -A x64
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cmake --build third_party/Shipwright/build --config Release -j
+          cmake --build third_party/Shipwright/build --config RelWithDebInfo -j
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Stage the drop (soh.exe + TrifoolPercent.o2r + a README)
+      - name: Stage the drop (soh.exe + PDBs + TrifoolPercent.o2r + a README)
         run: |
           STAGE="build/soh-drop-windows"
           mkdir -p "$STAGE/mods"
           # Shipwright's Windows build uses the property sheets in soh/CMake/* which set
           # RUNTIME_OUTPUT_DIRECTORY to ${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/${CONFIG}.
-          # With -A x64 that's third_party/Shipwright/x64/Release/, NOT the build tree's
-          # soh/Release/ default. Locate soh.exe by searching so a future Shipwright pin or
+          # With -A x64 that's third_party/Shipwright/x64/RelWithDebInfo/, NOT the build tree's
+          # soh/RelWithDebInfo/ default. Locate soh.exe by searching so a future Shipwright pin or
           # generator change does not silently break this step again.
-          SOH_EXE=$(find third_party/Shipwright -type f -name soh.exe -path '*/Release/*' | head -1)
+          SOH_EXE=$(find third_party/Shipwright -type f -name soh.exe -path '*/RelWithDebInfo/*' | head -1)
           if [ -z "$SOH_EXE" ]; then
             echo "soh.exe not found under third_party/Shipwright. Build tree contents:"
             find third_party/Shipwright -type f \( -name 'soh.exe' -o -name 'soh*.pdb' \) 2>/dev/null || true
@@ -220,6 +223,10 @@ jobs:
           # Shipwright drops a handful of DLLs (SDL2, etc.) next to soh.exe at build time;
           # copy any that landed in that same folder so the drop is self-contained.
           find "$SOH_DIR" -maxdepth 1 -name '*.dll' -exec cp {} "$STAGE/" \;
+          # PDBs for soh.exe and libultraship (next to it). Needed so a crash dump names the
+          # actual function instead of "CVarSetString+0x745A" / "ResourceUnloadDirectory+0x..."
+          # Release-only nearest-exported-symbol fallbacks.
+          find "$SOH_DIR" -maxdepth 1 -name '*.pdb' -exec cp {} "$STAGE/" \;
           # soh.o2r (engine asset pack) is version-checked by the exe at launch, so a
           # stock-release soh.o2r that doesn't match this Shipwright pin is rejected with
           # "soh.o2r is outdated". Bundle the one from this very build.
@@ -257,4 +264,68 @@ jobs:
         with:
           name: TrifoolPercent-soh-windows
           path: build/soh-drop-windows
+          retention-days: 30
+
+  build-soh-windows-vanilla:
+    name: Build unmodified upstream soh.exe at same pin (Windows, diagnostic)
+    runs-on: windows-2022
+    # Diagnostic build: Shipwright at the SAME commit as our pin, with NO TrifoolPercent
+    # module and NO engine patches applied. Purpose: tell whether a startup crash reproduces
+    # on vanilla upstream at this pin, so we can separate "our mod broke it" from "develop
+    # regressed on Windows between 9.2.3 and 2026-10-14". Does not block the main build.
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out TrifoolPercent (for the SHIPWRIGHT_COMMIT value only)
+        uses: actions/checkout@v4
+
+      - name: Fetch Shipwright at the pinned commit (no module, no patches)
+        run: |
+          mkdir -p third_party
+          SHIPWRIGHT_COMMIT=$(grep -E '^SHIPWRIGHT_COMMIT=' tools/setup.sh | head -1 | cut -d= -f2 | awk '{print $1}')
+          echo "Building vanilla upstream Shipwright at $SHIPWRIGHT_COMMIT"
+          git clone --filter=blob:none https://github.com/HarbourMasters/Shipwright third_party/Shipwright
+          git -C third_party/Shipwright checkout --quiet "$SHIPWRIGHT_COMMIT"
+          git -C third_party/Shipwright submodule update --init --depth 1
+
+      - name: Configure and build vanilla soh.exe (MSVC VS 17 2022, x64 RelWithDebInfo)
+        shell: pwsh
+        run: |
+          cmake -S third_party/Shipwright -B third_party/Shipwright/build -G "Visual Studio 17 2022" -A x64
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build third_party/Shipwright/build --config RelWithDebInfo -j
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Stage the vanilla drop (soh.exe + soh.o2r + DLLs + PDBs)
+        run: |
+          STAGE="build/soh-drop-windows-vanilla"
+          mkdir -p "$STAGE"
+          SOH_EXE=$(find third_party/Shipwright -type f -name soh.exe -path '*/RelWithDebInfo/*' | head -1)
+          if [ -z "$SOH_EXE" ]; then
+            echo "vanilla soh.exe not found"; exit 1
+          fi
+          echo "Found vanilla soh.exe at: $SOH_EXE"
+          SOH_DIR=$(dirname "$SOH_EXE")
+          cp "$SOH_EXE" "$STAGE/soh.exe"
+          find "$SOH_DIR" -maxdepth 1 -name '*.dll' -exec cp {} "$STAGE/" \;
+          find "$SOH_DIR" -maxdepth 1 -name '*.pdb' -exec cp {} "$STAGE/" \;
+          SOH_O2R=$(find third_party/Shipwright -type f -name soh.o2r | head -1)
+          if [ -z "$SOH_O2R" ]; then
+            echo "vanilla soh.o2r not found"; exit 1
+          fi
+          cp "$SOH_O2R" "$STAGE/soh.o2r"
+          cat > "$STAGE/README.txt" <<'EOF'
+          Diagnostic: unmodified upstream Ship of Harkinian at the exact Shipwright commit
+          our fork pins to (see tools/setup.sh SHIPWRIGHT_COMMIT). No TrifoolPercent module,
+          no engine patches. Launch this against your ROMs in an EMPTY folder (nothing
+          carried over) to see whether vanilla upstream at this pin also crashes at startup
+          on your box. If it does, the problem is upstream develop, not our fork.
+          EOF
+
+      - name: Upload the vanilla upstream drop
+        uses: actions/upload-artifact@v4
+        with:
+          name: Vanilla-upstream-soh-windows
+          path: build/soh-drop-windows-vanilla
           retention-days: 30
