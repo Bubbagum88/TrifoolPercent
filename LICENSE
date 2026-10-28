@@ -1,0 +1,47 @@
+TrifoolPercent — Ship of Harkinian rebuild of the Triforce% ACE/TAS run
+Copyright (C) 2026 Isaac Gordhamer and contributors
+
+Portions of this repository are derived from or vendored from the upstream
+Triforce% OoT ACE Showcase (https://github.com/triforce-percent/triforce-percent),
+Copyright (C) 2019-2022 The Triforce% Team. Their original LICENSE and README
+are preserved verbatim under `upstream/`.
+
+This repository does not include any ROMs or any code or assets copyrighted
+by Nintendo. Only content created by the Triforce% team or by this project's
+contributors is included.
+
+All content in this repository — both the vendored Triforce% content and the
+original TrifoolPercent code and assets — is released under the same terms as
+the upstream Triforce% license, reproduced below:
+
+----------------------------------------------------------------------
+
+You may run, copy, redistribute, modify, create and distribute derivative
+works of, and otherwise deal in ("use") the code, tools, and assets
+("content") in this repository, subject to the following conditions:
+
+1. Credits - You must credit whoever produced the content you are using,
+   i.e. the members of the Triforce% team who contributed to that content,
+   and the TrifoolPercent contributors who contributed to the TrifoolPercent
+   portion. If it is not clear which members created which part, contact
+   the developers.
+    - If you are distributing the content in source form, you must include
+      the contributor names in a prominent location in the source
+      distribution, and in a similar way to how you credit yourself and
+      other collaborators.
+    - If you use the content directly in a romhack or similar project, you
+      must include the contributor names in your project's in-game Staff
+      Roll.
+    - If the content you use is tools, and you use them without modification
+      and do not redistribute them, you don't have to credit anyone.
+
+2. No Endorsement - You must not make any implication that the Triforce%
+   team, the TrifoolPercent contributors, or their developers endorse or
+   support any works you create using content from this repository.
+
+3. No Warranty - You must agree that no warranty, express or implied, is
+   provided for the content, as far as is permitted by law.
+
+----------------------------------------------------------------------
+
+See `docs/ACKNOWLEDGEMENTS.md` and `CREDITS.md` for the contributor roll.
