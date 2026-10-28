@@ -87,17 +87,32 @@ jobs:
         # engine objects and only recompile the TrifoolPercent module (incremental build).
         run: tools/build_soh.sh
 
-      - name: Stage the drop (soh.elf + TrifoolPercent.o2r + a README)
+      - name: Stage the drop (soh.elf + soh.o2r + TrifoolPercent.o2r + a README)
         run: |
           STAGE="build/soh-drop"
           mkdir -p "$STAGE/mods"
           cp third_party/Shipwright/build/soh/soh.elf "$STAGE/soh.elf"
+          # soh.o2r (engine asset pack) is produced by Shipwright's build. The engine
+          # version-checks it against the exe at launch, so a stock-release soh.o2r
+          # that doesn't match this Shipwright pin is rejected with "soh.o2r is
+          # outdated". Bundle the one from this very build so the drop is self-contained.
+          SOH_O2R=$(find third_party/Shipwright/build -type f -name soh.o2r | head -1)
+          if [ -z "$SOH_O2R" ]; then
+            echo "soh.o2r not found under third_party/Shipwright/build. Nearby candidates:"
+            find third_party/Shipwright -maxdepth 5 -type f -name '*.o2r' 2>/dev/null || true
+            exit 1
+          fi
+          echo "Found soh.o2r at: $SOH_O2R"
+          cp "$SOH_O2R" "$STAGE/soh.o2r"
           cp build/TrifoolPercent.o2r "$STAGE/mods/TrifoolPercent.o2r"
           cat > "$STAGE/README.txt" <<'EOF'
           TrifoolPercent build for Ship of Harkinian (Linux).
 
           Files in this archive:
             soh.elf                   The engine with the TrifoolPercent module compiled in.
+            soh.o2r                   Engine asset pack matching this build. The exe
+                                      version-checks it at launch; using a stock-release
+                                      soh.o2r instead will fail with "soh.o2r is outdated".
             mods/TrifoolPercent.o2r   The scenes (Triforce Room, Unicorn Fountain, hex Test Room)
                                       and actor models. soh.elf picks it up automatically from mods/.
 
@@ -205,6 +220,17 @@ jobs:
           # Shipwright drops a handful of DLLs (SDL2, etc.) next to soh.exe at build time;
           # copy any that landed in that same folder so the drop is self-contained.
           find "$SOH_DIR" -maxdepth 1 -name '*.dll' -exec cp {} "$STAGE/" \;
+          # soh.o2r (engine asset pack) is version-checked by the exe at launch, so a
+          # stock-release soh.o2r that doesn't match this Shipwright pin is rejected with
+          # "soh.o2r is outdated". Bundle the one from this very build.
+          SOH_O2R=$(find third_party/Shipwright -type f -name soh.o2r | head -1)
+          if [ -z "$SOH_O2R" ]; then
+            echo "soh.o2r not found under third_party/Shipwright. Nearby candidates:"
+            find third_party/Shipwright -maxdepth 5 -type f -name '*.o2r' 2>/dev/null || true
+            exit 1
+          fi
+          echo "Found soh.o2r at: $SOH_O2R"
+          cp "$SOH_O2R" "$STAGE/soh.o2r"
           # Reuse the .o2r built by the Linux job (asset pipeline is Linux-only).
           cp build/linux-drop/mods/TrifoolPercent.o2r "$STAGE/mods/TrifoolPercent.o2r"
           cat > "$STAGE/README.txt" <<'EOF'
@@ -212,6 +238,9 @@ jobs:
 
           Files in this archive:
             soh.exe                   The engine with the TrifoolPercent module compiled in.
+            soh.o2r                   Engine asset pack matching this build. The exe
+                                      version-checks it at launch; using a stock-release
+                                      soh.o2r instead will fail with "soh.o2r is outdated".
             *.dll                     SDL2 and friends; keep them next to soh.exe.
             mods/TrifoolPercent.o2r   The scenes (Triforce Room, Unicorn Fountain, hex Test Room)
                                       and actor models. soh.exe picks it up automatically from mods/.
