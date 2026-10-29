@@ -188,17 +188,18 @@ jobs:
             done
           fi
 
-      - name: Configure and build soh.exe (MSVC Visual Studio 17 2022, x64 RelWithDebInfo)
-        # RelWithDebInfo (optimised + PDBs) so crash dumps can name real functions instead of the
-        # nearest-exported-symbol artifact we got in Release ("CVarSetString+0x745A",
-        # "ControllerUnblockGameInput+0x..."). Perf is close enough to Release for in-game use.
+      - name: Configure and build soh.exe (MSVC Visual Studio 17 2022, x64 Release)
+        # Shipwright's CMake restricts CMAKE_CONFIGURATION_TYPES to Debug + Release only, so
+        # --config RelWithDebInfo errors out with MSB8013. Shipwright's Release build already
+        # produces PDBs (its property sheets compile with /Zi and link with /DEBUG), so staging
+        # them alongside soh.exe below is enough to symbolicate the next crash dump.
         # Always runs; MSVC's incremental build reuses engine objects from the restored cache
         # and only recompiles the TrifoolPercent module (and relinks).
         shell: pwsh
         run: |
           cmake -S third_party/Shipwright -B third_party/Shipwright/build -G "Visual Studio 17 2022" -A x64
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cmake --build third_party/Shipwright/build --config RelWithDebInfo -j
+          cmake --build third_party/Shipwright/build --config Release -j
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Stage the drop (soh.exe + PDBs + TrifoolPercent.o2r + a README)
@@ -207,10 +208,10 @@ jobs:
           mkdir -p "$STAGE/mods"
           # Shipwright's Windows build uses the property sheets in soh/CMake/* which set
           # RUNTIME_OUTPUT_DIRECTORY to ${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/${CONFIG}.
-          # With -A x64 that's third_party/Shipwright/x64/RelWithDebInfo/, NOT the build tree's
-          # soh/RelWithDebInfo/ default. Locate soh.exe by searching so a future Shipwright pin or
+          # With -A x64 that's third_party/Shipwright/x64/Release/, NOT the build tree's
+          # soh/Release/ default. Locate soh.exe by searching so a future Shipwright pin or
           # generator change does not silently break this step again.
-          SOH_EXE=$(find third_party/Shipwright -type f -name soh.exe -path '*/RelWithDebInfo/*' | head -1)
+          SOH_EXE=$(find third_party/Shipwright -type f -name soh.exe -path '*/Release/*' | head -1)
           if [ -z "$SOH_EXE" ]; then
             echo "soh.exe not found under third_party/Shipwright. Build tree contents:"
             find third_party/Shipwright -type f \( -name 'soh.exe' -o -name 'soh*.pdb' \) 2>/dev/null || true
@@ -289,19 +290,21 @@ jobs:
           git -C third_party/Shipwright checkout --quiet "$SHIPWRIGHT_COMMIT"
           git -C third_party/Shipwright submodule update --init --depth 1
 
-      - name: Configure and build vanilla soh.exe (MSVC VS 17 2022, x64 RelWithDebInfo)
+      - name: Configure and build vanilla soh.exe (MSVC VS 17 2022, x64 Release)
+        # Shipwright's CMake restricts configuration types to Debug + Release; Release emits
+        # PDBs natively via its property sheets, so staging them alongside the exe is enough.
         shell: pwsh
         run: |
           cmake -S third_party/Shipwright -B third_party/Shipwright/build -G "Visual Studio 17 2022" -A x64
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cmake --build third_party/Shipwright/build --config RelWithDebInfo -j
+          cmake --build third_party/Shipwright/build --config Release -j
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
       - name: Stage the vanilla drop (soh.exe + soh.o2r + DLLs + PDBs)
         run: |
           STAGE="build/soh-drop-windows-vanilla"
           mkdir -p "$STAGE"
-          SOH_EXE=$(find third_party/Shipwright -type f -name soh.exe -path '*/RelWithDebInfo/*' | head -1)
+          SOH_EXE=$(find third_party/Shipwright -type f -name soh.exe -path '*/Release/*' | head -1)
           if [ -z "$SOH_EXE" ]; then
             echo "vanilla soh.exe not found"; exit 1
           fi
