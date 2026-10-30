@@ -205,7 +205,16 @@ jobs:
       - name: Stage the drop (soh.exe + PDBs + TrifoolPercent.o2r + a README)
         run: |
           STAGE="build/soh-drop-windows"
-          mkdir -p "$STAGE/mods"
+          # Stock SoH Windows releases ship an assets\ folder populated from Shipwright's
+          # soh/assets/yml/ (the ROM-extractor YML specs per ROM version) alongside soh.exe.
+          # See upstream CMakeLists.txt:388 install(DIRECTORY soh/assets/yml/ DESTINATION assets).
+          # Without it the first-launch wizard either prompts the user to pick an assets
+          # folder (empty) or reports "ROM could not be extracted" (missing). debug\ stays
+          # empty: upstream does not populate it, and the engine writes crash dumps into it.
+          mkdir -p "$STAGE/mods" "$STAGE/assets" "$STAGE/debug"
+          cp -r third_party/Shipwright/soh/assets/yml/. "$STAGE/assets/"
+          # actions/upload-artifact skips empty directories, so keep debug\ alive via .gitkeep.
+          touch "$STAGE/debug/.gitkeep"
           # Shipwright's Windows build uses the property sheets in soh/CMake/* which set
           # RUNTIME_OUTPUT_DIRECTORY to ${CMAKE_SOURCE_DIR}/${CMAKE_VS_PLATFORM_NAME}/${CONFIG}.
           # With -A x64 that's third_party/Shipwright/x64/Release/, NOT the build tree's
@@ -303,7 +312,11 @@ jobs:
       - name: Stage the vanilla drop (soh.exe + soh.o2r + DLLs + PDBs)
         run: |
           STAGE="build/soh-drop-windows-vanilla"
-          mkdir -p "$STAGE"
+          # Match upstream's Windows release layout: assets\ populated from Shipwright's
+          # soh/assets/yml/ (ROM-extractor YML specs); debug\ empty (engine writes into it).
+          mkdir -p "$STAGE" "$STAGE/assets" "$STAGE/debug"
+          cp -r third_party/Shipwright/soh/assets/yml/. "$STAGE/assets/"
+          touch "$STAGE/debug/.gitkeep"
           SOH_EXE=$(find third_party/Shipwright -type f -name soh.exe -path '*/Release/*' | head -1)
           if [ -z "$SOH_EXE" ]; then
             echo "vanilla soh.exe not found"; exit 1
