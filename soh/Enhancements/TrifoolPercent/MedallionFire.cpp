@@ -75,8 +75,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolMedallionFireWidget() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterMedallionFireWidget() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Fire Medallion melts Zora's Domain", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_MEDALLION_FIRE)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -87,4 +89,3 @@ static void RegisterTrifoolMedallionFireWidget() {
             "code and land in a separate PR."));
 }
 
-static RegisterMenuInitFunc medallionFireMenuInitFunc(RegisterTrifoolMedallionFireWidget);

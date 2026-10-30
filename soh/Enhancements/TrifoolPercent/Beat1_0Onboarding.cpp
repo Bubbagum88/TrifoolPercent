@@ -215,8 +215,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolBeat1_0Widgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterBeat1_0Widget() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Beat 1.0 - Onboarding Kokiri", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_ONBOARDING)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -227,4 +229,3 @@ static void RegisterTrifoolBeat1_0Widgets() {
             "+ object_oE9 head combo as the Sacred Forest Meadow Beta Kokiri."));
 }
 
-static RegisterMenuInitFunc beat1_0MenuInitFunc(RegisterTrifoolBeat1_0Widgets);

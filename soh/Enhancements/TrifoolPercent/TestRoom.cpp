@@ -424,8 +424,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolTestRoomWidgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterTestRoomSceneWidget() {
+    WidgetPath path = { "TrifoolPercent", "Scenes & Rooms", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Test Room (hex hub)", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_TEST_ROOM)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(true).Tooltip(
@@ -438,6 +440,10 @@ static void RegisterTrifoolTestRoomWidgets() {
             "near the room centre. Needs TrifoolPercent.o2r "
             "in the mods folder for the room itself. Reach it via the Dev inputs' warp cycle "
             "(the \"Test Room (hex hub)\" slot) or the OoT debug map select (\"118:Syotes\")."));
+}
+
+void TrifoolMenu::RegisterTestRoomPrototypeCutsceneWidget() {
+    WidgetPath path = { "TrifoolPercent", "Cutscenes", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Test Room prototype cutscene", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_TEST_ROOM_PROTOTYPE_CS)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -446,5 +452,3 @@ static void RegisterTrifoolTestRoomWidgets() {
             "docs/cutscene-plan.md end-to-end with no Fast64 export. Leave off for ordinary "
             "test-room navigation; turn it on to see or iterate on the cutscene."));
 }
-
-static RegisterMenuInitFunc testRoomMenuInitFunc(RegisterTrifoolTestRoomWidgets);

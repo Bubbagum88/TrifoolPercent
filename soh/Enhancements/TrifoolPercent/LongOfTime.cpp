@@ -114,8 +114,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterLongOfTimeWidgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterLongOfTimeAgeFlipWidget() {
+    WidgetPath path = { "TrifoolPercent", "Cutscenes", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Long of Time flips Link's age", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_LONG_OF_TIME_AGE_FLIP)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -126,4 +128,3 @@ static void RegisterLongOfTimeWidgets() {
             "engine and the Long of Time detection toggle to also be on."));
 }
 
-static RegisterMenuInitFunc longOfTimeMenuInitFunc(RegisterLongOfTimeWidgets);

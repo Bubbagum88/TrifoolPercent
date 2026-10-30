@@ -110,8 +110,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolSacredRealmChainWidgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterSacredRealmChainWidget() {
+    WidgetPath path = { "TrifoolPercent", "Cutscenes", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Sacred Realm chain (scaffold)", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_SACRED_REALM_CHAIN)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -122,4 +124,3 @@ static void RegisterTrifoolSacredRealmChainWidgets() {
             "~300 cutscene frames once this is on."));
 }
 
-static RegisterMenuInitFunc sacredRealmChainMenuInitFunc(RegisterTrifoolSacredRealmChainWidgets);

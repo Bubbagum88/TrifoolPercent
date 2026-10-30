@@ -13,6 +13,8 @@ extern std::shared_ptr<SohMenu> mSohMenu;
 
 void TrifoolMenu::RegisterDebug() {
     SohGui::mSohMenu->AddSidebarEntry("TrifoolPercent", "Dev & Debug", 1);
+    TrifoolMenu::RegisterSetupWidgets();
+
     WidgetPath path = { "TrifoolPercent", "Dev & Debug", SECTION_COLUMN_1 };
 
     SohGui::mSohMenu->AddWidget(path, "Mimic Chest in Test Room", WIDGET_CVAR_CHECKBOX)

@@ -55,8 +55,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolMedallionLightWidget() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterMedallionLightWidget() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Light Medallion grants Light Arrows", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_MEDALLION_LIGHT)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -66,4 +68,3 @@ static void RegisterTrifoolMedallionLightWidget() {
             "illumination' behaviour needs engine-side envCtx edits and lands in a separate PR."));
 }
 
-static RegisterMenuInitFunc medallionLightMenuInitFunc(RegisterTrifoolMedallionLightWidget);

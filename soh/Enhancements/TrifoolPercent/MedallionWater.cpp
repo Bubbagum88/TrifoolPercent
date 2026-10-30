@@ -57,8 +57,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolMedallionWaterWidget() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterMedallionWaterWidget() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Water Medallion grants Ice Arrows", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_MEDALLION_WATER)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -69,4 +71,3 @@ static void RegisterTrifoolMedallionWaterWidget() {
             "separate PR."));
 }
 
-static RegisterMenuInitFunc medallionWaterMenuInitFunc(RegisterTrifoolMedallionWaterWidget);
