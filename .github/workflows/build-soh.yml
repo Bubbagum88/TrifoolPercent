@@ -74,11 +74,17 @@ jobs:
         #   tools/setup.sh         - pins SHIPWRIGHT_COMMIT (bump invalidates cache)
         #   tools/build_soh.sh     - the build recipe itself
         #   patches/shipwright/**  - engine patches applied before cmake
+        # restore-keys gives us an incremental fallback: on a cache miss (e.g. a bump of
+        # SHIPWRIGHT_COMMIT, a tweak to tools/build_soh.sh, or a new engine patch) actions/cache
+        # falls back to the newest cache whose key starts with `soh-build-<os>-`. Ninja then only
+        # recompiles what actually changed instead of the full engine from scratch (~60 min cold).
         id: cache-soh-build
         uses: actions/cache@v4
         with:
           path: third_party/Shipwright/build
           key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', 'tools/build_soh.sh', 'patches/shipwright/**') }}
+          restore-keys: |
+            soh-build-${{ runner.os }}-
 
       - name: Build the full Ship of Harkinian engine with the TrifoolPercent module
         # tools/build_soh.sh copies soh/Enhancements/TrifoolPercent/ into Shipwright's tree and runs
@@ -169,7 +175,13 @@ jobs:
           # The build-cmake tools tree lives beside it and is cheap enough to rebuild.
           # Deliberately NOT keyed on TrifoolPercent source - edits to our module get a cache
           # hit on the engine objects and only trigger an incremental rebuild of our files.
-          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', '.github/workflows/build-soh.yml', 'patches/shipwright/**') }}
+          # Also deliberately NOT keyed on the workflow YAML: tweaks to packaging/stage steps
+          # shouldn't throw away the engine build cache.
+          key: soh-build-${{ runner.os }}-${{ hashFiles('tools/setup.sh', 'patches/shipwright/**') }}
+          # Incremental fallback: on a cache miss (e.g. SHIPWRIGHT_COMMIT bump) MSBuild only
+          # recompiles what actually changed instead of the full engine from scratch.
+          restore-keys: |
+            soh-build-${{ runner.os }}-
 
       - name: Prep Shipwright (copy module, apply engine patches)
         # Mirrors the prep in tools/build_soh.sh. Uses Git Bash's `patch` (lenient enough
@@ -298,6 +310,19 @@ jobs:
           git clone --filter=blob:none https://github.com/HarbourMasters/Shipwright third_party/Shipwright
           git -C third_party/Shipwright checkout --quiet "$SHIPWRIGHT_COMMIT"
           git -C third_party/Shipwright submodule update --init --depth 1
+
+      - name: Cache the vanilla Shipwright engine build (same pin as the modded Windows job)
+        # Vanilla build at the same SHIPWRIGHT_COMMIT as our modded Windows job, with no module
+        # and no engine patches. Separate cache namespace (soh-vanilla-*) so a modded-build cache
+        # entry can't be confused for a vanilla one at the same pin. restore-keys gives us the
+        # incremental-fallback behaviour on a pin bump.
+        id: cache-soh-vanilla
+        uses: actions/cache@v4
+        with:
+          path: third_party/Shipwright/build
+          key: soh-vanilla-${{ runner.os }}-${{ hashFiles('tools/setup.sh') }}
+          restore-keys: |
+            soh-vanilla-${{ runner.os }}-
 
       - name: Configure and build vanilla soh.exe (MSVC VS 17 2022, x64 Release)
         # Shipwright's CMake restricts configuration types to Debug + Release; Release emits
