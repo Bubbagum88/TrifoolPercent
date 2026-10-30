@@ -143,8 +143,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolStaffRollChainWidgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterStaffRollChainWidget() {
+    WidgetPath path = { "TrifoolPercent", "Cutscenes", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Staff Roll chain (scaffold)", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_STAFF_ROLL_CHAIN)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -155,4 +157,3 @@ static void RegisterTrifoolStaffRollChainWidgets() {
             "~450 frames -- off by default so vanilla visits are unaffected."));
 }
 
-static RegisterMenuInitFunc staffRollChainMenuInitFunc(RegisterTrifoolStaffRollChainWidgets);

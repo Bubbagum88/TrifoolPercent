@@ -182,8 +182,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolBeat2_0Widgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterBeat2_0Widgets() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Beat 2.0 - Sages' Charm (Oracle Amulet)",
                                 WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_SAGES_CHARM)
@@ -204,4 +206,3 @@ static void RegisterTrifoolBeat2_0Widgets() {
             "Requires the Beat 2.0 toggle above to be on. Clears itself after firing."));
 }
 
-static RegisterMenuInitFunc beat2_0MenuInitFunc(RegisterTrifoolBeat2_0Widgets);

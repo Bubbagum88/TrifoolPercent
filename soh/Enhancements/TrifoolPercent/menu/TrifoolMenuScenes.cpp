@@ -13,6 +13,11 @@ extern std::shared_ptr<SohMenu> mSohMenu;
 
 void TrifoolMenu::RegisterScenes() {
     SohGui::mSohMenu->AddSidebarEntry("TrifoolPercent", "Scenes & Rooms", 1);
+    // Call per-feature widget fns first (they live in their feature's .cpp): this fn
+    // owns the AddSidebarEntry above, so by the time these run the sidebar exists.
+    TrifoolMenu::RegisterTestRoomSceneWidget();
+    TrifoolMenu::RegisterLostWoodsPathWidget();
+
     WidgetPath path = { "TrifoolPercent", "Scenes & Rooms", SECTION_COLUMN_1 };
 
     SohGui::mSohMenu->AddWidget(path, "Door of Time opens for adult Link", WIDGET_CVAR_CHECKBOX)

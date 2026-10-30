@@ -255,8 +255,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolRunningManWidgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterBossRunningManWidgets() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path,
                                 "Running Man boss - dialogue scaffold",
                                 WIDGET_CVAR_CHECKBOX)
@@ -278,4 +280,3 @@ static void RegisterTrifoolRunningManWidgets() {
             "above to be on. Clears itself after firing."));
 }
 
-static RegisterMenuInitFunc runningManMenuInitFunc(RegisterTrifoolRunningManWidgets);

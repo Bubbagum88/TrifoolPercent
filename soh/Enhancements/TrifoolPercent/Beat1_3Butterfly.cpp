@@ -384,8 +384,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolBeat1_3Widgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterBeat1_3Widget() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Beat 1.3 - Butterfly trade", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_BUTTERFLY)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -398,4 +400,3 @@ static void RegisterTrifoolBeat1_3Widgets() {
             "auto-moved into the child trade slot."));
 }
 
-static RegisterMenuInitFunc beat1_3MenuInitFunc(RegisterTrifoolBeat1_3Widgets);

@@ -309,8 +309,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolSongEngineWidgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterSongEngineWidget() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Chromatic song-recognition engine", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_SONG_ENGINE)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -318,6 +320,10 @@ static void RegisterTrifoolSongEngineWidgets() {
             "song recognition. The vanilla matcher still handles the six Sheik songs "
             "and the three warp cues; this one adds songs that use half-steps or more "
             "than six notes, starting with Long of Time. Toggle individual songs below."));
+}
+
+void TrifoolMenu::RegisterLongOfTimeCutsceneWidget() {
+    WidgetPath path = { "TrifoolPercent", "Cutscenes", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Long of Time (eight-note Song of Time)", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_LONG_OF_TIME)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -327,5 +333,3 @@ static void RegisterTrifoolSongEngineWidgets() {
             "lands in a later beat, matching upstream Nabooru's teach). Requires "
             "the engine toggle above."));
 }
-
-static RegisterMenuInitFunc songEngineMenuInitFunc(RegisterTrifoolSongEngineWidgets);

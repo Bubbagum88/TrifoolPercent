@@ -154,8 +154,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolBeat2_1Widgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterBeat2_1Widget() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Beat 2.1 - Medallions on C (Sages' Charm)",
                                 WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_MEDALLION_ON_C)
@@ -169,4 +171,3 @@ static void RegisterTrifoolBeat2_1Widgets() {
             "patched engine binary with this toggle off identical to vanilla."));
 }
 
-static RegisterMenuInitFunc beat2_1MenuInitFunc(RegisterTrifoolBeat2_1Widgets);

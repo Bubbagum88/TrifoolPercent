@@ -67,8 +67,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolMedallionForestWidget() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterMedallionForestWidget() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Forest Medallion grants Farore's Wind", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_MEDALLION_FOREST)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -78,4 +80,3 @@ static void RegisterTrifoolMedallionForestWidget() {
             "equipped the medallion itself to C lives in SoH engine code and lands in a separate PR."));
 }
 
-static RegisterMenuInitFunc medallionForestMenuInitFunc(RegisterTrifoolMedallionForestWidget);

@@ -309,8 +309,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolBeat1Widgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterLostWoodsPathWidget() {
+    WidgetPath path = { "TrifoolPercent", "Scenes & Rooms", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Beat 1 - Lost Woods path", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_LOST_WOODS_PATH)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -318,6 +320,10 @@ static void RegisterTrifoolBeat1Widgets() {
             "Forest Meadow, same path trigger as the Triforce% showcase. The 'secret found' "
             "cue is deferred until the next time Link enters Sacred Forest Meadow after the "
             "path finishes, matching the moment the Beta Kokiri first appears."));
+}
+
+void TrifoolMenu::RegisterBetaKokiriWidget() {
+    WidgetPath path = { "TrifoolPercent", "Beats & Progression", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Beat 1 - Beta Kokiri", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_BETA_KOKIRI)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -328,5 +334,3 @@ static void RegisterTrifoolBeat1Widgets() {
             "non-bug item and she rejects it, show a vanilla bug and she asks for a flying "
             "one. The Butterfly trade and its reward land in Beat 1.3."));
 }
-
-static RegisterMenuInitFunc beat1MenuInitFunc(RegisterTrifoolBeat1Widgets);

@@ -206,8 +206,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolSetupWidgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterSetupWidgets() {
+    WidgetPath path = { "TrifoolPercent", "Dev & Debug", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Setup Preset (new save)", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_SETUP_PRESET)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -227,4 +229,3 @@ static void RegisterTrifoolSetupWidgets() {
             "Fountain, Chamber of Sages, Staff Roll); L+D-Right+A jumps to the current slot."));
 }
 
-static RegisterMenuInitFunc setupMenuInitFunc(RegisterTrifoolSetupWidgets);

@@ -81,8 +81,10 @@ namespace SohGui {
 extern std::shared_ptr<SohMenu> mSohMenu;
 }
 
-static void RegisterTrifoolEndingWidgets() {
-    WidgetPath path = { "Enhancements", "TrifoolPercent", SECTION_COLUMN_1 };
+#include "menu/TrifoolMenu.h"
+
+void TrifoolMenu::RegisterEndingWidget() {
+    WidgetPath path = { "TrifoolPercent", "Cutscenes", SECTION_COLUMN_1 };
     SohGui::mSohMenu->AddWidget(path, "Ending scene", WIDGET_CVAR_CHECKBOX)
         .CVar(CVAR_TRIFOOL_ENDING)
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
@@ -92,4 +94,3 @@ static void RegisterTrifoolEndingWidgets() {
             "StaffRollFinaleCS and the song-of-storms-to-staff-roll handoff come later."));
 }
 
-static RegisterMenuInitFunc endingMenuInitFunc(RegisterTrifoolEndingWidgets);
