@@ -17,7 +17,6 @@
 #include <array>
 #include <string>
 
-#include <spdlog/spdlog.h>
 #include <libultraship/bridge/consolevariablebridge.h>
 
 #include "soh/ActorDB.h"
@@ -108,13 +107,7 @@ static constexpr std::array<TestRoomSign, 14> kTestRoomExhibits = { {
 } };
 
 static bool IsTestRoom() {
-    bool result = gPlayState != nullptr && gPlayState->sceneNum == TEST_ROOM_SCENE;
-    SPDLOG_INFO("[TrifoolTestRoom] IsTestRoom: playState={} sceneNum={:#x} expected={:#x} -> {}",
-                (const void*)gPlayState,
-                gPlayState ? gPlayState->sceneNum : -1,
-                TEST_ROOM_SCENE,
-                result);
-    return result;
+    return gPlayState != nullptr && gPlayState->sceneNum == TEST_ROOM_SCENE;
 }
 
 // -----------------------------------------------------------------------------
@@ -209,17 +202,13 @@ static s16 AddSignActor() {
 // in export_test_room.py).
 
 static void SpawnTestRoomSigns() {
-    SPDLOG_INFO("[TrifoolTestRoom] SpawnTestRoomSigns entry; cvar={}", CVAR_TEST_ROOM_VALUE);
     if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0) {
-        SPDLOG_INFO("[TrifoolTestRoom] SpawnTestRoomSigns bail (not test room or cvar off)");
         return;
     }
     if (sTestRoomSignActorId < 0) {
         sTestRoomSignActorId = AddSignActor();
-        SPDLOG_INFO("[TrifoolTestRoom] AddSignActor -> id={}", sTestRoomSignActorId);
     }
     if (sTestRoomSignActorId < 0) {
-        SPDLOG_INFO("[TrifoolTestRoom] SpawnTestRoomSigns bail (AddSignActor failed)");
         return;
     }
 
@@ -251,7 +240,6 @@ static void SpawnTestRoomSigns() {
 // Spawn the beta-content gallery plaques on an inner ring, well clear of the doorway signs and
 // the room centre. Each plaque faces the centre so Link can walk the ring and read them in order.
 static void SpawnTestRoomExhibits() {
-    SPDLOG_INFO("[TrifoolTestRoom] SpawnTestRoomExhibits entry; cvar={}", CVAR_TEST_ROOM_VALUE);
     if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0) {
         return;
     }
@@ -284,7 +272,6 @@ static void SpawnTestRoomExhibits() {
 // FountainOverworld toggle used to spawn; the canonical overworld entrance is now at the bottom
 // of Zora's Domain. Slot 3 angle: 30 + 60*3 = 210 degrees (see SpawnTestRoomSigns).
 static void SpawnTestRoomFountainFlame() {
-    SPDLOG_INFO("[TrifoolTestRoom] SpawnTestRoomFountainFlame entry; cvar={}", CVAR_TEST_ROOM_VALUE);
     if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0) {
         return;
     }
@@ -302,7 +289,6 @@ static void SpawnTestRoomFountainFlame() {
 // etc.) need object slots that would push the room's object list closer to the cap or depend on
 // gameplay state we don't set up here; those stay as plaque-only entries for now.
 static void SpawnTestRoomLiveExhibits() {
-    SPDLOG_INFO("[TrifoolTestRoom] SpawnTestRoomLiveExhibits entry; cvar={}", CVAR_TEST_ROOM_VALUE);
     if (!IsTestRoom() || CVAR_TEST_ROOM_VALUE == 0) {
         return;
     }
@@ -320,10 +306,8 @@ static void SpawnTestRoomLiveExhibits() {
         float angle = 2.0943951023931953f * (float)i; // 0, 120, 240 deg
         float x = cosf(angle) * kRadius;
         float z = -sinf(angle) * kRadius;
-        Actor* spawned = Actor_Spawn(&gPlayState->actorCtx, gPlayState, kExhibits[i].actorId,
-                                     x, 0.0f, z, 0, 0, 0, kExhibits[i].params);
-        SPDLOG_INFO("[TrifoolTestRoom] LiveExhibit i={} actorId={:#x} spawned={}",
-                    i, (unsigned)kExhibits[i].actorId, (const void*)spawned);
+        Actor_Spawn(&gPlayState->actorCtx, gPlayState, kExhibits[i].actorId,
+                    x, 0.0f, z, 0, 0, 0, kExhibits[i].params);
     }
 }
 
@@ -426,7 +410,6 @@ static void PlayTestRoomPrototypeCs() {
 // -----------------------------------------------------------------------------
 
 static void RegisterTrifoolTestRoom() {
-    SPDLOG_INFO("[TrifoolTestRoom] RegisterTrifoolTestRoom running; cvar={}", CVAR_TEST_ROOM_VALUE);
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomSigns);
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomExhibits);
     COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomLiveExhibits);
