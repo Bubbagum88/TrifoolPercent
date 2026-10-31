@@ -64,7 +64,12 @@ static const Vtx sFlameVtx[4] = {
 void TfUnusedFlame_Init(Actor* thisx, PlayState* play) {
     TfUnusedFlame* this = (TfUnusedFlame*)thisx;
 
-    this->objBankIdx = Object_GetIndex(&play->objectCtx, TF_UNUSED_FLAME_OBJECT);
+    // Kokiri Forest, Zora's Domain and the Test Room hub don't preload OBJECT_FIRE in
+    // their scene object lists, so a plain Object_GetIndex here returns -1 and the flame
+    // never renders -- only the fallback point light shows up, which is too subtle to see
+    // in daylight scenes. Request the slot ourselves via Object_Spawn, same pattern the
+    // beta Kokiri actor uses; TfUnusedFlame_Update still gates `ready` on Object_IsLoaded.
+    this->objBankIdx = Object_Spawn(&play->objectCtx, TF_UNUSED_FLAME_OBJECT);
     this->ready = 0;
     this->frames = 0;
 

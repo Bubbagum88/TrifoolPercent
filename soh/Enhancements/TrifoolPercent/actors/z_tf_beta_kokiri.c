@@ -134,9 +134,16 @@ void TfBetaKokiri_Init(Actor* thisx, PlayState* play) {
     Collider_InitCylinder(play, &this->collider);
     Collider_SetCylinderType1(play, &this->collider, &this->actor, &sCylinderInit);
 
-    this->animBankIdx = Object_GetIndex(&play->objectCtx, TF_BK_OBJ_ANIM);
-    this->bodyBankIdx = Object_GetIndex(&play->objectCtx, TF_BK_OBJ_BODY);
-    this->headBankIdx = Object_GetIndex(&play->objectCtx, TF_BK_OBJ_HEAD);
+    // Sacred Forest Meadow's vanilla object list does not contain the three beta Kokiri
+    // slots (0x34 / 0x4C / 0x52), so a plain Object_GetIndex lookup returns -1 for all
+    // three and the actor dies on frame one. Upstream Triforce% patched the scene file to
+    // include them; our ActorDB-based port instead requests each slot at runtime via
+    // Object_Spawn, which allocates it in the scene's object context and returns the bank
+    // index. TfBetaKokiri_ObjectsLoaded still gates the SkelAnime bring-up on
+    // Object_IsLoaded, same as before.
+    this->animBankIdx = Object_Spawn(&play->objectCtx, TF_BK_OBJ_ANIM);
+    this->bodyBankIdx = Object_Spawn(&play->objectCtx, TF_BK_OBJ_BODY);
+    this->headBankIdx = Object_Spawn(&play->objectCtx, TF_BK_OBJ_HEAD);
     if (this->animBankIdx < 0 || this->bodyBankIdx < 0 || this->headBankIdx < 0) {
         Actor_Kill(&this->actor);
         return;
