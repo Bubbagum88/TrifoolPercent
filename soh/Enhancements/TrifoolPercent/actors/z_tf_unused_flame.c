@@ -22,6 +22,11 @@
 
 #include "../TrifoolPercent.h"
 
+// Object_Spawn is defined in src/code/z_scene.c but not declared in any shared Shipwright
+// header; vanilla actors that call it (ovl_Bg_Mori_Hineri, ovl_En_GirlA, ...) forward-declare
+// it locally. Same pattern here.
+s32 Object_Spawn(ObjectContext* objectCtx, s16 objectId);
+
 #define TF_UNUSED_FLAME_OBJECT 0x0F // OBJECT_FIRE in vanilla OoT's object table
 
 // SoH extracts object_fire's eight IA8 32x64 flame frames as __OTR__ resource paths
