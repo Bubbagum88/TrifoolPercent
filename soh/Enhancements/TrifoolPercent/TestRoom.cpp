@@ -410,11 +410,15 @@ static void PlayTestRoomPrototypeCs() {
 // -----------------------------------------------------------------------------
 
 static void RegisterTrifoolTestRoom() {
-    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomSigns);
-    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomExhibits);
-    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomLiveExhibits);
-    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, SpawnTestRoomFountainFlame);
-    COND_HOOK(OnSceneSpawnActors, CVAR_TEST_ROOM_VALUE, PlayTestRoomPrototypeCs);
+    // OnSceneSpawnActors is guarded by `play->numSetupActors != 0` in z_actor.c, so it never
+    // fires for rooms whose exported actor list is empty - exactly what the SYOTES hex room is.
+    // OnSceneInit fires unconditionally on every scene load (z_play_otr.cpp), after sceneNum
+    // and the room/actor contexts are initialised, which is where we need to be anyway.
+    COND_HOOK(OnSceneInit, CVAR_TEST_ROOM_VALUE, [](int16_t) { SpawnTestRoomSigns(); });
+    COND_HOOK(OnSceneInit, CVAR_TEST_ROOM_VALUE, [](int16_t) { SpawnTestRoomExhibits(); });
+    COND_HOOK(OnSceneInit, CVAR_TEST_ROOM_VALUE, [](int16_t) { SpawnTestRoomLiveExhibits(); });
+    COND_HOOK(OnSceneInit, CVAR_TEST_ROOM_VALUE, [](int16_t) { SpawnTestRoomFountainFlame(); });
+    COND_HOOK(OnSceneInit, CVAR_TEST_ROOM_VALUE, [](int16_t) { PlayTestRoomPrototypeCs(); });
     COND_HOOK(OnOpenText, CVAR_TEST_ROOM_VALUE, LoadTestRoomSignMessage);
 }
 

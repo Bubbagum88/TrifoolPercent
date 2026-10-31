@@ -413,7 +413,10 @@ static void RegisterTrifoolDoorOfTimeAdult() {
 }
 
 static void RegisterTrifoolMimicChest() {
-    COND_HOOK(OnSceneSpawnActors, CVAR_MIMIC_CHEST_VALUE, SpawnMimicChestInTestRoom);
+    // SYOTES's exported actor list is empty, and OnSceneSpawnActors is gated on
+    // play->numSetupActors != 0 (z_actor.c), so hooks keyed to that never fire for the hex
+    // Test Room. OnSceneInit does, after the scene is loaded; same requirement as TestRoom.cpp.
+    COND_HOOK(OnSceneInit, CVAR_MIMIC_CHEST_VALUE, [](int16_t) { SpawnMimicChestInTestRoom(); });
 }
 
 static RegisterShipInitFunc initFunc(RegisterTrifoolTriforceRoom, { CVAR_TRIFOOL_TRIFORCE_ROOM });
