@@ -188,11 +188,12 @@ extern "C" void TrifoolSpawnUnusedFlame(float x, float y, float z) {
     if (gPlayState == nullptr) {
         return;
     }
-    AddUnusedFlameActorToDB();
-    if (sUnusedFlameId < 0) {
-        return;
-    }
-    Actor_Spawn(&gPlayState->actorCtx, gPlayState, sUnusedFlameId, x, y, z, 0, 0, 0, 0);
+    // Vanilla En_Light with params 0x0003: large blue flame, same engine-native actor the
+    // TfUnusedFlame billboard was emulating. Switched over because object_fire's eight-frame
+    // texture set does not render through our __OTR__ resource paths at runtime (the quad
+    // comes out solid black) and the Oct-30 architecture rule keeps ROM-derived art out of
+    // our o2r. TfUnusedFlame itself stays in-tree in case we revisit.
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_LIGHT, x, y, z, 0, 0, 0, 0x0003);
 }
 
 static void AddMimicChestActorToDB() {
@@ -229,12 +230,8 @@ static void SpawnTestEntranceMarker() {
     if (!IsKokiriForest()) {
         return;
     }
-    AddUnusedFlameActorToDB();
-    if (sUnusedFlameId < 0) {
-        return;
-    }
-    Actor_Spawn(&gPlayState->actorCtx, gPlayState, sUnusedFlameId, sTestEntrancePos.x, sTestEntrancePos.y,
-                sTestEntrancePos.z, 0, 0, 0, 0);
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_LIGHT, sTestEntrancePos.x, sTestEntrancePos.y,
+                sTestEntrancePos.z, 0, 0, 0, 0x0003);
 }
 
 static bool PlayerAt(const Vec3f* pos) {
@@ -274,12 +271,8 @@ static void SpawnFountainOverworldMarker() {
     if (!IsZorasDomain()) {
         return;
     }
-    AddUnusedFlameActorToDB();
-    if (sUnusedFlameId < 0) {
-        return;
-    }
-    Actor_Spawn(&gPlayState->actorCtx, gPlayState, sUnusedFlameId, sFountainOverworldPos.x,
-                sFountainOverworldPos.y, sFountainOverworldPos.z, 0, 0, 0, 0);
+    Actor_Spawn(&gPlayState->actorCtx, gPlayState, ACTOR_EN_LIGHT, sFountainOverworldPos.x,
+                sFountainOverworldPos.y, sFountainOverworldPos.z, 0, 0, 0, 0x0003);
 }
 
 static void EnterFountainFromOverworld() {
