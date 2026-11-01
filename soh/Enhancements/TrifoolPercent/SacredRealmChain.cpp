@@ -98,7 +98,25 @@ static void LeaveChamberOfSagesAtCutsceneEnd() {
     gPlayState->transitionType = TRANS_TYPE_FADE_WHITE;
 }
 
+// Suppress vanilla kenjyanoma's sage-medallion handoff cutscene. kenjyanoma has no neutral
+// scene layer -- every alt-header plays a specific sage's handoff (0xFFF0 = Saria/Forest,
+// 0xFFF1 = Darunia/Fire, etc.) and the main header plays Rauru's awakening. Until the
+// Phase B TrifoolPercent Chamber-of-Sages cutscene is vendored (docs/cutscene-plan.md §4),
+// entering the chamber would otherwise play whichever vanilla medallion CS the scene
+// layer selected. Clear csCtx.segment and the trigger on scene init so the chamber loads
+// quietly.
+static void SuppressVanillaChamberOfSagesCutscene(int16_t sceneNum) {
+    if (gPlayState == nullptr || sceneNum != kSceneChamberOfSages) {
+        return;
+    }
+    gPlayState->csCtx.segment = nullptr;
+    gPlayState->csCtx.state = CS_STATE_IDLE;
+    gSaveContext.cutsceneTrigger = 0;
+}
+
 static void RegisterTrifoolSacredRealmChain() {
+    GameInteractor::Instance->RegisterGameHook<GameInteractor::OnSceneInit>(
+        SuppressVanillaChamberOfSagesCutscene);
     COND_HOOK(OnSceneSpawnActors, CVAR_SACRED_REALM_CHAIN_VALUE, TriggerWarpToSacredRealm);
     COND_HOOK(OnPlayerUpdate, CVAR_SACRED_REALM_CHAIN_VALUE, LeaveChamberOfSagesAtCutsceneEnd);
 }
