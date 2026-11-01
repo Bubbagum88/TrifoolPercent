@@ -25,6 +25,11 @@
 
 #include "../TrifoolPercent.h"
 
+// Object_Spawn is defined in src/code/z_scene.c but not declared in any shared Shipwright
+// header; vanilla actors that call it (ovl_Bg_Mori_Hineri, ovl_En_GirlA, ...) forward-declare
+// it locally. Same pattern here.
+s32 Object_Spawn(ObjectContext* objectCtx, s16 objectId);
+
 // SoH extracts the vanilla beta Kokiri object slots as __OTR__ resource paths; the
 // SkelAnime / Animation / gfx runtime detects the string marker and loads via
 // ResourceMgr, same way all other SoH actors reach their object data.
