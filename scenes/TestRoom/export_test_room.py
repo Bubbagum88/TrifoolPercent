@@ -86,10 +86,14 @@ def _build_floor_mesh(floor_mat, exit_mats):
         v_d2_inner = bm.verts.new(d2_inner)
         doorway_quads.append(((v_d1_outer, v_d2_outer, v_d2_inner, v_d1_inner), i + 1))
 
+        # Four fan triangles plus a center wedge, all wound CCW so their +Z normal faces up
+        # (needed for floor collision). Together with the doorway quad they tile the whole slice
+        # (corner[i], corner[i+1], center); the center wedge is what closes the hole in the middle.
         tris.append((corner_verts[i], v_d1_outer, center))
-        tris.append((v_d1_outer, v_d1_inner, center))
-        tris.append((v_d2_inner, v_d2_outer, center))
+        tris.append((v_d1_inner, v_d1_outer, center))
+        tris.append((v_d2_outer, v_d2_inner, center))
         tris.append((v_d2_outer, corner_verts[(i + 1) % 6], center))
+        tris.append((v_d1_inner, v_d2_inner, center))
 
     for tri in tris:
         bm.faces.new(tri)
@@ -116,7 +120,10 @@ def _build_floor_mesh(floor_mat, exit_mats):
 def _build_walls_mesh(wall_mat):
     mesh = bpy.data.meshes.new("TestRoomWallsMesh")
     bm = bmesh.new()
-    half_opening = (HEX_RADIUS * math.sqrt(3) - 2 * DOORWAY_HALF_WIDTH) / 2
+    # A regular hexagon with circumradius R has edges of length R (not R*sqrt(3), which is the
+    # inscribed-circle diameter). Each hex edge gets a wall segment on either side of the
+    # doorway opening, so each segment runs (edge_length - doorway_width) / 2 along the edge.
+    half_opening = (HEX_RADIUS - 2 * DOORWAY_HALF_WIDTH) / 2
     for i in range(6):
         angle_a = math.radians(30 + 60 * i)
         angle_b = math.radians(30 + 60 * (i + 1))
@@ -133,7 +140,10 @@ def _build_walls_mesh(wall_mat):
             v1 = bm.verts.new(base_b)
             v2 = bm.verts.new((base_b.x, base_b.y, WALL_HEIGHT))
             v3 = bm.verts.new((base_a.x, base_a.y, WALL_HEIGHT))
-            bm.faces.new((v0, v1, v2, v3))
+            # Wound so the quad's normal points inward toward the hex centre -- the face Link
+            # looks at from inside the room. The reverse winding backface-culled the walls from
+            # inside and showed only the outer face from outside the hex.
+            bm.faces.new((v0, v3, v2, v1))
     bm.normal_update()
     bm.to_mesh(mesh)
     bm.free()
