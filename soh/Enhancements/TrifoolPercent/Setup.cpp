@@ -122,7 +122,12 @@ static void TickPauseDebugInventory() {
 }
 
 // Jumps to one of the showcase beats. Each entrance mirrors the upstream Statics_TestShortcuts
-// commented-out block; cutsceneIndex 0xFFF0 forces the Chamber of Sages cutscene when applicable.
+// commented-out block. cutsceneIndex 0xFFF8 selects the vanilla staff-roll layer for Hyrule
+// Castle so the Staff Roll dev warp lands in the Castle flyover setup; the Chamber-of-Sages
+// warp intentionally leaves cutsceneIndex at 0 because every vanilla kenjyanoma cutscene
+// layer plays a sage medallion handoff (0xFFF0 picked Saria/Forest), and TrifoolPercent's
+// Phase B chamber cutscene is not vendored yet -- suppressing the vanilla CS is handled by
+// the SacredRealmChain scene-init hook.
 struct DevWarp {
     const char* label;
     s32 entranceIndex;
@@ -136,7 +141,7 @@ static const DevWarp kDevWarps[] = {
     { "Thieves' Hideout (Nabooru)", 0x04A6,                   1,  0      },
     { "Zora's Domain (adult)",   ENTR_ZORAS_DOMAIN_ENTRANCE,  0,  0      },
     { "Unicorn Fountain",        ENTR_TEST01_0,               0,  0      },
-    { "Chamber of Sages",        0x006B,                      0,  (s16)0xFFF0 },
+    { "Chamber of Sages",        0x006B,                      0,  0           },
     { "Staff Roll",              0x00CD,                      1,  (s16)0xFFF8 },
     { "Test Room (hex hub)",     ENTR_SYOTES_0,               1,  0      },
 };
