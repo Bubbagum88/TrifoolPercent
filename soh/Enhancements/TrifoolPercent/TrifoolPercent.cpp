@@ -120,11 +120,21 @@ static void SpawnTriforceRoom() {
     AddActorsToDB();
 
     ActorContext* actorCtx = &gPlayState->actorCtx;
-    Actor_Spawn(actorCtx, gPlayState, sTriforceChestId, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0);
-    Actor_Spawn(actorCtx, gPlayState, sTriforceLightId, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0);
-    Actor_Spawn(actorCtx, gPlayState, sTriforcePieceId, 0.0f, 0.0f, 0.0f, 0, 0, 0, TRIFOOL_TRIFORCE_POWER);
-    Actor_Spawn(actorCtx, gPlayState, sTriforcePieceId, 0.0f, 0.0f, 0.0f, 0, 0, 0, TRIFOOL_TRIFORCE_WISDOM);
-    Actor_Spawn(actorCtx, gPlayState, sTriforcePieceId, 0.0f, 0.0f, 0.0f, 0, 0, 0, TRIFOOL_TRIFORCE_COURAGE);
+    // The Triforce Piece/Chest/Light .o2r resources, produced by Torch via
+    // actors/triforce_actor/make_torch_input.py, carry unresolved segmented pointers
+    // (observed as DEADBEEF sentinels and ASCII path-string bytes being executed as
+    // GFX opcodes). Drawing them trips an access violation in GfxSpVertex, which
+    // crashes the Triforce Room on first frame. Until the exporter fix lands, keep
+    // the spawns opt-in; default off so Isaac can walk through the room without a
+    // crash. Flip CVAR_TRIFOOL_TRIFORCE_ACTORS on to reproduce the crash while
+    // iterating on the pipeline.
+    if (CVarGetInteger(CVAR_TRIFOOL_TRIFORCE_ACTORS, 0) != 0) {
+        Actor_Spawn(actorCtx, gPlayState, sTriforceChestId, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0);
+        Actor_Spawn(actorCtx, gPlayState, sTriforceLightId, 0.0f, 0.0f, 0.0f, 0, 0, 0, 0);
+        Actor_Spawn(actorCtx, gPlayState, sTriforcePieceId, 0.0f, 0.0f, 0.0f, 0, 0, 0, TRIFOOL_TRIFORCE_POWER);
+        Actor_Spawn(actorCtx, gPlayState, sTriforcePieceId, 0.0f, 0.0f, 0.0f, 0, 0, 0, TRIFOOL_TRIFORCE_WISDOM);
+        Actor_Spawn(actorCtx, gPlayState, sTriforcePieceId, 0.0f, 0.0f, 0.0f, 0, 0, 0, TRIFOOL_TRIFORCE_COURAGE);
+    }
 
     // Debug scenes have no place name, so the room brings its own title card (built by make_title_card.py).
     TitleCard_InitPlaceName(gPlayState, &gPlayState->actorCtx.titleCtx, (void*)gTrifoolTriforceRoomTitleCardTex, 160,

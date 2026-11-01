@@ -9,6 +9,13 @@
 #include "align_asset_macro.h"
 
 #define CVAR_TRIFOOL_TRIFORCE_ROOM CVAR_ENHANCEMENT("TrifoolPercent.TriforceRoom")
+// Triforce actor zobjs (Piece, Chest, Light) are converted to .o2r by Torch. The
+// pipeline currently emits unresolved references (DEADBEEF sentinels + raw
+// segmented pointers) inside those DLs, so drawing them crashes SoH's F3D
+// interpreter in GfxSpVertex. This CVar gates the Actor_Spawn calls for them;
+// default off until the Torch pipeline fix lands. Flip on manually to test the
+// actors.
+#define CVAR_TRIFOOL_TRIFORCE_ACTORS CVAR_ENHANCEMENT("TrifoolPercent.TriforceActors")
 #define CVAR_TRIFOOL_TEST_ENTRANCE CVAR_ENHANCEMENT("TrifoolPercent.TestEntrance")
 #define CVAR_TRIFOOL_UNICORN_FOUNTAIN CVAR_ENHANCEMENT("TrifoolPercent.UnicornFountain")
 #define CVAR_TRIFOOL_SETUP_PRESET CVAR_ENHANCEMENT("TrifoolPercent.SetupPreset")
