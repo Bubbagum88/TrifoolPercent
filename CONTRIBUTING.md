@@ -1,6 +1,10 @@
 # Contributing to TrifoolPercent
 
-Pull requests are welcome! By submitting one, you agree to be credited in [CREDITS.md](CREDITS.md) under your preferred name or handle.
+Pull requests are welcome! Contributors land in [CREDITS.md](CREDITS.md) and the in-game staff roll — under your preferred name or handle. By opening a PR you agree to that.
+
+Not sure where to help? The README's [**Where I need help**](README.md#where-i-need-help) section lists the skill buckets this project needs, and GitHub's [`good first issue`](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) and [`help wanted`](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) labels have carved-out tasks.
+
+**On AI-generated contributions.** This repo is drafted with heavy AI assist, and PRs that use AI are welcome too — just test what you ship. Don't paste code you haven't actually built or run.
 
 ## Before you start
 
