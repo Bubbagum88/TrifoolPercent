@@ -1,0 +1,59 @@
+# TrifoolPercent GitHub label definitions.
+#
+# Keep this file as the source of truth for labels. To sync it to GitHub,
+# use a label sync action (e.g. EndBug/label-sync) or copy entries into the
+# repo's Labels page manually.
+
+# --- Help / triage ---
+- name: good first issue
+  color: 7057ff
+  description: Small, well-scoped task — good landing spot for a new contributor.
+
+- name: help wanted
+  color: 008672
+  description: I'd love someone else to pick this up.
+
+- name: question
+  color: d876e3
+  description: Open question or clarification needed.
+
+- name: bug
+  color: d73a4a
+  description: Something's broken.
+
+- name: enhancement
+  color: a2eeef
+  description: New feature or improvement.
+
+- name: docs
+  color: 0075ca
+  description: Documentation only.
+
+# --- Areas of the codebase ---
+- name: area/engine
+  color: 1d76db
+  description: SoH module (soh/Enhancements/TrifoolPercent/) — actors, hooks, CVars.
+
+- name: area/scenes
+  color: fbca04
+  description: Scenes, rooms, Fast64/Blender exports, .o2r assets.
+
+- name: area/cutscenes
+  color: c2e0c6
+  description: Cutscene commands, song engine, staff-roll chain.
+
+- name: area/art
+  color: f9d0c4
+  description: Textures, models, animations.
+
+- name: area/build
+  color: bfdadc
+  description: Build pipeline, tools/, CI workflows.
+
+- name: area/docs
+  color: 0075ca
+  description: README, docs/, porting guide.
+
+- name: area/playtesting
+  color: fef2c0
+  description: In-game verification and bug reports.

@@ -26,13 +26,26 @@ Two deliverables:
 
 No Nintendo ROM data is redistributed. SoH extracts `oot.o2r` from your own OoT ROM on first launch.
 
-## A note from Bubbagum88 — what, why, and how
+## A note from Bubbagum88
 
-**Why I'm doing this.** I'm a passionate fan. The **Triforce% Team** built something that is, in a lot of ways, a work of art — a fulfillment of the kind of dreams Ocarina of Time players have been chasing for over two decades. I want that work experienced by every single person who wants to experience it. I took this project on because I saw a gap in the OoT community right where Ship of Harkinian and Triforce% meet, and I wanted that gap filled.
+I'm a passionate fan. The **Triforce% Team** built something that is, in a lot of ways, a work of art — a fulfillment of the kind of dreams Ocarina of Time players have been chasing for over two decades. I want that work experienced by every single person who wants to experience it. I took this project on because I saw a gap in the OoT community right where Ship of Harkinian and Triforce% meet, and I wanted that gap filled.
 
-**How I'm building it.** With heavy use of AI coding assistants (Claude Code). I review, test, and ship every change myself, but a lot of the code, docs, and CI wiring in this repo were drafted by an AI pair. If that matters to you, now you know.
+> **This repo uses AI.** Code, docs, and CI wiring are drafted with Claude Code; I review, test, and ship every change.
 
-**What I'm not here to do.** Argue about the use of AI or its ethics. AI is the tool that lets me, as one person, actually do this — bring the Triforce% quest into Ship of Harkinian so more people can play it.
+## Where I need help
+
+This project is bigger than one person, and I'd love company. If any of these sound like you, open a PR or an issue — contributors get credited in [CREDITS.md](CREDITS.md) and in the in-game staff roll.
+
+| Skill | What that looks like here |
+|-------|---------------------------|
+| **C++ / Ship of Harkinian engine** | Writing custom actors, wiring `GameInteractor` hooks, porting Triforce% patches into the `soh/Enhancements/TrifoolPercent/` module. |
+| **Fast64 / Blender scene editing** | Finishing or polishing custom scenes (Triforce Room, Unicorn Fountain, Chamber of Sages), fixing room geometry, exporting `.o2r` assets. |
+| **Cutscene scripting** | Rebuilding Triforce% cutscenes with SoH's cutscene commands — the song engine, Chamber of Sages beats, the staff-roll chain. |
+| **Texture / model art** | Original replacement art where upstream assets need to be re-authored, or polish on existing ports. |
+| **Playtesting** | Running the latest build, finding what breaks, filing good bug reports. No code needed. |
+| **Docs / build-script QA** | Making [BUILDING.md](docs/BUILDING.md) smoother on your machine, improving `docs/porting-guide/`, writing tutorials. |
+
+Start points: the [roadmap](docs/roadmap.md), the [parity table](docs/references/triforcepercent-parity.md), the [porting checklist](docs/porting-checklist.md), or anything labeled [`good first issue`](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) / [`help wanted`](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22).
 
 ## Quick start
 
@@ -110,4 +123,4 @@ Built on the work of the **Triforce% Team** (the quest, the scenes, the assets),
 
 ## Contributing
 
-PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Start with [BUILDING.md](docs/BUILDING.md) and pick an open row from the [porting checklist](docs/porting-checklist.md) or the [parity table](docs/references/triforcepercent-parity.md).
+PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Easiest paths in: pick a [`good first issue`](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22), grab an open row from the [porting checklist](docs/porting-checklist.md) or the [parity table](docs/references/triforcepercent-parity.md), or just drop a draft PR with a question. Build setup is in [BUILDING.md](docs/BUILDING.md); if it doesn't work on your box, that itself is a bug worth filing.
