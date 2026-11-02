@@ -26,11 +26,13 @@ Two deliverables:
 
 No Nintendo ROM data is redistributed. SoH extracts `oot.o2r` from your own OoT ROM on first launch.
 
-## Built with AI assistance
+## A note from Isaac — why this exists and how it's built
 
-TrifoolPercent is developed with heavy use of AI coding assistants (Claude Code). I review, test, and ship every change — but a lot of the code, docs, and CI wiring in this repo were drafted by an AI pair. If that matters to you, now you know.
+**Why I'm doing this.** I'm a passionate fan. The **Triforce% Team** built something that is, in a lot of ways, a work of art — a fulfillment of the kind of dreams Ocarina of Time players have been chasing for over two decades. I want that work experienced by every single person who wants to experience it. I took this project on because I saw a gap in the OoT community right where Ship of Harkinian and Triforce% meet, and I wanted that gap filled.
 
-I'm not here to argue about the use of AI or its ethics. I'm here because I'm a passionate fan who wants the work of the **Triforce% Team** to be experienced by as many people who want to experience it. What they built is a work of art in a lot of ways — a fulfillment of the kind of dreams OoT players have been chasing for over two decades. I took this project on because I saw a gap in the OoT community where Ship of Harkinian and Triforce% meet, and I wanted that gap filled. AI is the tool that lets me, as one person, actually do it.
+**How I'm building it.** With heavy use of AI coding assistants (Claude Code). I review, test, and ship every change myself, but a lot of the code, docs, and CI wiring in this repo were drafted by an AI pair. If that matters to you, now you know.
+
+**What I'm not here to do.** Argue about the use of AI or its ethics. AI is the tool that lets me, as one person, actually do this — bring the Triforce% quest into Ship of Harkinian so more people can play it.
 
 ## Quick start
 
