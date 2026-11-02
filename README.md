@@ -39,10 +39,13 @@ This project is bigger than one person, and I'd love company. If any of these so
 | Skill | What that looks like here |
 |-------|---------------------------|
 | **C++ / Ship of Harkinian engine** | Writing custom actors, wiring `GameInteractor` hooks, porting Triforce% patches into the `soh/Enhancements/TrifoolPercent/` module. |
+| **Shipwright symbol / naming audits** | Grepping Shipwright headers against this repo for hallucinated or drifted symbol names (`Actor_IsTalking` vs. `Actor_ProcessTalkRequest`, invented `EVENTCHKINF_*` names, parallel `OBJECT_*` / `GI_*` ids, etc.) and fixing them to match upstream. AI pair-programming has broken a lot of builds this way — human eyes catch it fastest. See `CLAUDE.md` → "Shipwright wins on naming." |
+| **N64 / F3DEX2 graphics porting** | Porting Triforce%'s original N64 GFX work: `OBJECT_*` display lists, textures, animations, vertex data, Fast64 pipeline questions. "GFX64 stuff." |
 | **Fast64 / Blender scene editing** | Finishing or polishing custom scenes (Triforce Room, Unicorn Fountain, Chamber of Sages), fixing room geometry, exporting `.o2r` assets. |
 | **Cutscene scripting** | Rebuilding Triforce% cutscenes with SoH's cutscene commands — the song engine, Chamber of Sages beats, the staff-roll chain. |
 | **Texture / model art** | Original replacement art where upstream assets need to be re-authored, or polish on existing ports. |
-| **Playtesting** | Running the latest build, finding what breaks, filing good bug reports. No code needed. |
+| **Playtesting** | Running the latest build, finding what breaks on the golden path, filing good bug reports. No code needed. |
+| **Edge-case testing** | Hunting the weird stuff: save/load cycles mid-quest, age-flip timing, dying inside a custom scene, equipping/dequipping items at trigger boundaries, controller re-plug during cutscenes, SoH enhancement toggles that interact badly with the mod. |
 | **Docs / build-script QA** | Making [BUILDING.md](docs/BUILDING.md) smoother on your machine, improving `docs/porting-guide/`, writing tutorials. |
 
 Start points: the [roadmap](docs/roadmap.md), the [parity table](docs/references/triforcepercent-parity.md), the [porting checklist](docs/porting-checklist.md), or anything labeled [`good first issue`](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) / [`help wanted`](../../issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22).
