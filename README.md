@@ -96,6 +96,10 @@ Where upstream patches a routine, we hook the equivalent SoH event. Where upstre
 - `.github/workflows/` — CI
 </details>
 
+## Built with AI assistance
+
+TrifoolPercent is developed with heavy use of AI coding assistants (Claude Code). I review, test, and ship every change — but a lot of the code, docs, and CI wiring in this repo were drafted by an AI pair. If that matters to you, now you know.
+
 ## Acknowledgements
 
 Built on the work of the **Triforce% Team** (the quest, the scenes, the assets), **HarbourMasters** (Ship of Harkinian), the **zeldaret/oot** decomp team, and the OoT modding and preservation community (TCRF, Zelda Wiki, [The Spriters Resource](https://models.spriters-resource.com/nintendo_64/thelegendofzeldaocarinaoftime/)). Per the upstream license, the Triforce% Team is credited in the in-game staff roll when the mod ships. Full roll in [docs/ACKNOWLEDGEMENTS.md](docs/ACKNOWLEDGEMENTS.md).
