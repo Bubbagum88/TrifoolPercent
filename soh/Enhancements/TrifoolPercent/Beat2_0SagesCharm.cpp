@@ -192,9 +192,12 @@ void TrifoolMenu::RegisterBeat2_0Widgets() {
         .Options(UIWidgets::CheckboxOptions().DefaultValue(false).Tooltip(
             "Lays the foundation for the Sages' Charm (Oracle Amulet). This slice "
             "wires only the session flag, item id (0x69, unused in vanilla), text id "
-            "(0x0084) and the item-get textbox. The medallion-on-C, Din's Fire on C "
-            "and magic-bar follow-ups each ship as their own slice. Use the debug "
-            "grant button below to arm the flag and preview the item-get card without "
+            "(0x0084) and the item-get textbox. Medallion-on-C, Din's Fire on C and "
+            "the 3px magic-bar shift ship as separate slices (Beat 2.1 toggle). "
+            "The Charm itself does NOT draw an icon in the pause menu yet -- the "
+            "24x24 and 128x16 textures are vendored but no draw hook references "
+            "them. See docs/items/sages-charm.md follow-up #4. Use the debug grant "
+            "button below to arm the flag and preview the item-get card without "
             "the Running Man boss."));
     SohGui::mSohMenu->AddWidget(path,
                                 "Grant Sages' Charm now (debug)",
