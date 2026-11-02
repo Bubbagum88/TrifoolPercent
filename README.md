@@ -26,7 +26,7 @@ Two deliverables:
 
 No Nintendo ROM data is redistributed. SoH extracts `oot.o2r` from your own OoT ROM on first launch.
 
-## A note from Bubbagum88 — why this exists and how it's built
+## A note from Bubbagum88 — what, why, and how
 
 **Why I'm doing this.** I'm a passionate fan. The **Triforce% Team** built something that is, in a lot of ways, a work of art — a fulfillment of the kind of dreams Ocarina of Time players have been chasing for over two decades. I want that work experienced by every single person who wants to experience it. I took this project on because I saw a gap in the OoT community right where Ship of Harkinian and Triforce% meet, and I wanted that gap filled.
 
