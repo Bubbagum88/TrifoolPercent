@@ -4,6 +4,13 @@ A custom item added for TrifoolPercent. Upstream Triforce% refers to it as the
 **Sages' Charm** in the item-get text; the showcase VOD / behind-the-scenes
 talk calls it the **Oracle Amulet**. Same object.
 
+> **Where does the Charm appear in the pause menu?** It doesn't — yet. The
+> Charm is a session boolean + an item-get textbox + a set of engine patches
+> that enable the medallion-on-C flow, the Fire-Medallion-as-Din's-Fire remap
+> and the 3px magic-bar shift. The 24×24 C-button icon and the 128×16
+> quest-status "chain" strip are vendored under `assets/textures/` but
+> nothing draws them yet. Tracked as follow-up #4 below.
+
 In Triforce% the Running Man boss hands it over after Link beats him; it is
 the key that unlocks:
 
@@ -34,7 +41,8 @@ SoH because the Rumble Pak indicator still ships; we add a new id instead.
 | Model source | `.blend` vendored | `assets/model/SagesCharm/SagesCharm.blend` |
 | Model `.c` | **Exported** (383 lines, 20 KB) | `assets/model/SagesCharm/object_gi_sagescharm.c` — display list `gGiSagesCharmDL` at ROM `0x6001128`, with `CharmString` + `chain` ia8 textures baked in. |
 | OTR / o2r wrapper | **Pending** | Lands in the next `TrifoolPercent.o2r` build when the Fast64 pipeline covers the SagesCharm object. Same follow-up as the Butterfly's 3D asset. |
-| C-button icon (24×24 ia8) | **Missing** | Upstream shipped a new 24px icon; no source asset in the repo yet. Needs Isaac's Blender / texture pipeline to export the icon alongside the next o2r build. |
+| C-button icon (24×24 rgba32) | **Vendored** | `assets/textures/sages_charm_24.rgba32.{png,bin}` — ready to blit on a C button or draw as an overlay. Not yet referenced by `soh/Enhancements/TrifoolPercent/` code. |
+| Quest-status "chain" strip (128×16 ia4) | **Vendored** | `assets/textures/item_sages_charm.ia4.{png,bin}` — upstream draws it across the medallion row on the Quest Status page when the Charm is held. Not yet referenced by `soh/Enhancements/TrifoolPercent/` code. |
 | Dialogue-box inline icon | **Not needed** | The item-get card renders through the vanilla textbox fanfare path; once the GetItemEntry lands, `CustomMessageManager::CreateGetItemMessage` stamps the item-icon header automatically. |
 
 ## Scope of Beat 2.0 (merged in this PR)
@@ -65,25 +73,31 @@ Each of those PRs grants the vanilla elemental item when the medallion is held, 
 ability is reachable from the vanilla equip slots and does not block on the C-button
 work below. See `docs/references/beta-medallions.md`.
 
-Follow-ups still open (unchanged from the foundation slice, kept here for tracking):
+Follow-ups still open (status refreshed 2026-11-02):
 
-1. **Medallion-on-C enabler.** Allow the quest-status subscreen to pick a
-   medallion and equip it to a C-button. Upstream patches `z_kaleido_scope`
-   and `sSubscreenButtonStates`; in SoH this is a VB hook on the kaleido
-   C-button gate (`REGISTER_VB_SHOULD(VB_KALEIDO_...)` or a direct kaleido
-   edit). Gated on `TrifoolBeat_HasSagesCharm()`.
-2. **Fire Medallion as Din's Fire.** When Link presses a C-button that holds
-   `ITEM_FIRE_MEDALLION`, trigger Din's Fire. Upstream patches
-   `Player_ItemToItemAction`; in SoH this is a Player VB hook. Also gated
-   on `TrifoolBeat_HasSagesCharm()`.
-3. **Magic-bar visual tweak.** Shift the magic bar down 3px when the Charm
-   is held (upstream `Patched_MagicBarSetup/Y1/Loads`). Visual only.
-4. **24×24 C-button icon.** Register once the asset exists.
+1. **Medallion-on-C enabler.** ✅ **Done** — `Beat2_1MedallionOnC.cpp` + the
+   weak-symbol patch `patches/shipwright/kaleido-equip-medallions-to-c.patch`.
+   Our hook reads C-press directly and calls `KaleidoScope_SetupItemEquip`,
+   so unlike upstream we do not need to toggle `sSubscreenButtonStates`.
+   Enable SoH's `gEnhancements.PauseAnyCursor` → "Always" if you want the
+   Quest Status cursor to park on any slot (not required for medallions,
+   which are already cursor-reachable in vanilla).
+2. **Fire Medallion as Din's Fire.** ✅ **Done** —
+   `TrifoolBeat_MapMedallionItemAction` in `Beat2_1MedallionOnC.cpp` +
+   `patches/shipwright/player-medallion-item-action.patch`.
+3. **Magic-bar visual tweak.** ✅ **Done** — `TrifoolBeat_MagicBarYOffset`
+   in `Beat2_1MedallionOnC.cpp` + `patches/shipwright/magic-bar-sages-charm-offset.patch`.
+4. **24×24 C-button icon.** Asset vendored (`sages_charm_24.rgba32`). Still
+   needs a draw hook: nothing in `soh/Enhancements/TrifoolPercent/` references
+   it yet, so the Charm itself is not rendered on any C button or in the
+   pause menu. Likely approach: a weak-symbol hook at the end of
+   `KaleidoScope_DrawQuestStatus` that draws the 24×24 overlay (and/or the
+   128×16 "chain" strip across the medallion row) when `TrifoolBeat_HasSagesCharm()`.
 5. **GetItemEntry via `ItemTableManager`.** Wire `gGiSagesCharmDL` through a
    `GetItemEntry {.getItemId = ..., .objectId = ..., .gid = ...}` and the
    `object_gi_sagescharm.o2r` resource path, so chests and NPCs can deliver
-   the Charm through the vanilla En_Box pipeline. Lands with the next
-   `TrifoolPercent.o2r` build.
+   the Charm through the vanilla En_Box pipeline. Blocked on the next
+   `TrifoolPercent.o2r` build (Fast64 pipeline covering the SagesCharm object).
 6. **Running Man boss handoff.** When `BossRunningMan` is ported, its
    "deliver reward" state calls `TrifoolBeat_GrantSagesCharm()` and starts
    `TRIFOOL_TEXT_SAGES_CHARM_GET` through En_Box.
